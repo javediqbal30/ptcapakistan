@@ -1,0 +1,107 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { getPublishedMentors } from '@lib/content';
+import { breadcrumbSchema } from '@lib/schema';
+import Breadcrumbs from '@components/ui/Breadcrumbs.astro';
+import SectionHead from '@components/ui/SectionHead.astro';
+import Icon from '@components/ui/Icon.astro';
+import { initials, mentorPhoto } from '@lib/content';
+
+const mentors = await getPublishedMentors();
+
+// Optimised portrait per mentor (falls back to initials when none supplied).
+const portraits = mentors.map((mentor) => ({
+  mentor,
+  portrait: mentor.data.photo ?? mentorPhoto(mentor.id),
+}));
+---
+
+<BaseLayout
+  seo={{
+    title: 'Mentors - Practising Tax & Corporate Experts',
+    description: 'Meet PTCA mentors: practising tax, corporate affairs and human resource professionals with 15+ and 20+ years of experience. Karachi, online and hybrid.',
+    canonical: '/mentors/',
+  }}
+  schemaNodes={[
+    breadcrumbSchema([
+      { name: 'Home', path: '/' },
+      { name: 'Mentors', path: '/mentors/' },
+    ]),
+  ]}
+>
+  <section class="page-hero">
+    <div class="container">
+      <Breadcrumbs items={[{ name: 'Home', path: '/' }, { name: 'Mentors', path: '/mentors/' }]} />
+      <h1>Our mentors</h1>
+      <p class="page-hero__lead">
+        PTCA is taught by practising professionals. Our mentors combine senior
+        corporate roles with long-standing experience in professional training.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="grid grid--2">
+        {portraits.map(({ mentor, portrait }) => (
+          <article class="card">
+            <div style="display:flex; gap:1.5rem; align-items:flex-start">
+              <div
+                class="mentor-card__avatar"
+                style="width:120px; height:120px; font-size:var(--fs-2xl); border-radius:var(--radius-lg)"
+              >
+                {typeof portrait === 'string' ? (
+                  <img src={portrait} alt={mentor.data.name} width="120" height="120" loading="lazy" decoding="async" />
+                ) : portrait ? (
+                  <Image
+                    src={portrait}
+                    alt={mentor.data.name}
+                    widths={[120, 240, 360]}
+                    sizes="120px"
+                    quality={85}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                ) : (
+                  initials(mentor.data.name)
+                )}
+              </div>
+              <div>
+                <h2 style="font-size:var(--fs-xl)">
+                  <a href={`/mentors/${mentor.id}/`}>{mentor.data.name}</a>
+                </h2>
+                <p class="mentor-card__role">{mentor.data.title}</p>
+                <p style="margin-top:0.5rem; font-size:var(--fs-sm); color:var(--muted)">
+                  <Icon name="briefcase" size={14} /> {mentor.data.yearsExperience}+ years of experience
+                </p>
+              </div>
+            </div>
+
+            <ul class="chip-list" style="margin-top:1.25rem">
+              {mentor.data.expertise.slice(0, 5).map((item) => (
+                <li class="chip">{item}</li>
+              ))}
+            </ul>
+
+            <a class="btn btn--primary btn--sm" href={`/mentors/${mentor.id}/`} style="margin-top:1.25rem">
+              View full profile
+              <Icon name="arrow-right" size={15} />
+            </a>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--soft">
+    <div class="container container--narrow">
+      <SectionHead
+        eyebrow="Why it matters"
+        title="Taught by people who do the work"
+        align="center"
+        lead="Every mentor on the faculty holds a current professional role, so examples in class reflect live practice rather than textbooks alone."
+      />
+    </div>
+  </section>
+</BaseLayout>

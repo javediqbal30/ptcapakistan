@@ -1,0 +1,222 @@
+---
+import { Image } from 'astro:assets';
+import advancedTax from '@assets/hero/Advanced_Taxation_&_Litigation.webp';
+import salesTax from '@assets/hero/Certified_Sales_Tax_Specialist.webp';
+import companySec from '@assets/hero/Company_Secretary_&_Secretarial_Practices.webp';
+import chrp from '@assets/hero/Human_Resource_Professional_Course.webp';
+import ipCourse from '@assets/hero/Intellectual_Property_Course.webp';
+import foundation from '@assets/hero/Foundation_in_Tax_&_Corporate.jpg';
+
+/**
+ * Hero image rotator.
+ *
+ * Each slide is a real course poster supplied by PTCA and doubles as a course
+ * advertisement: the artwork links to the course page and the caption carries
+ * the course name with a direct enrolment link.
+ *
+ * Behaviour:
+ *   - Auto-advances every 3s, and pauses on hover, on keyboard focus and while
+ *     the tab is hidden, so it never fights the reader.
+ *   - Every slide stays in the HTML, so crawlers and generative engines index
+ *     all six courses straight from the home page.
+ *   - Honours `prefers-reduced-motion`: no auto-rotation, but the dots still
+ *     let those users move between slides manually.
+ */
+const slides = [
+  {
+    src: advancedTax,
+    alt: 'Advanced Certificate in Taxation and Litigation course poster at PTCA',
+    eyebrow: 'Flagship programme',
+    title: 'Advanced Taxation & Litigation',
+    text: 'Income tax, sales tax and appellate practice taught by practising professionals.',
+    href: '/courses/advanced-taxation-litigation-course/',
+    enroll: '/enroll/?course=advanced-taxation-litigation-course',
+  },
+  {
+    src: salesTax,
+    alt: 'Certified Sales Tax Specialist course poster at PTCA',
+    eyebrow: 'High demand',
+    title: 'Certified Sales Tax Specialist',
+    text: 'Registration, return filing, adjudication and practical sales tax compliance.',
+    href: '/courses/sales-tax-course-pakistan/',
+    enroll: '/enroll/?course=sales-tax-course-pakistan',
+  },
+  {
+    src: companySec,
+    alt: 'Company Secretary and Secretarial Practices course poster at PTCA',
+    eyebrow: 'Corporate practice',
+    title: 'Company Secretary & Secretarial Practices',
+    text: 'SECP compliance, corporate governance and secretarial practice for professionals.',
+    href: '/courses/company-secretary-course-pakistan/',
+    enroll: '/enroll/?course=company-secretary-course-pakistan',
+  },
+  {
+    src: chrp,
+    alt: 'Certified Human Resource Professional (CHRP) course poster at PTCA',
+    eyebrow: 'People focus',
+    title: 'CHRP – Human Resource Professional',
+    text: 'Recruitment, performance, employment law and strategic people management.',
+    href: '/courses/chrp-hr-course-karachi/',
+    enroll: '/enroll/?course=chrp-hr-course-karachi',
+  },
+  {
+    src: ipCourse,
+    alt: 'Intellectual Property course poster at PTCA',
+    eyebrow: 'IP & branding',
+    title: 'Intellectual Property Course',
+    text: 'Rights, protection mechanisms and registration procedures in Pakistan.',
+    href: '/courses/intellectual-property-course-pakistan/',
+    enroll: '/enroll/?course=intellectual-property-course-pakistan',
+  },
+  {
+    src: foundation,
+    alt: 'Foundation Certification in Tax and Corporate course poster at PTCA',
+    eyebrow: 'Start here',
+    title: 'Foundation in Tax & Corporate',
+    text: 'A structured starting point for students and graduates entering the field.',
+    href: '/courses/foundation-tax-corporate-course/',
+    enroll: '/enroll/?course=foundation-tax-corporate-course',
+  },
+];
+---
+
+<div class="hero-rotator" data-rotator data-interval="3000">
+  <div class="hero-rotator__viewport">
+    {slides.map((slide, index) => (
+      <article
+        class="hero-slide"
+        data-slide={index}
+        data-active={index === 0 ? 'true' : undefined}
+        aria-roledescription="slide"
+        aria-hidden={index === 0 ? 'false' : 'true'}
+        aria-label={`${index + 1} of ${slides.length}: ${slide.title}`}
+      >
+        <a class="hero-slide__media" href={slide.href}>
+          <Image
+            src={slide.src}
+            alt={slide.alt}
+            widths={[540, 720, 1080]}
+            sizes="(min-width: 901px) 540px, 100vw"
+            quality={80}
+            loading={index === 0 ? 'eager' : 'lazy'}
+            decoding="async"
+            fetchpriority={index === 0 ? 'high' : 'auto'}
+          />
+        </a>
+
+        {/* The visible slide is just the poster. The course name and summary stay
+            in the DOM (visually hidden) so search engines and assistive tech
+            still index every featured course from the home page. */}
+        <div class="hero-slide__caption sr-only">
+          <span class="hero-slide__eyebrow">{slide.eyebrow}</span>
+          <h2 class="hero-slide__title">
+            <a href={slide.href}>{slide.title}</a>
+          </h2>
+          <p class="hero-slide__text">{slide.text}</p>
+        </div>
+      </article>
+    ))}
+  </div>
+
+  <div class="hero-rotator__dots" role="tablist" aria-label="Featured courses">
+    {slides.map((slide, index) => (
+      <button
+        class="hero-rotator__dot"
+        type="button"
+        role="tab"
+        data-dot={index}
+        aria-selected={index === 0 ? 'true' : 'false'}
+        aria-label={slide.title}
+      >
+        <span class="hero-rotator__dot-fill"></span>
+      </button>
+    ))}
+  </div>
+</div>
+<script>
+  // Hero rotator: auto-advance every 3s, pause on hover/focus/hidden tab.
+  document.querySelectorAll<HTMLElement>('[data-rotator]').forEach((root) => {
+    const slides = Array.from(root.querySelectorAll<HTMLElement>('[data-slide]'));
+    const dots = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-dot]'));
+    const interval = Number(root.dataset.interval ?? 3000);
+
+    if (slides.length < 2) return;
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let index = 0;
+    let timer: number | undefined;
+
+    const show = (next: number) => {
+      index = (next + slides.length) % slides.length;
+      slides.forEach((slide, i) => {
+        const active = i === index;
+        // Toggle the attribute rather than `hidden`: `hidden` is a hard
+        // display:none and cannot be transitioned, which is what made the
+        // swap feel abrupt.
+        slide.dataset.active = String(active);
+        slide.setAttribute('aria-hidden', String(!active));
+      });
+      dots.forEach((dot, i) => {
+        const active = i === index;
+        dot.setAttribute('aria-selected', String(active));
+        // Restart the progress animation on the newly selected dot.
+        if (active) {
+          const fill = dot.firstElementChild as HTMLElement | null;
+          if (fill) {
+            fill.style.animation = 'none';
+            void fill.offsetWidth;
+            fill.style.animation = '';
+          }
+        }
+      });
+    };
+
+    const start = () => {
+      if (reduceMotion) return;
+      window.clearInterval(timer);
+      timer = window.setInterval(() => show(index + 1), interval);
+    };
+
+    const stop = () => window.clearInterval(timer);
+
+    dots.forEach((dot, i) =>
+      dot.addEventListener('click', () => {
+        show(i);
+        start();
+      })
+    );
+
+    // Pause while the reader interacts with, or is not looking at, the slider.
+    root.addEventListener('mouseenter', stop);
+    root.addEventListener('mouseleave', start);
+    root.addEventListener('focusin', stop);
+    root.addEventListener('focusout', start);
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) stop();
+      else start();
+    });
+
+    // Swipe support on touch devices.
+    let touchStartX = 0;
+    root.addEventListener(
+      'touchstart',
+      (e) => {
+        touchStartX = e.changedTouches[0].clientX;
+        stop();
+      },
+      { passive: true }
+    );
+    root.addEventListener(
+      'touchend',
+      (e) => {
+        const delta = e.changedTouches[0].clientX - touchStartX;
+        if (Math.abs(delta) > 45) show(index + (delta < 0 ? 1 : -1));
+        start();
+      },
+      { passive: true }
+    );
+
+    show(0);
+    start();
+  });
+</script>

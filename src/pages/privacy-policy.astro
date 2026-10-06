@@ -1,0 +1,77 @@
+---
+import LegalLayout from '@layouts/LegalLayout.astro';
+import { SITE, mailHref } from '@data/site';
+---
+
+<LegalLayout
+  title="Privacy Policy"
+  description="How PTCA collects, uses and protects the personal information you provide through enrolment and contact forms, including retention, cookies and your rights."
+  updated="10 April 2026"
+>
+  <p>
+    {SITE.legalName} ("PTCA", "we") respects your privacy. This policy explains
+    what information we collect when you submit an enrolment or enquiry form, why
+    we collect it, and the choices available to you.
+  </p>
+
+  <h2>Information we collect</h2>
+  <p>When you submit a form on this website we may collect:</p>
+  <ul>
+    <li>Your full name</li>
+    <li>Your mobile or WhatsApp number</li>
+    <li>Your email address</li>
+    <li>Your city and area</li>
+    <li>Your highest level of education and current professional status</li>
+    <li>The course, learning mode and batch timing you are interested in</li>
+    <li>Any message you choose to send us</li>
+  </ul>
+  <p>
+    Optional details such as CNIC, date of birth and experience are collected only
+    when required for registration and certification, and are collected at the
+    time of admission rather than through the website form.
+  </p>
+
+  <h2>How we use your information</h2>
+  <p>We use your details only to:</p>
+  <ul>
+    <li>Respond to your enquiry and confirm fees, batch dates and registration</li>
+    <li>Provide the course and materials you have enrolled in</li>
+    <li>Send batch updates and relevant academic information</li>
+    <li>Maintain our internal student records and issue certificates</li>
+  </ul>
+
+  <h2>What we do not do</h2>
+  <ul>
+    <li>We do not sell, rent or trade your personal information.</li>
+    <li>We do not send unsolicited marketing messages.</li>
+    <li>We do not share your details with unrelated third parties.</li>
+  </ul>
+
+  <h2>Legal basis and data protection</h2>
+  <p>
+    We handle personal data in line with the principles set out in Pakistan's
+    Electronic Transactions Act, 2016 (PECA) and applicable data protection
+    legislation. Your information is stored securely and accessed only by staff
+    who need it for admissions and teaching purposes.
+  </p>
+
+  <h2>Your rights</h2>
+  <p>
+    You may request access to, correction of, or deletion of the personal
+    information we hold about you. To make a request, email us at{' '}
+    <a href={mailHref}>{SITE.email}</a>.
+  </p>
+
+  <h2>Cookies</h2>
+  <p>
+    This website uses only the cookies necessary to operate the site, such as
+    remembering your enrolment form progress. We do not use advertising cookies
+    without your consent.
+  </p>
+
+  <h2>Contact</h2>
+  <p>
+    For any privacy question, contact us at <a href={mailHref}>{SITE.email}</a>{' '}
+    or write to {SITE.address.singleLine}.
+  </p>
+</LegalLayout>

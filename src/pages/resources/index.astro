@@ -1,0 +1,71 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { getPublishedPosts, postPath, formatDate } from '@lib/content';
+import Breadcrumbs from '@components/ui/Breadcrumbs.astro';
+import SectionHead from '@components/ui/SectionHead.astro';
+import Icon from '@components/ui/Icon.astro';
+
+const posts = await getPublishedPosts();
+const categories = [...new Set(posts.map((post) => post.data.category))];
+---
+
+<BaseLayout
+  seo={{
+    title: 'Practical Tax Guides & Compliance Help',
+    description: 'Practical guides on Pakistan income tax, sales tax, FBR compliance, SECP filings and HR practice, written by practising PTCA mentors in Karachi.',
+    canonical: '/resources/',
+  }}
+>
+  <section class="page-hero">
+    <div class="container">
+      <Breadcrumbs items={[{ name: 'Home', path: '/' }, { name: 'Resources', path: '/resources/' }]} />
+      <h1>Knowledge hub</h1>
+      <p class="page-hero__lead">
+        Step-by-step guides and explanations on Pakistan&rsquo;s tax and corporate
+        compliance landscape, written and reviewed by practising professionals.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      {posts.length === 0 ? (
+        <p style="color:var(--muted)">Articles are being published. Please check back soon.</p>
+      ) : (
+        <>
+          <ul class="chip-list" style="margin-bottom:2rem">
+            <li class="chip badge--brand">All topics</li>
+            {categories.map((category) => <li class="chip">{category}</li>)}
+          </ul>
+
+          <div class="grid grid--3">
+            {posts.map((post) => (
+              <article class="card card--hover" style="display:flex; flex-direction:column">
+                <span class="badge badge--brand">{post.data.category}</span>
+                <h2 style="font-size:var(--fs-lg); margin-top:1rem">
+                  <a href={postPath(post)}>{post.data.title}</a>
+                </h2>
+                <p style="flex:1">{post.data.description}</p>
+                <div style="margin-top:1.25rem; font-size:var(--fs-2xs); color:var(--muted-2); display:flex; gap:0.75rem; align-items:center">
+                  <Icon name="calendar" size={14} />
+                  {formatDate(post.data.publishedAt)}
+                </div>
+              </article>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  </section>
+
+  <section class="section section--soft">
+    <div class="container container--narrow">
+      <SectionHead
+        eyebrow="Disclaimer"
+        title="Educational content"
+        align="center"
+        lead="Our articles are for educational purposes. Tax and corporate law change with each Finance Act and SECP notification, so confirm current requirements with the relevant authority or a qualified professional."
+      />
+    </div>
+  </section>
+</BaseLayout>

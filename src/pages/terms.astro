@@ -1,0 +1,78 @@
+---
+import LegalLayout from '@layouts/LegalLayout.astro';
+import { SITE, mailHref } from '@data/site';
+---
+
+<LegalLayout
+  title="Terms & Conditions"
+  description="The terms and conditions that apply when you enrol in a course, use our website, or interact with PTCA admissions and training services in Karachi."
+  updated="10 April 2026"
+>
+  <p>
+    These terms apply to your use of this website and to enrolments in any
+    programme offered by {SITE.legalName}.
+  </p>
+
+  <h2>Course information</h2>
+  <p>
+    Course content, duration, schedule and learning mode are confirmed at the time
+    of registration. Fees and batch dates may change between intakes, so please
+    rely on the confirmation you receive from admissions rather than information
+    shown on a general webpage.
+  </p>
+
+  <h2>Registration and payment</h2>
+  <p>
+    A place in a batch is confirmed once registration and the applicable fee have
+    been completed as advised by admissions. Course fees are not refundable except
+    where stated in our refund policy.
+  </p>
+
+  <h2>Attendance and conduct</h2>
+  <p>
+    Learners are expected to attend their sessions regularly and to conduct
+    themselves professionally. Repeated absence without notice may affect your
+    eligibility to sit an assessment or receive a certificate.
+  </p>
+
+  <h2>Certificates</h2>
+  <p>
+    Certificates are issued on the basis of attendance and assessment as
+    applicable to the programme. A certificate confirms completion of the
+    programme; it is not a professional licence or a guarantee of employment.
+  </p>
+
+  <h2>Intellectual property</h2>
+  <p>
+    All course material, exercises and documentation provided by PTCA remain our
+    property. Learners may use them for personal study and may not reproduce,
+    distribute or sell them without written permission.
+  </p>
+
+  <h2>Educational content, not advice</h2>
+  <p>
+    Content published on this website, including articles in our resources
+    section, is provided for education. It is not professional tax, legal or
+    financial advice and does not create a professional relationship.
+  </p>
+
+  <h2>Liability</h2>
+  <p>
+    We take care to provide accurate information, but we do not warrant that the
+    website is free of error or continuously available. To the extent permitted
+    by law, PTCA is not liable for decisions you make in reliance on general
+    information published here.
+  </p>
+
+  <h2>Governing law</h2>
+  <p>
+    These terms are governed by the laws of Pakistan, and are subject to the
+    jurisdiction of the courts of Karachi.
+  </p>
+
+  <h2>Contact</h2>
+  <p>
+    Questions about these terms can be sent to{' '}
+    <a href={mailHref}>{SITE.email}</a>.
+  </p>
+</LegalLayout>

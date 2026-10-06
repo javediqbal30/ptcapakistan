@@ -1,0 +1,33 @@
+{
+  "name": "ptcapakistan",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Prime Tax & Corporate Academy (PTCA) - official website. Astro, SEO + GEO optimized.",
+  "scripts": {
+    "dev": "node -r ./scripts/preload-env.mjs node_modules/astro/astro.js dev",
+    "start": "node -r ./scripts/preload-env.mjs node_modules/astro/astro.js dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "astro": "astro",
+    "assets": "node scripts/generate-brand-assets.mjs",
+    "db:migrate": "node scripts/db-migrate.mjs",
+    "start:prod": "node -r ./scripts/preload-env.mjs ./dist/server/entry.mjs"
+  },
+  "dependencies": {
+    "@astrojs/node": "^9.5.5",
+    "@astrojs/sitemap": "^3.5.0",
+    "@neondatabase/serverless": "^1.2.0",
+    "@portabletext/to-html": "^6.0.0",
+    "@sanity/client": "^8.9.0",
+    "astro": "^5.13.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "typescript": "^5.9.0"
+  },
+  "engines": {
+    "node": ">=20.3.0"
+  }
+}

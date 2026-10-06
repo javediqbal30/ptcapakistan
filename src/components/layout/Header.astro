@@ -1,0 +1,182 @@
+---
+import { PRIMARY_NAV, COURSE_MENU } from '@data/navigation';
+import { SITE, telHref, mailHref} from '@data/site';
+import { getPublishedCourses, coursePath } from '@lib/content';
+import Icon from '@components/ui/Icon.astro';
+import Logo from '@components/ui/Logo.astro';
+
+const courses = await getPublishedCourses();
+const byId = new Map(courses.map((c) => [c.id, c]));
+
+/** Current path with trailing slash, used for active/aria-current states. */
+const pathname = Astro.url.pathname;
+const isActive = (href: string) =>
+  href === '/' ? pathname === '/' : pathname.startsWith(href);
+---
+
+<div class="topbar">
+  <div class="container topbar__inner">
+    <ul class="topbar__list">
+      <li>
+        <Icon name="pin" size={15} />
+        <span>{SITE.address.line2}, {SITE.address.locality}</span>
+      </li>
+    </ul>
+    <ul class="topbar__list">
+      <li>
+        <Icon name="phone" size={15} />
+        <a href={telHref}>{SITE.phone.display}</a>
+      </li>
+      <li>
+        <Icon name="mail" size={15} />
+        <a href={mailHref}>{SITE.email}</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<header class="site-header" data-header>
+  <div class="container site-header__inner">
+    <a class="brand" href="/" aria-label={`${SITE.shortName} home`}>
+      <Logo size={48} decorative />
+      <span class="brand__text">
+        <span class="brand__name">{SITE.legalName}</span>
+        <span class="brand__sub">{SITE.slogan}</span>
+      </span>
+    </a>
+
+    <nav class="nav" aria-label="Primary">
+      {PRIMARY_NAV.map((item) =>
+        item.href === '/courses/' ? (
+          <button
+            class="nav__link"
+            type="button"
+            aria-expanded="false"
+            aria-controls="courses-megamenu"
+            data-megamenu-trigger
+          >
+            {item.label}
+            <Icon name="chevron-down" size={12} />
+          </button>
+        ) : (
+          <a
+            class="nav__link"
+            href={item.href}
+            aria-current={isActive(item.href) ? 'page' : undefined}
+          >
+            {item.label}
+          </a>
+        )
+      )}
+    </nav>
+
+    <div class="header__actions">
+    
+      <a class="btn btn--primary btn--sm btn--desktop" href="/enroll/">
+        <span>Enroll Now</span>
+        <Icon name="arrow-right" size={15} />
+      </a>
+      <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" data-drawer-toggle>
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="megamenu" id="courses-megamenu" data-megamenu>
+    <div class="container megamenu__grid">
+      {COURSE_MENU.map((group) => (
+        <div class="megamenu__col">
+          <h3>{group.label}</h3>
+          <ul class="megamenu__list">
+            {group.slugs.map((slug) => {
+              const course = byId.get(slug);
+              if (!course) return null;
+              return (
+                <li>
+                  <a href={coursePath(course)}>{course.data.shortTitle}</a>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      ))}
+      <div class="megamenu__promo">
+        <h3>Not sure where to start?</h3>
+        <p>Talk to admissions and we will match you to the right programme, mode and batch.</p>
+        <a class="btn btn--dark btn--sm" href="/admissions/" style="justify-self:start">
+          View admissions
+          <Icon name="arrow-right" size={15} />
+        </a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="drawer" data-drawer>
+  <div class="drawer__group">
+    <p class="drawer__label">Menu</p>
+    <ul class="drawer__links">
+      {PRIMARY_NAV.map((item) => (
+        <li><a href={item.href}>{item.label}</a></li>
+      ))}
+    </ul>
+  </div>
+
+  <div class="drawer__group">
+    <p class="drawer__label">Popular courses</p>
+    <ul class="drawer__links">
+      {courses.slice(0, 4).map((course) => (
+        <li><a href={coursePath(course)}>{course.data.shortTitle}</a></li>
+      ))}
+    </ul>
+  </div>
+
+  <div class="drawer__group" style="display:grid;gap:0.75rem">
+    <a class="btn btn--primary btn--block" href="/enroll/">Enroll Now</a>
+   
+  </div>
+</div>
+
+<script>
+  // Header interactions: mega-menu disclosure and mobile drawer. Deliberately
+  // framework-free so the header adds almost nothing to the JS payload.
+  const header = document.querySelector('[data-header]');
+  if (header) {
+    const trigger = header.querySelector<HTMLButtonElement>('[data-megamenu-trigger]');
+    const panel = header.querySelector<HTMLElement>('[data-megamenu]');
+    const drawerToggle = header.querySelector<HTMLButtonElement>('[data-drawer-toggle]');
+    const drawer = document.querySelector<HTMLElement>('[data-drawer]');
+
+    const closeMenu = () => {
+      trigger?.setAttribute('aria-expanded', 'false');
+      panel?.classList.remove('is-open');
+    };
+
+    trigger?.addEventListener('click', () => {
+      const open = trigger.getAttribute('aria-expanded') === 'true';
+      trigger.setAttribute('aria-expanded', String(!open));
+      panel?.classList.toggle('is-open', !open);
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!header.contains(event.target as Node)) closeMenu();
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') closeMenu();
+    });
+
+    drawerToggle?.addEventListener('click', () => {
+      const open = drawer?.classList.toggle('is-open');
+      drawerToggle.setAttribute('aria-expanded', String(Boolean(open)));
+      document.body.style.overflow = open ? 'hidden' : '';
+    });
+
+    drawer?.querySelectorAll('a').forEach((link) =>
+      link.addEventListener('click', () => {
+        drawer.classList.remove('is-open');
+        document.body.style.overflow = '';
+      })
+    );
+  }
+</script>

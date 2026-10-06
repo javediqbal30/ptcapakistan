@@ -1,0 +1,176 @@
+---
+import { Image } from 'astro:assets';
+import { render } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { getPublishedMentors, mentorPath, initials, mentorPhoto, getPublishedCourses } from '@lib/content';
+import { personSchema, breadcrumbSchema } from '@lib/schema';
+import Breadcrumbs from '@components/ui/Breadcrumbs.astro';
+import CourseCard from '@components/ui/CourseCard.astro';
+import CtaBanner from '@components/ui/CtaBanner.astro';
+import Icon from '@components/ui/Icon.astro';
+import type { Mentor } from '@lib/content';
+
+export async function getStaticPaths() {
+  const mentors = await getPublishedMentors();
+  return mentors.map((mentor) => ({ params: { slug: mentor.id }, props: { mentor } }));
+}
+
+interface Props {
+  mentor: Mentor;
+}
+
+const { mentor } = Astro.props as Props;
+const { Content } = await render(mentor);
+
+const { name, title, yearsExperience, qualifications, memberships, expertise, linkedin, photo } = mentor.data;
+
+// Mentor "title" can be a long role line ("Senior VP – Corporate Affairs | Advocate..."),
+// so the SEO title uses its first segment to keep the final title under ~55 chars.
+const shortTitle = title.split(/[–|]/)[0]?.trim() || title;
+
+// Optimised portrait for the hero of this profile page.
+const portrait = photo ?? mentorPhoto(mentor.id);
+
+// Courses this mentor teaches (references are resolved by the collection loader).
+const taught = (await getPublishedCourses()).filter((course) =>
+  mentor.data.courses.some((ref) => ref.id === course.id)
+);
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Mentors', path: '/mentors/' },
+  { name, path: mentorPath(mentor) },
+];
+---
+
+<BaseLayout
+  seo={{
+    title: `${name} - ${shortTitle}`,
+    description: `${name} is ${shortTitle} at PTCA, with ${yearsExperience}+ years experience in ${expertise.slice(0, 2).join(' and ')}. Karachi, online and hybrid.`,
+    canonical: mentorPath(mentor),
+  }}
+  schemaNodes={[
+    personSchema({
+      name,
+      title,
+      expertise,
+      qualifications,
+      memberships,
+      linkedin,
+      path: mentorPath(mentor),
+    }),
+    breadcrumbSchema(crumbs),
+  ]}
+>
+  <section class="page-hero">
+    <div class="container">
+      <Breadcrumbs items={crumbs} />
+      <div style="display:flex; gap:1.5rem; align-items:center; flex-wrap:wrap; margin-top:1.5rem">
+        <div class="mentor-card__avatar" style="width:140px; height:140px; font-size:var(--fs-2xl); border-radius:var(--radius-lg)">
+          {typeof portrait === 'string' ? (
+            <img src={portrait} alt={name} width="140" height="140" />
+          ) : portrait ? (
+            <Image
+              src={portrait}
+              alt={name}
+              widths={[140, 280, 420]}
+              sizes="140px"
+              loading="eager"
+              decoding="async"
+              quality={85}
+            />
+          ) : (
+            initials(name)
+          )}
+        </div>
+        <div>
+          <h1 style="margin-top:0">{name}</h1>
+          <p class="mentor-card__role" style="font-size:var(--fs-md)">{title}</p>
+          <p style="margin-top:0.5rem; font-size:var(--fs-sm); color:var(--muted)">
+            <Icon name="briefcase" size={14} /> {yearsExperience}+ years of professional experience
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="course-layout">
+        <div class="course-layout__body">
+          <section>
+            <h2>About {name}</h2>
+            <div class="prose" style="margin-top:1rem">
+              <Content />
+            </div>
+          </section>
+
+          <section>
+            <h2>Expertise</h2>
+            <ul class="chip-list" style="margin-top:1.25rem">
+              {expertise.map((item) => <li class="chip">{item}</li>)}
+            </ul>
+          </section>
+
+          {taught.length > 0 && (
+            <section>
+              <h2>Courses taught</h2>
+              <div class="grid grid--2" style="margin-top:1.5rem">
+                {taught.map((course) => <CourseCard course={course} compact />)}
+              </div>
+            </section>
+          )}
+        </div>
+
+        <aside class="course-sidebar">
+          <div class="facts-card">
+            <div class="facts-card__head">
+              <h2>Profile</h2>
+              <p>{name}</p>
+            </div>
+            <ul class="facts-list">
+              <li><span class="k">Experience</span><span class="v">{yearsExperience}+ years</span></li>
+              <li><span class="k">Courses</span><span class="v">{taught.length}</span></li>
+            </ul>
+
+            {qualifications.length > 0 && (
+              <div style="padding:1.25rem 1.5rem; border-top:1px solid var(--line)">
+                <h3 style="font-size:var(--fs-sm); margin-bottom:0.75rem">Qualifications</h3>
+                <ul class="check-list">
+                  {qualifications.map((item) => (
+                    <li><Icon name="check" size={16} /> {item}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {memberships.length > 0 && (
+              <div style="padding:0 1.5rem 1.25rem">
+                <h3 style="font-size:var(--fs-sm); margin-bottom:0.75rem">Memberships</h3>
+                <ul class="chip-list">
+                  {memberships.map((item) => <li class="chip">{item}</li>)}
+                </ul>
+              </div>
+            )}
+
+            <div class="facts-card__actions">
+              <a class="btn btn--primary btn--block" href="/enroll/">Enrol in a course</a>
+              {linkedin && (
+                <a class="btn btn--outline btn--block" href={linkedin} target="_blank" rel="noopener">
+                  LinkedIn profile
+                </a>
+              )}
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <CtaBanner
+    title="Learn from practising professionals"
+    text="Join a PTCA programme in Karachi, online or hybrid and build job-ready capability."
+    primaryLabel="View courses"
+    primaryHref="/courses/"
+  />
+</BaseLayout>

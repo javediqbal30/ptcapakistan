@@ -1,0 +1,50 @@
+/* ==========================================================================
+   Blog: listing cards, article layout, TOC sidebar, tables, prose links.
+   ========================================================================== */
+
+.blog-card { padding: 0; overflow: hidden; }
+.blog-card__media { display: block; aspect-ratio: 16 / 9; overflow: hidden; background: var(--muted-bg, #f3f4f6); }
+.blog-card__media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.blog-card__body { padding: 1.25rem; display: grid; gap: 0.6rem; }
+.blog-card__title { margin: 0; font-size: 1.15rem; line-height: 1.35; }
+.blog-card__title a { color: inherit; text-decoration: none; }
+.blog-card__title a:hover { text-decoration: underline; }
+.blog-card__meta { font-size: 0.8rem; color: var(--muted-2, #6b7280); margin: 0; }
+
+.blog-cover { margin: 0; }
+.blog-cover img { width: 100%; max-height: 560px; object-fit: cover; border-radius: 12px; display: block; }
+
+.blog-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  gap: 3rem;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .blog-layout { grid-template-columns: 1fr; }
+}
+
+.blog-toc nav {
+  position: sticky;
+  top: 6rem;
+  border: 1px solid var(--line, #e5e7eb);
+  border-radius: 12px;
+  padding: 1.25rem;
+  font-size: 0.9rem;
+}
+.blog-toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; margin: 0 0 0.75rem; }
+.blog-toc ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.45rem; }
+.blog-toc li.toc-sub { padding-left: 1rem; }
+.blog-toc a { color: var(--muted, #374151); text-decoration: none; }
+.blog-toc a:hover { color: var(--brand, #22A74A); text-decoration: underline; }
+
+/* Article content: links, tables, figures. */
+.prose a { color: var(--brand-700, #176f33); text-decoration: underline; text-underline-offset: 2px; }
+.prose a:hover { color: var(--brand-900, #0a4623); }
+.prose figure { margin: 2rem 0; }
+.prose figure img { width: 100%; border-radius: 12px; display: block; }
+.prose figcaption { font-size: 0.8rem; color: var(--muted-2, #6b7280); margin-top: 0.5rem; text-align: center; }
+.prose table { width: 100%; border-collapse: collapse; margin: 2rem 0; font-size: 0.95rem; }
+.prose caption { caption-side: bottom; font-size: 0.8rem; color: var(--muted-2, #6b7280); padding-top: 0.5rem; text-align: left; }
+.prose th, .prose td { border: 1px solid var(--line, #e5e7eb); padding: 0.6rem 0.9rem; text-align: left; }
+.prose thead th { background: var(--muted-bg, #f3f4f6); }

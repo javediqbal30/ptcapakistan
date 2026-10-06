@@ -1,0 +1,118 @@
+---
+import { render, getEntry } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { getPublishedPosts, postPath, formatDate } from '@lib/content';
+import { articleSchema, breadcrumbSchema, faqSchema } from '@lib/schema';
+import Breadcrumbs from '@components/ui/Breadcrumbs.astro';
+import Accordion from '@components/ui/Accordion.astro';
+import CourseCard from '@components/ui/CourseCard.astro';
+import CtaBanner from '@components/ui/CtaBanner.astro';
+import Icon from '@components/ui/Icon.astro';
+import type { Post } from '@lib/content';
+
+export async function getStaticPaths() {
+  const posts = await getPublishedPosts();
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+interface Props {
+  post: Post;
+}
+
+const { post } = Astro.props as Props;
+const { Content } = await render(post);
+
+const { title, description, category, publishedAt, updatedAt, faqs } = post.data;
+
+const author = post.data.author ? await getEntry(post.data.author) : undefined;
+const relatedCourse = post.data.relatedCourse ? await getEntry(post.data.relatedCourse) : undefined;
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Resources', path: '/resources/' },
+  { name: title, path: postPath(post) },
+];
+---
+
+<BaseLayout
+  seo={{
+    title,
+    description,
+    canonical: postPath(post),
+    type: 'article',
+  }}
+  schemaNodes={[
+    articleSchema({
+      title,
+      description,
+      path: postPath(post),
+      publishedAt,
+      updatedAt,
+      authorName: author?.data.name,
+    }),
+    breadcrumbSchema(crumbs),
+    ...(faqs.length ? [faqSchema(faqs)] : []),
+  ]}
+>
+  <article>
+    <section class="page-hero">
+      <div class="container">
+        <Breadcrumbs items={crumbs} />
+        <div class="article-head">
+          <span class="badge badge--brand" style="margin-top:1rem">{category}</span>
+          <h1>{title}</h1>
+          <p class="page-hero__lead">{description}</p>
+          <div class="article-meta">
+            <span><Icon name="calendar" size={14} /> Published {formatDate(publishedAt)}</span>
+            {updatedAt && <span>Updated {formatDate(updatedAt)}</span>}
+            {author && (
+              <span>
+                By <a href={`/mentors/${author.id}/`}>{author.data.name}</a>
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container container--narrow">
+        <div class="prose">
+          <Content />
+        </div>
+
+        {faqs.length > 0 && (
+          <div style="margin-top:3rem">
+            <h2>Frequently asked questions</h2>
+            <div style="margin-top:1.25rem">
+              <Accordion items={faqs.map((f) => ({ title: f.q, html: `<p>${f.a}</p>` }))} firstOpen />
+            </div>
+          </div>
+        )}
+
+        <p style="margin-top:2.5rem; font-size:var(--fs-xs); color:var(--muted-2)">
+          This article is for educational purposes. Laws change with each Finance Act;
+          consult a qualified professional before acting.
+        </p>
+      </div>
+    </section>
+  </article>
+
+  {relatedCourse && (
+    <section class="section section--soft">
+      <div class="container">
+        <h2 style="margin-bottom:1.5rem">Structured learning on this topic</h2>
+        <div class="grid grid--2">
+          <CourseCard course={relatedCourse} compact />
+        </div>
+      </div>
+    </section>
+  )}
+
+  <CtaBanner
+    title="Prefer guided, hands-on training?"
+    text="PTCA courses turn this knowledge into practical skill with mentors who work in the field."
+    primaryLabel="View courses"
+    primaryHref="/courses/"
+  />
+</BaseLayout>

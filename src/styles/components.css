@@ -1,0 +1,542 @@
+/* ==========================================================================
+   Components - buttons, badges, cards, chips, accordion, breadcrumbs, misc
+   ========================================================================== */
+
+/* --- Buttons ------------------------------------------------------------- */
+
+.btn {
+  --btn-bg: var(--brand-500);
+  --btn-fg: #fff;
+  --btn-bd: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  padding: 0.82rem 1.5rem;
+  font-family: var(--font-heading);
+  font-weight: var(--weight-semibold);
+  font-size: var(--fs-sm);
+  line-height: 1;
+  color: var(--btn-fg);
+  background: var(--btn-bg);
+  border: 1px solid var(--btn-bd);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform var(--dur-fast) var(--ease),
+    background var(--dur-fast) var(--ease), box-shadow var(--dur) var(--ease),
+    border-color var(--dur-fast) var(--ease);
+}
+
+.btn:hover {
+  color: var(--btn-fg);
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn svg {
+  width: 1.05em;
+  height: 1.05em;
+  flex: none;
+}
+
+.btn--primary {
+  --btn-bg: var(--brand-500);
+  box-shadow: var(--shadow-brand);
+}
+
+.btn--primary:hover {
+  --btn-bg: var(--brand-600);
+}
+
+.btn--dark {
+  --btn-bg: var(--ink);
+}
+
+.btn--dark:hover {
+  --btn-bg: #000;
+}
+
+.btn--outline {
+  --btn-bg: transparent;
+  --btn-fg: var(--ink);
+  --btn-bd: var(--line-strong);
+}
+
+.btn--outline:hover {
+  --btn-bd: var(--brand-500);
+  --btn-fg: var(--brand-800);
+  background: var(--brand-50);
+}
+
+.btn--ghost {
+  --btn-bg: transparent;
+  --btn-fg: var(--ink);
+  --btn-bd: transparent;
+}
+
+.btn--ghost:hover {
+  background: var(--surface-muted);
+}
+
+.btn--whatsapp {
+  --btn-bg: #25d366;
+}
+
+.btn--whatsapp:hover {
+  --btn-bg: #1eb455;
+}
+
+.btn--lg {
+  padding: 1.02rem 1.9rem;
+  font-size: var(--fs-base);
+}
+
+.btn--sm {
+  padding: 0.6rem 1.1rem;
+  font-size: var(--fs-xs);
+}
+
+.btn--block {
+  width: 100%;
+}
+
+/* --- Badges & chips ------------------------------------------------------ */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.32rem 0.7rem;
+  font-size: var(--fs-2xs);
+  font-weight: var(--weight-semibold);
+  font-family: var(--font-heading);
+  letter-spacing: 0.01em;
+  border-radius: var(--radius-pill);
+  background: var(--surface-muted);
+  color: var(--muted);
+  line-height: 1;
+}
+
+.badge--brand {
+  background: var(--brand-50);
+  color: var(--brand-800);
+}
+
+.badge--gold {
+  background: #fbf4dc;
+  color: #8a6d12;
+}
+
+.badge--ink {
+  background: var(--surface-ink);
+  color: #d7e0e7;
+}
+
+.chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+  padding: 0;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45rem 0.9rem;
+  font-size: var(--fs-xs);
+  font-weight: var(--weight-medium);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  color: var(--ink-soft);
+}
+
+a.chip:hover {
+  border-color: var(--brand-400);
+  color: var(--brand-800);
+}
+
+/* --- Cards --------------------------------------------------------------- */
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease),
+    border-color var(--dur) var(--ease);
+}
+
+.card--hover:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--brand-200);
+}
+
+/* Centred "empty state" card (404, thank-you, admissions). The padding is a
+   clamp so the card stays comfortable on a phone instead of eating the screen. */
+.card--centred {
+  text-align: center;
+  padding: clamp(2rem, 7vw, 3rem) var(--space-5);
+}
+
+.card__icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  background: var(--brand-50);
+  color: var(--brand-700);
+  margin-bottom: var(--space-4);
+}
+
+.card__icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.card h3 {
+  font-size: var(--fs-lg);
+}
+
+.card p {
+  margin-top: var(--space-2);
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+.feature__index {
+  font-family: var(--font-heading);
+  font-weight: var(--weight-extrabold);
+  font-size: var(--fs-sm);
+  color: var(--brand-500);
+  letter-spacing: 0.05em;
+}
+
+/* --- Course card --------------------------------------------------------- */
+
+.course-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease),
+    border-color var(--dur) var(--ease);
+}
+
+.course-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--brand-200);
+}
+
+.course-card__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: var(--space-6);
+  gap: var(--space-3);
+}
+
+.course-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.course-card__title {
+  font-size: var(--fs-lg);
+  line-height: var(--lh-snug);
+}
+
+.course-card__title a {
+  color: var(--heading);
+}
+
+.course-card__title a:hover {
+  color: var(--brand-700);
+}
+
+.course-card__summary {
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  flex: 1;
+}
+
+.course-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--line);
+  margin-top: auto;
+}
+
+.course-card__facts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  font-size: var(--fs-2xs);
+  color: var(--muted-2);
+}
+
+.course-card__facts strong {
+  color: var(--ink-soft);
+  font-weight: var(--weight-semibold);
+}
+
+/* --- Mentor card --------------------------------------------------------- */
+
+.mentor-card {
+  display: flex;
+  gap: var(--space-5);
+  align-items: flex-start;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+}
+
+.mentor-card__avatar {
+  flex: none;
+  width: 84px;
+  height: 84px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(140deg, var(--brand-500), var(--brand-800));
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-heading);
+  font-weight: var(--weight-bold);
+  font-size: var(--fs-xl);
+  overflow: hidden;
+}
+
+.mentor-card__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Portraits are head-and-shoulders crops, so bias towards the top of the
+     frame instead of the geometric centre. */
+  object-position: center 18%;
+}
+
+.mentor-card h3 {
+  font-size: var(--fs-lg);
+}
+
+.mentor-card__role {
+  color: var(--brand-700);
+  font-weight: var(--weight-semibold);
+  font-size: var(--fs-sm);
+}
+
+.mentor-card__bio {
+  margin-top: var(--space-3);
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* --- Accordion ----------------------------------------------------------- */
+
+.accordion {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.accordion details {
+  border-bottom: 1px solid var(--line);
+}
+
+.accordion details:last-child {
+  border-bottom: 0;
+}
+
+.accordion summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-5) var(--space-6);
+  font-family: var(--font-heading);
+  font-weight: var(--weight-semibold);
+  color: var(--heading);
+  cursor: pointer;
+  list-style: none;
+  transition: background var(--dur-fast) var(--ease);
+}
+
+.accordion summary::-webkit-details-marker {
+  display: none;
+}
+
+.accordion summary:hover {
+  background: var(--surface-soft);
+}
+
+.accordion summary::after {
+  content: '';
+  flex: none;
+  width: 12px;
+  height: 12px;
+  border-right: 2px solid var(--brand-600);
+  border-bottom: 2px solid var(--brand-600);
+  transform: rotate(45deg);
+  transition: transform var(--dur) var(--ease);
+  margin-right: 4px;
+}
+
+.accordion details[open] > summary::after {
+  transform: rotate(-135deg);
+}
+
+.accordion .accordion__panel {
+  padding: 0 var(--space-6) var(--space-6);
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+.accordion .accordion__panel > * + * {
+  margin-top: var(--space-3);
+}
+
+.accordion__index {
+  color: var(--brand-500);
+  font-weight: var(--weight-bold);
+  margin-right: 0.6rem;
+}
+
+/* --- Breadcrumbs --------------------------------------------------------- */
+
+.breadcrumbs {
+  font-size: var(--fs-xs);
+  color: var(--muted-2);
+}
+
+.breadcrumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  list-style: none;
+  padding: 0;
+}
+
+.breadcrumbs li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.breadcrumbs li:not(:last-child)::after {
+  content: '/';
+  color: var(--line-strong);
+}
+
+.breadcrumbs a {
+  color: var(--muted);
+}
+
+.breadcrumbs a:hover {
+  color: var(--brand-700);
+}
+
+/* --- Steps --------------------------------------------------------------- */
+
+.steps {
+  display: grid;
+  gap: var(--space-6);
+  counter-reset: step;
+}
+
+.step {
+  position: relative;
+  padding-left: var(--space-8);
+}
+
+.step::before {
+  counter-increment: step;
+  content: '0' counter(step);
+  position: absolute;
+  left: 0;
+  top: -0.15rem;
+  font-family: var(--font-heading);
+  font-weight: var(--weight-extrabold);
+  font-size: var(--fs-2xl);
+  color: var(--brand-100);
+  line-height: 1;
+}
+
+.step h3 {
+  font-size: var(--fs-lg);
+}
+
+.step p {
+  margin-top: var(--space-2);
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+/* --- Stat ---------------------------------------------------------------- */
+
+.stat {
+  text-align: center;
+}
+
+.stat__value {
+  font-family: var(--font-heading);
+  font-weight: var(--weight-extrabold);
+  font-size: var(--fs-3xl);
+  color: var(--brand-700);
+  line-height: 1;
+}
+
+.stat__label {
+  margin-top: var(--space-2);
+  font-size: var(--fs-sm);
+  color: var(--muted);
+}
+
+/* --- Pagination ---------------------------------------------------------- */
+
+.pagination {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: center;
+  list-style: none;
+  padding: 0;
+}
+
+.pagination a,
+.pagination span {
+  display: grid;
+  place-items: center;
+  min-width: 40px;
+  height: 40px;
+  padding-inline: 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-sm);
+  color: var(--ink-soft);
+}
+
+.pagination [aria-current='page'] {
+  background: var(--brand-500);
+  border-color: var(--brand-500);
+  color: #fff;
+}
+

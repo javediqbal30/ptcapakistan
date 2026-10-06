@@ -1,0 +1,50 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { getPublishedCourses, coursePath } from '@lib/content';
+import { whatsappLink } from '@data/site';
+import Icon from '@components/ui/Icon.astro';
+
+const popular = (await getPublishedCourses()).slice(0, 3);
+---
+
+<BaseLayout
+  seo={{
+    title: 'Page not found',
+    description: 'The page you are looking for could not be found. Browse PTCA courses or contact admissions.',
+    canonical: '/404/',
+    noindex: true,
+  }}
+>
+  <section class="section">
+    <div class="container container--narrow" style="text-align:center">
+      <p style="font-family:var(--font-heading); font-size:var(--fs-5xl); font-weight:var(--weight-extrabold); color:var(--brand-200); line-height:1">
+        404
+      </p>
+      <h1 style="margin-top:1rem">We could not find that page</h1>
+      <p style="margin-top:1rem; color:var(--muted)">
+        The link may be outdated or the page may have moved. Try one of the
+        links below, or talk to our admissions team.
+      </p>
+
+      <div class="grid" style="gap:0.75rem; margin-top:2rem; max-width:20rem; margin-inline:auto">
+        <a class="btn btn--primary" href="/">Back to home</a>
+        <a class="btn btn--whatsapp" href={whatsappLink()} target="_blank" rel="noopener">
+          <Icon name="whatsapp" size={16} />
+          Chat on WhatsApp
+        </a>
+      </div>
+
+      <div style="margin-top:3rem; text-align:left">
+        <h2 style="font-size:var(--fs-lg); margin-bottom:1rem">Popular courses</h2>
+        <ul class="check-list">
+          {popular.map((course) => (
+            <li>
+              <Icon name="arrow-right" size={18} />
+              <a href={coursePath(course)}>{course.data.title}</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,50 @@
+---
+import type { Course } from '@lib/content';
+import { coursePath } from '@lib/content';
+import Icon from '@components/ui/Icon.astro';
+
+interface Props {
+  course: Course;
+  /** Compact cards hide the mode badges (used in dense grids). */
+  compact?: boolean;
+}
+
+const { course, compact = false } = Astro.props;
+const { title, shortTitle, category, summary, duration, modes } = course.data;
+const href = coursePath(course);
+---
+
+<article class="course-card">
+  <div class="course-card__body">
+    <div class="course-card__meta">
+      <span class="badge badge--brand">{category}</span>
+      <span class="badge">
+        <Icon name="clock" size={12} />
+        {duration}
+      </span>
+    </div>
+
+    <h3 class="course-card__title">
+      <a href={href}>{title}</a>
+    </h3>
+
+    <p class="course-card__summary">{summary}</p>
+
+    {!compact && (
+      <ul class="chip-list">
+        {modes.map((mode) => <li class="chip">{mode}</li>)}
+      </ul>
+    )}
+
+    <div class="course-card__footer">
+      <span class="course-card__facts">
+        <strong>{shortTitle}</strong>
+        <span>{duration}</span>
+      </span>
+      <a class="btn btn--primary btn--sm" href={href}>
+        View course
+        <Icon name="arrow-right" size={15} />
+      </a>
+    </div>
+  </div>
+</article>

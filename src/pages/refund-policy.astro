@@ -1,0 +1,58 @@
+---
+import LegalLayout from '@layouts/LegalLayout.astro';
+import { SITE, mailHref } from '@data/site';
+---
+
+<LegalLayout
+  title="Refund Policy"
+  description="How refunds, cancellations and course changes are handled at PTCA, including eligibility, processing timelines and admissions confirmation details."
+  updated="10 April 2026"
+>
+  <p>
+    The policy below is a general guide. The terms that apply to your enrolment are
+    those confirmed in writing by {SITE.legalName} at the time of registration.
+    Please confirm with admissions before paying any fee.
+  </p>
+
+  <h2>Course cancellation by PTCA</h2>
+  <p>
+    If a batch is cancelled or materially changed, you will be offered an
+    alternative batch, an alternative mode, or a refund of the fee paid.
+  </p>
+
+  <h2>Withdrawal by the learner</h2>
+  <ul>
+    <li>
+      Requests received before the first session are assessed on a case-by-case
+      basis by admissions.
+    </li>
+    <li>
+      Once sessions have begun, course material has been issued and teaching
+      time has been delivered, fee refunds may not be available.
+    </li>
+    <li>
+      Any amount that has already been applied to your registration may be
+      deducted.
+    </li>
+  </ul>
+
+  <h2>Transfers</h2>
+  <p>
+    A confirmed place may be transferable to a later batch or to another
+    individual, subject to approval by admissions and availability of seats.
+  </p>
+
+  <h2>How to raise a request</h2>
+  <p>
+    Contact admissions at <a href={mailHref}>{SITE.email}</a> or on WhatsApp at{' '}
+    {SITE.phone.display}, quoting your name, the course and the date of
+    registration. Responses are provided within a reasonable period after
+    receiving the request.
+  </p>
+
+  <h2>Note</h2>
+  <p>
+    Because fees, schedules and batches are agreed with each intake, we strongly
+    recommend confirming these terms with admissions before making payment.
+  </p>
+</LegalLayout>

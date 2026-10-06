@@ -1,0 +1,62 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { whatsappLink, telHref } from '@data/site';
+import Icon from '@components/ui/Icon.astro';
+
+const nextSteps = [
+  'Our admissions team reviews your request.',
+  'We confirm fees, batch dates and the right learning mode with you.',
+  'You receive registration details and join your batch.',
+];
+---
+
+<BaseLayout
+  seo={{
+    title: 'Thank you',
+    description: 'Your enrolment request has been received. Our admissions team will contact you within one working day.',
+    canonical: '/thank-you/',
+    noindex: true,
+  }}
+>
+  <section class="section">
+    <div class="container container--narrow">
+      <div class="card card--centred">
+        <div class="card__icon" style="margin:0 auto 1.25rem">
+          <Icon name="check-circle" size={28} />
+        </div>
+        <h1 style="font-size:var(--fs-2xl)">Thank you — we have your request</h1>
+        <p style="margin-top:1rem; color:var(--muted)">
+          Your enrolment enquiry has been received. Our admissions team will
+          contact you within one working day with fees, batch dates and
+          registration details.
+        </p>
+
+        <div class="grid" style="gap:0.75rem; margin-top:2rem; max-width:22rem; margin-inline:auto">
+          <a class="btn btn--whatsapp btn--lg" href={whatsappLink()} target="_blank" rel="noopener">
+            <Icon name="whatsapp" size={18} />
+            Continue on WhatsApp
+          </a>
+          <a class="btn btn--outline" href={telHref}>
+            <Icon name="phone" size={16} />
+            Call admissions
+          </a>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:2rem">
+        <h2 style="margin-bottom:1.25rem">What happens next</h2>
+        <div class="steps">
+          {nextSteps.map((step) => (
+            <div class="step">
+              <p style="font-size:var(--fs-sm); color:var(--ink-soft)">{step}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div style="margin-top:2rem; text-align:center">
+        <a class="btn btn--ghost" href="/courses/">Browse more courses</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

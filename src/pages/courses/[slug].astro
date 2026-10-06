@@ -1,0 +1,251 @@
+---
+import { render } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { getPublishedCourses, coursePath, resolveMentors, formatDate } from '@lib/content';
+import { courseSchema, faqSchema, breadcrumbSchema } from '@lib/schema';
+import { whatsappLink } from '@data/site';
+import Breadcrumbs from '@components/ui/Breadcrumbs.astro';
+import Accordion from '@components/ui/Accordion.astro';
+import CourseCard from '@components/ui/CourseCard.astro';
+import MentorCard from '@components/ui/MentorCard.astro';
+import Icon from '@components/ui/Icon.astro';
+import type { Course } from '@lib/content';
+
+export async function getStaticPaths() {
+  const courses = await getPublishedCourses();
+  return courses.map((course) => ({ params: { slug: course.id }, props: { course } }));
+}
+
+interface Props {
+  course: Course;
+}
+
+const { course } = Astro.props as Props;
+const { Content } = await render(course);
+
+const { title, summary, category, duration, modes, eligibility, outcomes, modules, careerPaths, certificateName, authoritiesCovered, faqs, updated } = course.data;
+
+const mentors = await resolveMentors(course);
+const allCourses = await getPublishedCourses();
+const related = allCourses.filter((c) => c.id !== course.id && c.data.category === category).slice(0, 3);
+
+const enrolHref = `/enroll/?course=${course.id}`;
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Courses', path: '/courses/' },
+  { name: title, path: coursePath(course) },
+];
+---
+
+<BaseLayout
+  seo={{
+    // seoTitle carries the keyword set; the "| PTCA" suffix is added by BaseLayout.
+    title: course.data.seoTitle ?? title,
+    description: course.data.seoDescription ?? summary.slice(0, 155),
+    canonical: coursePath(course),
+  }}
+  schemaNodes={[
+    courseSchema({
+      title,
+      summary,
+      path: coursePath(course),
+      durationISO: course.data.durationISO,
+      modes,
+      certificateName,
+      outcomes,
+    }),
+    breadcrumbSchema(crumbs),
+    ...(faqs.length ? [faqSchema(faqs)] : []),
+  ]}
+>
+  <section class="page-hero">
+    <div class="container">
+      <Breadcrumbs items={crumbs} />
+      <div class="course-layout__meta">
+        <span class="badge badge--brand">{category}</span>
+        {modes.map((mode) => <span class="badge">{mode}</span>)}
+      </div>
+      <h1>{title}</h1>
+      <p class="page-hero__lead">{summary}</p>
+      <div class="hero__actions">
+        <a class="btn btn--primary btn--lg" href={enrolHref}>
+          Enrol now
+          <Icon name="arrow-right" size={16} />
+        </a>
+        <a
+          class="btn btn--whatsapp btn--lg"
+          href={whatsappLink(`Hi PTCA, I am interested in ${title}. Please share fees and batch dates.`)}
+          target="_blank"
+          rel="noopener"
+        >
+          <Icon name="whatsapp" size={18} />
+          Ask on WhatsApp
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container course-layout">
+      <div class="course-layout__body">
+        <section>
+          <h2>Course overview</h2>
+          <div class="prose">
+            <Content />
+          </div>
+        </section>
+
+        {eligibility.length > 0 && (
+          <section>
+            <h2>Who should join</h2>
+            <ul class="check-list" style="margin-top:1.25rem">
+              {eligibility.map((item) => (
+                <li><Icon name="check" size={18} /> {item}</li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {outcomes.length > 0 && (
+          <section>
+            <h2>What you will learn</h2>
+            <ul class="check-list" style="margin-top:1.25rem">
+              {outcomes.map((item) => (
+                <li><Icon name="check-circle" size={18} /> {item}</li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {modules.length > 0 && (
+          <section>
+            <h2>Curriculum</h2>
+            <p style="color:var(--muted); margin-top:0.75rem">
+              The programme is delivered module by module, with practical
+              application after each topic.
+            </p>
+            <div style="margin-top:1.5rem">
+              <Accordion items={modules} numbered firstOpen />
+            </div>
+          </section>
+        )}
+
+        {authoritiesCovered.length > 0 && (
+          <section>
+            <h2>Authorities covered</h2>
+            <ul class="chip-list" style="margin-top:1.25rem">
+              {authoritiesCovered.map((authority) => <li class="chip">{authority}</li>)}
+            </ul>
+          </section>
+        )}
+
+        {mentors.length > 0 && (
+          <section>
+            <h2>Your mentor</h2>
+            <div class="grid" style="margin-top:1.5rem">
+              {mentors.map((mentor) => <MentorCard mentor={mentor} />)}
+            </div>
+          </section>
+        )}
+
+        {careerPaths.length > 0 && (
+          <section>
+            <h2>Career paths</h2>
+            <p style="color:var(--muted); margin-top:0.75rem">
+              Graduates of this programme typically move into roles such as:
+            </p>
+            <ul class="chip-list" style="margin-top:1.25rem">
+              {careerPaths.map((role) => <li class="chip">{role}</li>)}
+            </ul>
+          </section>
+        )}
+
+        {faqs.length > 0 && (
+          <section>
+            <h2>Frequently asked questions</h2>
+            <div style="margin-top:1.5rem">
+              <Accordion items={faqs.map((f) => ({ title: f.q, html: `<p>${f.a}</p>` }))} firstOpen />
+            </div>
+          </section>
+        )}
+
+        <section>
+          <div class="enrol-band">
+            <div>
+              <h3>Ready to join this programme?</h3>
+              <p>
+                Submit your enrolment request and admissions will confirm fees,
+                batch dates and registration within one working day.
+              </p>
+            </div>
+            <a class="btn btn--primary btn--lg" href={enrolHref}>
+              Enrol now
+              <Icon name="arrow-right" size={16} />
+            </a>
+          </div>
+        </section>
+
+        <p style="font-size:var(--fs-xs); color:var(--muted-2)">
+          Last reviewed: {formatDate(updated)}
+        </p>
+      </div>
+
+      <aside class="course-sidebar" aria-label="Course quick facts">
+        <div class="facts-card">
+          <div class="facts-card__head">
+            <h2>Course facts</h2>
+            <p>{title}</p>
+          </div>
+          <ul class="facts-list">
+            <li><span class="k">Duration</span><span class="v">{duration}</span></li>
+            {course.data.sessionsPerWeek && (
+              <li>
+                <span class="k">Sessions</span>
+                <span class="v">{course.data.sessionsPerWeek} per week</span>
+              </li>
+            )}
+            <li><span class="k">Mode</span><span class="v">{modes.join(', ')}</span></li>
+            <li><span class="k">Category</span><span class="v">{category}</span></li>
+            <li>
+              <span class="k">Certificate</span>
+              <span class="v">{certificateName ?? 'On completion'}</span>
+            </li>
+            <li><span class="k">Fees</span><span class="v">Contact admissions</span></li>
+            <li><span class="k">Next batch</span><span class="v">Enquire today</span></li>
+          </ul>
+          <div class="facts-card__actions">
+            <a class="btn btn--primary btn--block btn--lg" href={enrolHref}>
+              Enrol now
+              <Icon name="arrow-right" size={16} />
+            </a>
+            <a
+              class="btn btn--whatsapp btn--block"
+              href={whatsappLink(`Hi PTCA, I want to enrol in ${title}.`)}
+              target="_blank"
+              rel="noopener"
+            >
+              <Icon name="whatsapp" size={16} />
+              Ask on WhatsApp
+            </a>
+            <a class="btn btn--outline btn--block" href="/admissions/">How enrolment works</a>
+            <p class="facts-card__note">
+              Fees and batch dates are confirmed by admissions and may vary by
+              intake and learning mode.
+            </p>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  {related.length > 0 && (
+    <section class="section section--soft">
+      <div class="container">
+        <h2 style="margin-bottom:1.75rem">Related courses</h2>
+        <div class="grid grid--3">
+          {related.map((item) => <CourseCard course={item} compact />)}
+        </div>
+      </div>
+    </section>
+  )}
+</BaseLayout>

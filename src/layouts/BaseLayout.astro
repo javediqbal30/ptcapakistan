@@ -1,0 +1,82 @@
+---
+import '@styles/global.css';
+import { SITE } from '@data/site';
+import { resolveSeo, type SeoProps } from '@lib/seo';
+import { organizationSchema, websiteSchema, graph } from '@lib/schema';
+import Header from '@components/layout/Header.astro';
+import Footer from '@components/layout/Footer.astro';
+import MobileBar from '@components/layout/MobileBar.astro';
+import WhatsAppFloat from '@components/layout/WhatsAppFloat.astro';
+
+interface Props {
+  seo: SeoProps;
+  /** Page-specific schema nodes, merged with the site-wide ones. */
+  schemaNodes?: Record<string, unknown>[];
+}
+
+const { seo, schemaNodes = [] } = Astro.props;
+const meta = resolveSeo(seo);
+
+// Site-wide entities are always present; pages append their own nodes.
+const jsonLd = graph(organizationSchema(), websiteSchema(), ...schemaNodes);
+---
+
+<!doctype html>
+<html lang="en-PK">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>{meta.title}</title>
+    <meta name="description" content={meta.description} />
+    <link rel="canonical" href={meta.canonical} />
+    {meta.noindex && <meta name="robots" content="noindex, nofollow" />}
+
+    <meta name="theme-color" content="#22A74A" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content={meta.type} />
+    <meta property="og:site_name" content={SITE.legalName} />
+    <meta property="og:title" content={meta.title} />
+    <meta property="og:description" content={meta.description} />
+    <meta property="og:url" content={meta.canonical} />
+    <meta property="og:image" content={meta.ogImage} />
+    <meta property="og:locale" content="en_PK" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={meta.title} />
+    <meta name="twitter:description" content={meta.description} />
+    <meta name="twitter:image" content={meta.ogImage} />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap"
+    />
+
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <!-- Icons: rasterised from the master artwork by `npm run assets` -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="320x320" href="/logo-mark.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+    <!-- Structured data -->
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+    <MobileBar />
+    <WhatsAppFloat />
+  </body>
+</html>

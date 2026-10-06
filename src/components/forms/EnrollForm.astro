@@ -1,0 +1,426 @@
+---
+import { LEARNING_MODES, BATCH_TIMINGS, EDUCATION_LEVELS, PROFESSIONS, EXPERIENCE_BANDS, CITIES, HEARD_ABOUT } from '@data/formOptions';
+import { SITE } from '@data/site';
+import Icon from '@components/ui/Icon.astro';
+
+interface CourseOption {
+  id: string;
+  title: string;
+}
+
+interface Props {
+  courses: CourseOption[];
+  /** Where the lead is POSTed. Defaults to the local Neon-backed lead API. */
+  endpoint?: string;
+}
+
+const {
+  courses,
+  endpoint = import.meta.env.PUBLIC_ENROLL_ENDPOINT ?? '/api/enroll/',
+} = Astro.props;
+---
+
+<form
+  class="enroll"
+  id="enroll-form"
+  method="post"
+  action={endpoint || undefined}
+  data-endpoint={endpoint}
+  data-whatsapp={SITE.phone.whatsapp}
+  novalidate
+>
+  <div class="enroll__head">
+    <div class="form-progress" aria-hidden="true">
+      <span class="form-progress__bar" data-bar="1" data-state="active"></span>
+      <span class="form-progress__bar" data-bar="2"></span>
+      <span class="form-progress__bar" data-bar="3"></span>
+    </div>
+    <p class="step-heading" data-step-heading>Step 1 of 3 — About you</p>
+  </div>
+
+  <!-- Step 1 — About you -->
+  <fieldset class="step-panel is-active" data-step="1">
+    <legend class="sr-only">Your details</legend>
+
+    <div class="form-grid">
+      <div class="field">
+        <label for="name">Full name <span class="req">*</span></label>
+        <input class="input" id="name" name="name" type="text" autocomplete="name"
+          placeholder="e.g. Ayesha Khan" required data-rule="name" />
+        <span class="field__error" data-error-for="name" aria-live="polite"></span>
+      </div>
+
+      <div class="field">
+        <label for="phone">Mobile / WhatsApp <span class="req">*</span></label>
+        <input class="input" id="phone" name="phone" type="tel" inputmode="numeric"
+          autocomplete="tel" placeholder="03XX XXXXXXX" required data-rule="phone" />
+        <span class="field__error" data-error-for="phone" aria-live="polite"></span>
+      </div>
+
+      <div class="field field--full">
+        <label for="email">Email address <span class="req">*</span></label>
+        <input class="input" id="email" name="email" type="email" autocomplete="email"
+          placeholder="you@gmail.com" required data-rule="email" />
+        <span class="field__error" data-error-for="email" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="step-actions">
+      <span></span>
+      <button class="btn btn--primary" type="button" data-next>
+        Continue <Icon name="arrow-right" size={15} />
+      </button>
+    </div>
+  </fieldset>
+
+  <!-- Step 2 — Background -->
+  <fieldset class="step-panel" data-step="2">
+    <legend class="sr-only">Your background</legend>
+
+    <div class="form-grid">
+      <div class="field">
+        <label for="education">Highest education <span class="req">*</span></label>
+        <select class="select" id="education" name="education" required data-rule="select">
+          <option value="" selected disabled>Select qualification</option>
+          {EDUCATION_LEVELS.map((level) => <option value={level}>{level}</option>)}
+        </select>
+        <span class="field__error" data-error-for="education" aria-live="polite"></span>
+      </div>
+
+      <div class="field">
+        <label for="profession">Current status <span class="req">*</span></label>
+        <select class="select" id="profession" name="profession" required data-rule="select">
+          <option value="" selected disabled>Select status</option>
+          {PROFESSIONS.map((p) => <option value={p}>{p}</option>)}
+        </select>
+        <span class="field__error" data-error-for="profession" aria-live="polite"></span>
+      </div>
+
+      <div class="field">
+        <label for="city">City <span class="req">*</span></label>
+        <select class="select" id="city" name="city" required data-rule="select">
+          <option value="" selected disabled>Select city</option>
+          {CITIES.map((city) => <option value={city}>{city}</option>)}
+        </select>
+        <span class="field__error" data-error-for="city" aria-live="polite"></span>
+      </div>
+
+      <div class="field">
+        <label for="experience">Experience</label>
+        <select class="select" id="experience" name="experience">
+          <option value="">Prefer not to say</option>
+          {EXPERIENCE_BANDS.map((band) => <option value={band}>{band}</option>)}
+        </select>
+      </div>
+
+      <div class="field field--full">
+        <label for="address">Area / address <span class="field__hint">(optional)</span></label>
+        <input class="input" id="address" name="address" type="text"
+          autocomplete="street-address" placeholder="e.g. PECHS Block 6, Karachi" />
+      </div>
+    </div>
+
+    <div class="step-actions">
+      <button class="btn btn--outline" type="button" data-back>Back</button>
+      <button class="btn btn--primary" type="button" data-next>
+        Continue <Icon name="arrow-right" size={15} />
+      </button>
+    </div>
+  </fieldset>
+
+  <!-- Step 3 — Course & preferences -->
+  <fieldset class="step-panel" data-step="3">
+    <legend class="sr-only">Course and preferences</legend>
+
+    <div class="field">
+      <label for="course">Course of interest <span class="req">*</span></label>
+      <select class="select" id="course" name="course" required data-rule="select">
+        <option value="" selected disabled>Select a course</option>
+        {courses.map((course) => <option value={course.id}>{course.title}</option>)}
+      </select>
+      <span class="field__error" data-error-for="course" aria-live="polite"></span>
+    </div>
+
+    <fieldset class="fieldset">
+      <legend>Preferred learning mode <span class="req">*</span></legend>
+      <div class="choice-row">
+        {LEARNING_MODES.map((mode, i) => (
+          <label class="choice">
+            <input type="radio" name="mode" value={mode} required={i === 0} data-rule="radio" />
+            {mode}
+          </label>
+        ))}
+      </div>
+      <span class="field__error" data-error-for="mode" aria-live="polite"></span>
+    </fieldset>
+
+    <fieldset class="fieldset">
+      <legend>Preferred batch timing <span class="field__hint">(optional)</span></legend>
+      <div class="choice-row">
+        {BATCH_TIMINGS.map((slot) => (
+          <label class="choice">
+            <input type="radio" name="timing" value={slot} />
+            {slot}
+          </label>
+        ))}
+      </div>
+    </fieldset>
+
+    <div class="form-grid">
+      <div class="field">
+        <label for="source">How did you hear about us?</label>
+        <select class="select" id="source" name="source">
+          <option value="">Select an option</option>
+          {HEARD_ABOUT.map((item) => <option value={item}>{item}</option>)}
+        </select>
+      </div>
+
+      <div class="field field--full">
+        <label for="message">Message <span class="field__hint">(optional)</span></label>
+        <textarea class="textarea" id="message" name="message" rows={4}
+          placeholder="Tell us about your goals or ask a question"></textarea>
+      </div>
+    </div>
+
+    <label class="consent">
+      <input type="checkbox" name="consent" value="yes" required data-rule="consent" />
+      <span>
+        I agree to be contacted by PTCA about this enquiry and accept the
+        <a href="/privacy-policy/">privacy policy</a>.
+      </span>
+    </label>
+    <span class="field__error" data-error-for="consent" aria-live="polite"></span>
+
+    <!-- Honeypot: hidden from humans, catches naive bots. -->
+    <div class="hp-field" aria-hidden="true">
+      <label for="website">Website</label>
+      <input id="website" name="website" type="text" tabindex="-1" autocomplete="off" />
+    </div>
+
+    <div class="step-actions">
+      <button class="btn btn--outline" type="button" data-back>Back</button>
+      <button class="btn btn--primary btn--lg" type="submit">
+        Submit enrolment <Icon name="check" size={16} />
+      </button>
+    </div>
+  </fieldset>
+</form>
+
+<script>
+  // Progressive enhancement for the enrolment form:
+  //  - multi-step navigation with per-step validation
+  //  - draft autosave so a refresh never loses input
+  //  - course pre-selection from ?course=<slug>
+  //  - submit via endpoint when configured, otherwise a WhatsApp fallback
+  // The markup works without JavaScript; this layer only improves the experience.
+  const form = document.getElementById('enroll-form') as HTMLFormElement | null;
+
+  if (form) {
+    const panels = Array.from(form.querySelectorAll<HTMLElement>('[data-step]'));
+    const bars = Array.from(form.querySelectorAll<HTMLElement>('[data-bar]'));
+    const heading = form.querySelector<HTMLElement>('[data-step-heading]');
+    const stepLabels = ['About you', 'Your background', 'Course & preferences'];
+    const totalSteps = panels.length;
+    const DRAFT_KEY = 'ptca-enroll-draft';
+
+    const messages: Record<string, string> = {
+      name: 'Please enter your full name (letters only).',
+      phone: 'Enter a valid mobile number, e.g. 0300 1234567.',
+      email: 'Enter a valid email address.',
+      select: 'Please select an option.',
+      radio: 'Please choose an option.',
+      consent: 'Please accept the privacy policy to continue.',
+    };
+
+    const setError = (key: string, message: string) => {
+      const slot = form.querySelector<HTMLElement>(`[data-error-for="${key}"]`);
+      if (slot) slot.textContent = message;
+      const input = form.querySelector<HTMLElement>(`#${key}`);
+      if (input) input.setAttribute('aria-invalid', message ? 'true' : 'false');
+    };
+
+    const isValid = (field: HTMLElement): boolean => {
+      const rule = (field as HTMLInputElement).dataset.rule;
+      const value = (field as HTMLInputElement).value?.trim() ?? '';
+      switch (rule) {
+        case 'name':
+          return /^[A-Za-z][A-Za-z\s.'-]{2,}$/.test(value);
+        case 'phone':
+          return /^(03\d{9}|\+923\d{9})$/.test(value.replace(/[\s-]/g, ''));
+        case 'email':
+          return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value);
+        case 'select':
+          return value !== '';
+        case 'consent':
+          return (field as HTMLInputElement).checked;
+        default:
+          return (field as HTMLInputElement).checkValidity();
+      }
+    };
+
+    const validateStep = (step: number): boolean => {
+      const panel = panels.find((p) => Number(p.dataset.step) === step);
+      if (!panel) return true;
+      let ok = true;
+
+      panel.querySelectorAll<HTMLElement>('[data-rule]').forEach((field) => {
+        if (field.dataset.rule === 'radio') return;
+        const key = field.id || field.getAttribute('name') || '';
+        if (isValid(field)) {
+          setError(key, '');
+        } else {
+          ok = false;
+          setError(key, messages[field.dataset.rule ?? 'select'] ?? '');
+        }
+      });
+
+      if (panel.querySelector('[data-rule="radio"]')) {
+        if (panel.querySelector('input[name="mode"]:checked')) {
+          setError('mode', '');
+        } else {
+          ok = false;
+          setError('mode', messages.radio);
+        }
+      }
+      return ok;
+    };
+
+    let current = 1;
+
+    const show = (step: number) => {
+      panels.forEach((panel) =>
+        panel.classList.toggle('is-active', Number(panel.dataset.step) === step)
+      );
+      bars.forEach((bar) => {
+        const index = Number(bar.dataset.bar);
+        bar.dataset.state = index < step ? 'done' : index === step ? 'active' : '';
+      });
+      if (heading) {
+        heading.textContent = `Step ${step} of ${totalSteps} — ${stepLabels[step - 1]}`;
+      }
+      form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+
+    form.querySelectorAll<HTMLButtonElement>('[data-next]').forEach((btn) =>
+      btn.addEventListener('click', () => {
+        if (validateStep(current) && current < totalSteps) {
+          current += 1;
+          show(current);
+        }
+      })
+    );
+
+    form.querySelectorAll<HTMLButtonElement>('[data-back]').forEach((btn) =>
+      btn.addEventListener('click', () => {
+        if (current > 1) {
+          current -= 1;
+          show(current);
+        }
+      })
+    );
+
+    // Restore a saved draft, then pre-select the course passed in the URL.
+    try {
+      const draft = JSON.parse(localStorage.getItem(DRAFT_KEY) ?? '{}') as Record<string, string>;
+      Object.entries(draft).forEach(([key, value]) => {
+        const field = form.elements.namedItem(key) as HTMLInputElement | null;
+        if (!field) return;
+        if (field.type === 'radio') {
+          const match = form.querySelector<HTMLInputElement>(
+            `input[name="${key}"][value="${value}"]`
+          );
+          if (match) match.checked = true;
+        } else if (field.type !== 'checkbox') {
+          field.value = value;
+        }
+      });
+    } catch {
+      /* ignore malformed drafts */
+    }
+
+    const courseSelect = form.querySelector<HTMLSelectElement>('#course');
+    const preset = new URLSearchParams(location.search).get('course');
+    if (
+      preset &&
+      courseSelect &&
+      Array.from(courseSelect.options).some((option) => option.value === preset)
+    ) {
+      courseSelect.value = preset;
+    }
+
+    const saveDraft = () => {
+      const data: Record<string, string> = {};
+      new FormData(form).forEach((value, key) => {
+        if (key === 'website' || typeof value !== 'string') return;
+        data[key] = value;
+      });
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(data));
+    };
+    form.addEventListener('input', saveDraft);
+    form.addEventListener('change', saveDraft);
+
+    // Fallback handoff: compose a WhatsApp message from the collected data.
+    const buildWhatsApp = (data: FormData): string => {
+      const number = form.dataset.whatsapp ?? '';
+      const lines = [
+        'Assalam-o-Alaikum PTCA,',
+        'I would like to enrol.',
+        `Course: ${data.get('course') ?? '-'}`,
+        `Name: ${data.get('name') ?? '-'}`,
+        `City: ${data.get('city') ?? '-'}`,
+        `Education: ${data.get('education') ?? '-'}`,
+        `Preferred mode: ${data.get('mode') ?? '-'}`,
+        'Please share fees, batch dates and next steps.',
+      ];
+      return `https://wa.me/${number}?text=${encodeURIComponent(lines.join('\n'))}`;
+    };
+
+    form.addEventListener('submit', async (event) => {
+      if (![1, 2, 3].every((step) => validateStep(step))) {
+        event.preventDefault();
+        return;
+      }
+
+      const data = new FormData(form);
+
+      // Honeypot tripped - silently drop the submission.
+      if (String(data.get('website') ?? '').length > 0) {
+        event.preventDefault();
+        return;
+      }
+
+      const endpoint = form.dataset.endpoint;
+
+      if (!endpoint) {
+        event.preventDefault();
+        window.open(buildWhatsApp(data), '_blank', 'noopener');
+        localStorage.removeItem(DRAFT_KEY);
+        location.assign('/thank-you/');
+        return;
+      }
+
+      event.preventDefault();
+      const button = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+      if (button) button.disabled = true;
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          body: data,
+          headers: { Accept: 'application/json' },
+        });
+        if (!response.ok) throw new Error(`Request failed: ${response.status}`);
+        localStorage.removeItem(DRAFT_KEY);
+        location.assign('/thank-you/');
+      } catch {
+        if (button) button.disabled = false;
+        window.alert(
+          'Sorry, we could not submit the form. Please try again, or contact us on WhatsApp.'
+        );
+      }
+    });
+
+    show(1);
+  }
+</script>
+
+

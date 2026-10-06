@@ -1,0 +1,215 @@
+/* ==========================================================================
+   Footer + mobile action bar
+   ========================================================================== */
+
+.site-footer {
+  background: var(--surface-ink);
+  color: #a9b7c2;
+  padding-block: var(--space-9) var(--space-6);
+  font-size: var(--fs-sm);
+}
+
+.site-footer a {
+  color: #c3cfd8;
+}
+
+.site-footer a:hover {
+  color: #fff;
+}
+
+.footer__grid {
+  display: grid;
+  gap: var(--space-8);
+  grid-template-columns: 1.6fr 1fr 1.4fr 1.2fr;
+}
+
+.footer__brand .brand {
+  color: #fff;
+}
+
+.footer__about {
+  margin-top: var(--space-4);
+  max-width: 34ch;
+  color: #93a3af;
+}
+
+.footer__social {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: var(--space-5);
+  list-style: none;
+  padding: 0;
+}
+
+.footer__social a {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.06);
+  transition: background var(--dur-fast) var(--ease);
+}
+
+.footer__social a:hover {
+  background: var(--brand-500);
+}
+
+.footer__social svg {
+  width: 18px;
+  height: 18px;
+}
+
+.footer h4 {
+  color: #fff;
+  font-size: var(--fs-sm);
+  letter-spacing: 0.02em;
+  margin-bottom: var(--space-4);
+}
+
+.footer__links {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.footer__contact {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: var(--space-4);
+}
+
+.footer__contact li {
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+}
+
+.footer__contact svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  margin-top: 0.2rem;
+  color: var(--brand-400);
+}
+
+.footer__bottom {
+  margin-top: var(--space-8);
+  padding-top: var(--space-6);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  align-items: center;
+  justify-content: space-between;
+  font-size: var(--fs-xs);
+  color: #8593a0;
+}
+
+.footer__legal {
+  display: flex;
+  gap: var(--space-5);
+  flex-wrap: wrap;
+  list-style: none;
+  padding: 0;
+}
+
+@media (max-width: 940px) {
+  .footer__grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .footer__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- Mobile sticky action bar -------------------------------------------- */
+
+.mobile-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: var(--z-header);
+  display: none;
+  grid-template-columns: repeat(3, 1fr);
+  background: var(--surface);
+  border-top: 1px solid var(--line);
+  box-shadow: 0 -6px 20px rgba(16, 23, 29, 0.08);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.mobile-bar a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.65rem 0.5rem;
+  font-size: var(--fs-2xs);
+  font-weight: var(--weight-semibold);
+  color: var(--ink-soft);
+}
+
+.mobile-bar a svg {
+  width: 20px;
+  height: 20px;
+  color: var(--brand-600);
+}
+
+.mobile-bar a.is-accent {
+  background: var(--brand-500);
+  color: #fff;
+}
+
+.mobile-bar a.is-accent svg {
+  color: #fff;
+}
+
+@media (max-width: 768px) {
+  .mobile-bar {
+    display: grid;
+  }
+
+  body {
+    padding-bottom: 68px;
+  }
+}
+
+/* --- Floating WhatsApp --------------------------------------------------- */
+
+.whatsapp-float {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.75rem;
+  z-index: var(--z-overlay);
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #25d366;
+  color: #fff;
+  box-shadow: var(--shadow-lg);
+  transition: transform var(--dur) var(--ease);
+}
+
+.whatsapp-float:hover {
+  color: #fff;
+  transform: scale(1.06);
+}
+
+.whatsapp-float svg {
+  width: 28px;
+  height: 28px;
+}
+
+@media (max-width: 768px) {
+  .whatsapp-float {
+    bottom: 5rem;
+  }
+}

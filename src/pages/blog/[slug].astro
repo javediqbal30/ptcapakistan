@@ -1,0 +1,113 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { getPosts, getPost } from '@lib/sanity';
+import { renderBody, extractToc } from '@lib/portableText';
+import { formatDate } from '@lib/content';
+import { articleSchema, breadcrumbSchema } from '@lib/schema';
+import Breadcrumbs from '@components/ui/Breadcrumbs.astro';
+import CtaBanner from '@components/ui/CtaBanner.astro';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post) => ({ params: { slug: post.slug } }));
+}
+
+const { slug } = Astro.params;
+const post = await getPost(slug!);
+
+if (!post) {
+  return Astro.redirect('/blog/');
+}
+
+const html = renderBody(post.body);
+const toc = extractToc(post.body);
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Blog', path: '/blog/' },
+  { name: post.title, path: `/blog/${post.slug}/` },
+];
+---
+
+<BaseLayout
+  seo={{
+    title: post.seoTitle || post.title,
+    description: post.seoDescription || post.excerpt,
+    canonical: `/blog/${post.slug}/`,
+    type: 'article',
+  }}
+  schemaNodes={[
+    articleSchema({
+      title: post.seoTitle || post.title,
+      description: post.seoDescription || post.excerpt,
+      path: `/blog/${post.slug}/`,
+      publishedAt: new Date(post.publishedAt),
+      updatedAt: post.updatedAt ? new Date(post.updatedAt) : undefined,
+      authorName: post.authorName,
+    }),
+    breadcrumbSchema(crumbs),
+  ]}
+>
+  <article>
+    <section class="page-hero">
+      <div class="container">
+        <Breadcrumbs items={crumbs} />
+        <div class="article-head">
+          {post.category && <span class="badge badge--brand" style="margin-top:1rem">{post.category}</span>}
+          <h1>{post.title}</h1>
+          <p class="page-hero__lead">{post.excerpt}</p>
+          <div class="article-meta">
+            <span>Published {formatDate(new Date(post.publishedAt))}</span>
+            {post.updatedAt && <span>Updated {formatDate(new Date(post.updatedAt))}</span>}
+            {post.authorName && <span>By {post.authorName}</span>}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {post.imageUrl && (
+      <section class="section" style="padding-bottom:0">
+        <div class="container">
+          <figure class="blog-cover">
+            <img src={`${post.imageUrl}?w=1600&auto=format`} alt={post.imageAlt ?? post.title} />
+          </figure>
+        </div>
+      </section>
+    )}
+
+    <section class="section">
+      <div class="container">
+        <div class="blog-layout">
+          <div class="prose blog-content" set:html={html} />
+
+          {toc.length > 0 && (
+            <aside class="blog-toc" aria-label="Table of contents">
+              <nav>
+                <h2>On this page</h2>
+                <ul>
+                  {toc.map((entry) => (
+                    <li class={entry.depth === 3 ? 'toc-sub' : undefined}>
+                      <a href={`#${entry.id}`}>{entry.text}</a>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            </aside>
+          )}
+        </div>
+
+        <p style="margin-top:2.5rem; font-size:var(--fs-xs); color:var(--muted-2)">
+          This article is for educational purposes. Laws change with each Finance Act;
+          consult a qualified professional before acting.
+        </p>
+      </div>
+    </section>
+  </article>
+
+  <CtaBanner
+    title="Prefer guided, hands-on training?"
+    text="PTCA courses turn this knowledge into practical skill with mentors who work in the field."
+    primaryLabel="View courses"
+    primaryHref="/courses/"
+  />
+</BaseLayout>

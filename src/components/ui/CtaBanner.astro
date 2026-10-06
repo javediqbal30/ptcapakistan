@@ -1,0 +1,49 @@
+---
+import { whatsappLink } from '@data/site';
+import Icon from '@components/ui/Icon.astro';
+
+interface Props {
+  title: string;
+  text: string;
+  primaryLabel: string;
+  primaryHref: string;
+  /** Pre-filled WhatsApp message. Pass false to hide the WhatsApp button. */
+  whatsappMessage?: string | false;
+}
+
+const {
+  title,
+  text,
+  primaryLabel,
+  primaryHref,
+  whatsappMessage = 'Hi PTCA, I would like guidance on choosing the right course.',
+} = Astro.props;
+---
+
+<section class="section section--tight">
+  <div class="container">
+    <div class="cta-banner">
+      <div>
+        <h2>{title}</h2>
+        <p>{text}</p>
+      </div>
+      <div class="cta-banner__actions">
+        <a class="btn btn--dark btn--lg" href={primaryHref}>
+          {primaryLabel}
+          <Icon name="arrow-right" size={16} />
+        </a>
+        {whatsappMessage !== false && (
+          <a
+            class="btn btn--whatsapp btn--lg"
+            href={whatsappLink(whatsappMessage)}
+            target="_blank"
+            rel="noopener"
+          >
+            <Icon name="whatsapp" size={18} />
+            WhatsApp
+          </a>
+        )}
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,49 @@
+---
+import { Image } from 'astro:assets';
+import type { Mentor } from '@lib/content';
+import { mentorPath, initials, mentorPhoto } from '@lib/content';
+import Icon from '@components/ui/Icon.astro';
+
+interface Props {
+  mentor: Mentor;
+}
+
+const { mentor } = Astro.props;
+const { name, title, yearsExperience, expertise, photo } = mentor.data;
+const href = mentorPath(mentor);
+// `photo` (a raw path) still wins when present; otherwise fall back to the
+// optimised asset registered in `mentorPhoto()`.
+const portrait = photo ?? mentorPhoto(mentor.id);
+---
+
+<article class="mentor-card">
+  <div class="mentor-card__avatar">
+    {typeof portrait === 'string' ? (
+      <img src={portrait} alt={name} width="84" height="84" loading="lazy" decoding="async" />
+    ) : portrait ? (
+      <Image
+        src={portrait}
+        alt={name}
+        widths={[84, 168, 252, 336]}
+        sizes="84px"
+        loading="lazy"
+        decoding="async"
+        quality={82}
+      />
+    ) : (
+      initials(name)
+    )}
+  </div>
+  <div>
+    <h3><a href={href}>{name}</a></h3>
+    <p class="mentor-card__role">{title}</p>
+    <p class="mentor-card__bio">
+      {yearsExperience}+ years of professional experience. Focus areas include{' '}
+      {expertise.slice(0, 3).join(', ')}.
+    </p>
+    <a class="btn btn--ghost btn--sm" href={href} style="padding-left:0">
+      View profile
+      <Icon name="arrow-right" size={15} />
+    </a>
+  </div>
+</article>

@@ -1,0 +1,354 @@
+/* ==========================================================================
+   Layout - top bar, header, navigation, mega-menu, footer, mobile bars
+   ========================================================================== */
+
+/* --- Announcement / contact top bar -------------------------------------- */
+
+.topbar {
+  background: var(--surface-ink);
+  color: #b9c6cf;
+  font-size: var(--fs-2xs);
+  line-height: 1.2;
+  padding-block: 0.15rem;
+}
+
+.topbar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: 0;
+  padding-block: 0.3rem;
+}
+
+.topbar a {
+  color: #cdd8e0;
+}
+
+.topbar a:hover {
+  color: #fff;
+}
+
+.topbar__list {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.topbar__list li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.topbar svg {
+  width: 13px;
+  height: 13px;
+  opacity: 0.8;
+}
+
+@media (max-width: 860px) {
+  .topbar {
+    display: none;
+  }
+}
+
+/* --- Header -------------------------------------------------------------- */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-header);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: saturate(180%) blur(12px);
+  border-bottom: 1px solid var(--line);
+}
+
+.site-header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-5);
+  min-height: var(--header-h);
+  padding-block: 0.35rem;
+}
+
+/* --- Brand --------------------------------------------------------------- */
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  color: var(--heading);
+  font-family: var(--font-heading);
+  font-weight: var(--weight-extrabold);
+}
+
+.brand:hover {
+  color: var(--heading);
+}
+
+.brand__mark {
+  /* The component sets explicit width/height so the emblem never distorts.
+     Only the flex behaviour is enforced here. */
+  flex: none;
+  max-width: none;
+  height: auto;
+}
+
+/* Brand lockup: name on top, tagline beneath it. Both lines are clamped so the
+   block shrinks fluidly on smaller screens and can never wrap. */
+.brand__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.brand__name {
+  font-size: clamp(0.85rem, 1.35vw, 0.975rem);
+  letter-spacing: -0.015em;
+  /* Inherits from .brand so the footer (dark) and header (light) both work. */
+  color: inherit;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.brand__sub {
+  font-size: clamp(0.6rem, 0.95vw, 0.6875rem);
+  letter-spacing: 0.015em;
+  font-weight: var(--weight-medium);
+  color: var(--brand-700);
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 860px) {
+  .brand__name {
+    font-size: clamp(0.78rem, 3.1vw, 0.9rem);
+  }
+
+  .brand__sub {
+    font-size: clamp(0.56rem, 2.4vw, 0.625rem);
+  }
+}
+
+/* --- Primary navigation -------------------------------------------------- */
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.nav__link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.55rem 0.85rem;
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-sm);
+  font-weight: var(--weight-medium);
+  color: var(--ink-soft);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.nav__link:hover,
+.nav__link[aria-expanded='true'] {
+  color: var(--brand-800);
+  background: var(--brand-50);
+}
+
+.nav__link[aria-current='page'] {
+  color: var(--brand-800);
+  font-weight: var(--weight-semibold);
+}
+
+.nav__link svg {
+  width: 12px;
+  height: 12px;
+  transition: transform var(--dur-fast) var(--ease);
+}
+
+.nav__link[aria-expanded='true'] svg {
+  transform: rotate(180deg);
+}
+
+.header__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+/* --- Mega menu ----------------------------------------------------------- */
+
+.megamenu {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  z-index: var(--z-header);
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  box-shadow: var(--shadow-md);
+  padding-block: var(--space-7);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px);
+  transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease),
+    visibility var(--dur);
+}
+
+.megamenu.is-open {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+}
+
+.megamenu__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr) 1.2fr;
+  gap: var(--space-7);
+}
+
+.megamenu__col h3 {
+  font-size: var(--fs-2xs);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted-2);
+  margin-bottom: var(--space-4);
+}
+
+.megamenu__list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.megamenu__list a {
+  display: block;
+  padding: 0.4rem 0.5rem;
+  margin-inline: -0.5rem;
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-sm);
+  color: var(--ink-soft);
+}
+
+.megamenu__list a:hover {
+  background: var(--brand-50);
+  color: var(--brand-800);
+}
+
+.megamenu__promo {
+  background: linear-gradient(150deg, var(--brand-800), var(--brand-600));
+  color: #fff;
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  display: grid;
+  gap: var(--space-3);
+  align-content: start;
+}
+
+.megamenu__promo h3 {
+  color: #fff;
+  font-size: var(--fs-lg);
+}
+
+.megamenu__promo p {
+  font-size: var(--fs-sm);
+  color: #dff1e6;
+}
+
+/* --- Mobile navigation --------------------------------------------------- */
+
+.nav-toggle {
+  display: none;
+  padding: 0.7rem 0.6rem;
+  background: transparent;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.nav-toggle span {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: var(--ink);
+  border-radius: 2px;
+  transition: transform var(--dur) var(--ease), opacity var(--dur) var(--ease);
+}
+
+.nav-toggle span + span {
+  margin-top: 4px;
+}
+
+.drawer {
+  position: fixed;
+  inset: var(--header-h) 0 0;
+  z-index: var(--z-overlay);
+  background: var(--surface);
+  padding: var(--space-6) var(--gutter) var(--space-9);
+  overflow-y: auto;
+  transform: translateX(100%);
+  visibility: hidden;
+  transition: transform var(--dur-slow) var(--ease), visibility var(--dur-slow);
+}
+
+.drawer.is-open {
+  transform: none;
+  visibility: visible;
+}
+
+.drawer__group + .drawer__group {
+  margin-top: var(--space-6);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--line);
+}
+
+.drawer__label {
+  font-size: var(--fs-2xs);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted-2);
+  margin-bottom: var(--space-3);
+}
+
+.drawer__links {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 0.2rem;
+}
+
+.drawer__links a {
+  display: block;
+  padding: 0.7rem 0;
+  font-family: var(--font-heading);
+  font-size: var(--fs-lg);
+  font-weight: var(--weight-semibold);
+  color: var(--heading);
+  border-bottom: 1px solid var(--line);
+}
+
+@media (max-width: 1040px) {
+  .nav,
+  .header__actions .btn--desktop {
+    display: none;
+  }
+
+  .nav-toggle {
+    display: block;
+  }
+}

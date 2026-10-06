@@ -1,0 +1,155 @@
+/* ==========================================================================
+   Design tokens
+   Single source of truth for colour, type, spacing, radius, shadow and motion.
+   Nothing in the codebase should hard-code a hex value, font-size or spacing.
+   ========================================================================== */
+
+:root {
+  /* --- Brand colour ----------------------------------------------------- */
+  --brand-50: #eaf7ef;
+  --brand-100: #d0eede;
+  --brand-200: #a6dcbe;
+  --brand-300: #74c79b;
+  --brand-400: #45b478;
+  --brand-500: #22a74a; /* logo green */
+  --brand-600: #1c8f3f;
+  --brand-700: #176f33;
+  --brand-800: #0e5c2f; /* deep green for text/hover on light tints */
+  --brand-900: #0a4623;
+
+  --gold: #c9a227; /* sparing use: certificate / credential accents */
+
+  --ink: #111417;
+  --ink-soft: #2b3138;
+  --muted: #5f6b76;
+  --muted-2: #8a949e;
+  --line: #e6eaee;
+  --line-strong: #d3dae1;
+
+  --surface: #ffffff;
+  --surface-soft: #f5f8f6;
+  --surface-muted: #eef2f5;
+  --surface-ink: #10171d; /* dark sections */
+  --surface-ink-soft: #1a2530;
+
+  /* --- Semantic --------------------------------------------------------- */
+  --text: var(--ink-soft);
+  --heading: var(--ink);
+  --accent: var(--brand-500);
+  --accent-hover: var(--brand-600);
+  --focus-ring: 0 0 0 3px rgba(34, 167, 74, 0.35);
+  --danger: #c0392b;
+
+  /* --- Typography ------------------------------------------------------- */
+  --font-heading: 'Plus Jakarta Sans', 'Segoe UI', system-ui, sans-serif;
+  --font-body: 'Inter', 'Segoe UI', system-ui, sans-serif;
+
+  --fs-2xs: 0.75rem;   /* 12 */
+  --fs-xs: 0.8125rem;  /* 13 */
+  --fs-sm: 0.875rem;   /* 14 */
+  --fs-base: 1rem;     /* 16 */
+  --fs-md: 1.0625rem;  /* 17 */
+  --fs-lg: 1.1875rem;  /* 19 */
+  --fs-xl: 1.375rem;   /* 22 */
+  --fs-2xl: 1.75rem;   /* 28 */
+  --fs-3xl: 2.25rem;   /* 36 */
+  --fs-4xl: 3rem;      /* 48 */
+  --fs-5xl: 3.75rem;   /* 60 */
+
+  --lh-tight: 1.12;
+  --lh-snug: 1.28;
+  --lh-base: 1.65;
+  --lh-loose: 1.8;
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --weight-extrabold: 800;
+
+  /* --- Space scale (4px base) ------------------------------------------ */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 2.5rem;
+  --space-8: 3rem;
+  --space-9: 4rem;
+  --space-10: 5rem;
+  --space-11: 6rem;
+
+  /* --- Radius ----------------------------------------------------------- */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 26px;
+  --radius-pill: 999px;
+
+  /* --- Shadow ----------------------------------------------------------- */
+  --shadow-xs: 0 1px 2px rgba(16, 23, 29, 0.06);
+  --shadow-sm: 0 4px 12px rgba(16, 23, 29, 0.06);
+  --shadow-md: 0 12px 28px rgba(16, 23, 29, 0.08);
+  --shadow-lg: 0 24px 48px rgba(16, 23, 29, 0.12);
+  --shadow-brand: 0 14px 30px rgba(34, 167, 74, 0.28);
+
+  /* --- Layout ----------------------------------------------------------- */
+  --container: 1200px;
+  --container-narrow: 820px;
+  --container-wide: 1320px;
+  --gutter: clamp(1.25rem, 5vw, 2.5rem);
+  --header-h: 74px;
+
+  /* --- Motion ----------------------------------------------------------- */
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --dur-fast: 160ms;
+  --dur: 240ms;
+  --dur-slow: 420ms;
+
+  /* --- Z-index scale ---------------------------------------------------- */
+  --z-header: 100;
+  --z-overlay: 200;
+  --z-modal: 300;
+  --z-toast: 400;
+}
+
+/* Respect users who prefer less motion. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur: 0ms;
+    --dur-slow: 0ms;
+  }
+}
+
+/* --- Small-screen token overrides --------------------------------------- */
+/* Phones cannot carry the desktop type scale, and a 74px header eats too much
+   of a short viewport, so both shrink on small devices. Everything downstream
+   uses these tokens, so no component needs its own font-size patch. */
+@media (max-width: 640px) {
+  :root {
+    --fs-md: 1rem;
+    --fs-lg: 1.0625rem;
+    --fs-xl: 1.1875rem;
+    --fs-2xl: 1.4375rem;
+    --fs-3xl: 1.75rem;
+    --fs-4xl: 2rem;
+    --fs-5xl: 2.5rem;
+
+    --lh-tight: 1.16;
+    --lh-base: 1.62;
+
+    --header-h: 64px;
+  }
+}
+
+/* Very small phones (360px and under) tighten a touch more. */
+@media (max-width: 380px) {
+  :root {
+    --fs-2xl: 1.3125rem;
+    --fs-3xl: 1.625rem;
+    --fs-4xl: 1.875rem;
+    --fs-5xl: 2.25rem;
+  }
+}

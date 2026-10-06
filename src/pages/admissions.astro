@@ -1,0 +1,82 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { whatsappLink, telHref } from '@data/site';
+import Breadcrumbs from '@components/ui/Breadcrumbs.astro';
+import SectionHead from '@components/ui/SectionHead.astro';
+import Accordion from '@components/ui/Accordion.astro';
+import { faqSchema } from '@lib/schema';
+import Icon from '@components/ui/Icon.astro';
+
+const steps = [
+  { title: 'Send your enquiry', text: 'Use the Enroll Now form or message admissions on WhatsApp. Tell us the course, your city and preferred mode.' },
+  { title: 'Counselling call', text: 'Admissions confirms fees, batch dates, class timings and the documents you will need.' },
+  { title: 'Registration', text: 'Complete registration and fee payment as advised. You receive your confirmation and joining details.' },
+  { title: 'Start your batch', text: 'Attend your first session — physical, online or hybrid — and begin with the practical foundation.' },
+];
+
+const admissionsFaqs = [
+  { q: 'Which documents do I need to enrol?', a: 'Document requirements are confirmed by the admissions team for each programme. In general, a CNIC copy, your latest qualification and a photograph are used for registration and certificates.' },
+  { q: 'Can I pay the fee in instalments?', a: 'Payment options and instalment plans are confirmed by admissions, as they vary by programme and intake.' },
+  { q: 'Do I need to attend in person?', a: 'No. Most programmes offer online and hybrid modes, so you can study from your city.' },
+  { q: 'How early should I register?', a: 'Seats are limited per batch. Contact admissions as soon as you decide so the right batch can be reserved for you.' },
+];
+---
+
+<BaseLayout
+  seo={{
+    title: 'Admissions - Fees, Batches & Counselling',
+    description: 'How enrolment works at PTCA: enquiry, free counselling, registration and your first batch. Contact admissions for fees and batch dates in Karachi.',
+    canonical: '/admissions/',
+  }}
+  schemaNodes={[faqSchema(admissionsFaqs)]}
+>
+  <section class="page-hero">
+    <div class="container">
+      <Breadcrumbs items={[{ name: 'Home', path: '/' }, { name: 'Admissions', path: '/admissions/' }]} />
+      <h1>Admissions</h1>
+      <p class="page-hero__lead">
+        Four straightforward steps from enquiry to your first session. Fees and
+        batch dates are confirmed by our admissions team for each intake.
+      </p>
+      <div class="hero__actions">
+        <a class="btn btn--primary btn--lg" href="/enroll/">Start enrolment</a>
+        <a class="btn btn--whatsapp btn--lg" href={whatsappLink()} target="_blank" rel="noopener">
+          <Icon name="whatsapp" size={18} />
+          Ask admissions
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container container--narrow">
+      <SectionHead eyebrow="Process" title="How enrolment works" align="center" />
+      <div class="steps">
+        {steps.map((step) => (
+          <div class="step">
+            <h3>{step.title}</h3>
+            <p>{step.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--soft">
+    <div class="container container--narrow">
+      <SectionHead eyebrow="FAQ" title="Admissions questions" align="center" />
+      <Accordion items={admissionsFaqs.map((f) => ({ title: f.q, html: `<p>${f.a}</p>` }))} firstOpen />
+
+      <div class="card" style="margin-top:2.5rem; text-align:center">
+        <h3>Ready to begin?</h3>
+        <p>Our admissions team is available on WhatsApp and by phone.</p>
+        <div class="grid" style="gap:0.75rem; margin-top:1.25rem; max-width:20rem; margin-inline:auto">
+          <a class="btn btn--primary" href="/enroll/">Start enrolment</a>
+          <a class="btn btn--outline" href={telHref}>
+            <Icon name="phone" size={16} /> Call admissions
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

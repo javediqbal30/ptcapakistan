@@ -1,0 +1,43 @@
+---
+/**
+ * PTCA brand logo.
+ *
+ * `src/assets/brand/PTCA.png` is the crest PTCA supplied: a transparent PNG with
+ * the laurel, globe and "PTCA / PRIME TAX AND CORPORATE ACADEMY" ribbon artwork
+ * trimmed to its edges. Because it has no white canvas, it is rendered directly
+ * at the requested height - no cropping frame is needed.
+ *
+ * The company name and tagline live in text next to the mark (see Header.astro),
+ * which keeps them selectable, translatable and searchable by crawlers.
+ */
+import { Image } from 'astro:assets';
+import crest from '@assets/brand/PTCA.png';
+
+interface Props {
+  /** Rendered height of the logo artwork, in pixels. */
+  size?: number;
+  /** Decorative use (the parent already provides an accessible name). */
+  decorative?: boolean;
+}
+
+const { size = 48, decorative = false } = Astro.props;
+
+const alt = decorative ? '' : 'Prime Tax & Corporate Academy';
+
+// Native aspect ratio of the crest (338 x 299).
+const width = Math.round((size * 338) / 299);
+---
+
+<Image
+  src={crest}
+  alt={alt}
+  class="brand__mark"
+  width={width}
+  height={size}
+  widths={[width, width * 2, width * 3]}
+  sizes={`${width}px`}
+  quality={90}
+  loading="eager"
+  decoding="async"
+  fetchpriority="high"
+/>

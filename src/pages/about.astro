@@ -1,0 +1,183 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { SITE } from '@data/site';
+import { getPublishedMentors, getPublishedCourses } from '@lib/content';
+import { breadcrumbSchema } from '@lib/schema';
+import Breadcrumbs from '@components/ui/Breadcrumbs.astro';
+import SectionHead from '@components/ui/SectionHead.astro';
+import MentorCard from '@components/ui/MentorCard.astro';
+import Logo from '@components/ui/Logo.astro';
+import Icon from '@components/ui/Icon.astro';
+
+const mentors = await getPublishedMentors();
+const courseCount = (await getPublishedCourses()).length;
+
+const serving = [
+  { title: 'Students & graduates', text: 'Build practical knowledge and strengthen your professional profile.' },
+  { title: 'Accountants & lawyers', text: 'Develop applied taxation, litigation and compliance capabilities.' },
+  { title: 'Business owners', text: 'Understand obligations, documentation and corporate requirements.' },
+  { title: 'Working professionals', text: 'Upgrade job-relevant skills through flexible learning options.' },
+];
+
+const approach = [
+  { title: 'Understand', text: 'Learn core concepts in a clear, structured sequence.' },
+  { title: 'Practise', text: 'Work through realistic examples, exercises and documents.' },
+  { title: 'Apply', text: 'Build confidence to use skills in career and business settings.' },
+];
+
+const whyUs = [
+  { icon: 'book', title: 'Practical course content', text: 'Training designed around relevant tasks and real-world requirements.' },
+  { icon: 'users', title: 'Professional trainers', text: 'Learn from experienced professionals.' },
+  { icon: 'briefcase', title: 'Career-focused learning', text: 'Develop skills that support employment, practice and business growth.' },
+  { icon: 'globe', title: 'Flexible options', text: 'Online, physical and hybrid learning options where offered.' },
+];
+---
+
+<BaseLayout
+  seo={{
+    title: 'Practical Tax Training Academy in Karachi',
+    description: 'Prime Tax & Corporate Academy is a professional training academy in PECHS, Karachi. Practical courses in tax, sales tax, HR and corporate compliance.',
+    canonical: '/about/',
+  }}
+  schemaNodes={[
+    breadcrumbSchema([
+      { name: 'Home', path: '/' },
+      { name: 'About', path: '/about/' },
+    ]),
+  ]}
+>
+  <section class="page-hero">
+    <div class="container">
+      <Breadcrumbs items={[{ name: 'Home', path: '/' }, { name: 'About', path: '/about/' }]} />
+      <h1>Practical education for tax &amp; corporate careers</h1>
+      <p class="page-hero__lead">
+        {SITE.legalName} is a professional training academy in PECHS Block 6,
+        Shahrah-e-Faisal, Karachi. We provide professionally structured training
+        that connects essential knowledge with practical workplace skills.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="split">
+        <div>
+          <span class="eyebrow">Our academy</span>
+          <h2 style="margin-top:1rem">Professional learning built around real-world practice</h2>
+          <div class="prose" style="margin-top:1.25rem">
+            <p>
+              {SITE.legalName} (PTCA) offers {courseCount} professional programmes
+              for students, graduates, accountants, lawyers, entrepreneurs and
+              working professionals.
+            </p>
+            <p>
+              Our courses combine clear concepts, guided exercises, professional
+              documentation, application-based learning and professional insight,
+              so learners can contribute to real work from the outset.
+            </p>
+          </div>
+        </div>
+        <div class="split__media">
+          <img
+            src="/Our_academy.webp"
+            alt="PTCA academy - professional learning in a classroom setting"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--soft">
+    <div class="container">
+      <div class="grid grid--2">
+        <div class="card">
+          <div class="card__icon"><Icon name="star" size={24} /></div>
+          <h2>Our mission</h2>
+          <p>
+            To make professional taxation and corporate education practical,
+            accessible and relevant to modern career and business requirements.
+          </p>
+        </div>
+        <div class="card">
+          <div class="card__icon"><Icon name="globe" size={24} /></div>
+          <h2>Our vision</h2>
+          <p>
+            To become a trusted professional training academy for local and
+            international taxation education in Pakistan.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <SectionHead eyebrow="Who we serve" title="Who PTCA serves" align="center" />
+      <div class="grid grid--4">
+        {serving.map((item, index) => (
+          <div class="card card--hover">
+            <span class="feature__index">{String(index + 1).padStart(2, '0')}</span>
+            <h3 style="margin-top:0.75rem">{item.title}</h3>
+            <p>{item.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--soft">
+    <div class="container">
+      <div class="split">
+        <div>
+          <span class="eyebrow">Training approach</span>
+          <h2 style="margin-top:1rem">Understand. Practise. Apply.</h2>
+          <div class="steps" style="margin-top:2rem">
+            {approach.map((step) => (
+              <div class="step">
+                <h3>{step.title}</h3>
+                <p>{step.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div class="card card--centred">
+          <div style="display:inline-block">
+            <Logo size={150} />
+          </div>
+          <h3 style="margin-top:1.5rem">{SITE.slogan}</h3>
+          <p style="margin-top:0.75rem">
+            Our emblem pairs a globe &mdash; local and international taxation
+            &mdash; with three stars representing the three stages of every
+            programme: learning, practice and progress.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <SectionHead eyebrow="Why PTCA" title="Why choose PTCA?" align="center" />
+      <div class="grid grid--4">
+        {whyUs.map((item) => (
+          <div class="card card--hover">
+            <div class="card__icon"><Icon name={item.icon as any} size={24} /></div>
+            <h3>{item.title}</h3>
+            <p>{item.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--soft">
+    <div class="container">
+      <SectionHead eyebrow="Our mentors" title="Learn from practising professionals" />
+      <div class="grid grid--2">
+        {mentors.map((mentor) => <MentorCard mentor={mentor} />)}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

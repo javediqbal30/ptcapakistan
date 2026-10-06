@@ -1,0 +1,77 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { getPublishedCourses } from '@lib/content';
+import { SITE, whatsappLink, telHref } from '@data/site';
+import Breadcrumbs from '@components/ui/Breadcrumbs.astro';
+import EnrollForm from '@components/forms/EnrollForm.astro';
+import Icon from '@components/ui/Icon.astro';
+
+const courses = (await getPublishedCourses()).map((course) => ({
+  id: course.id,
+  title: course.data.title,
+}));
+
+const reassurance = [
+  { icon: 'shield', title: 'Your data stays private', text: 'We only use your details to respond to this enquiry. We never sell student data.' },
+  { icon: 'clock', title: 'Reply within one working day', text: 'Admissions confirms fees, batch dates and registration on WhatsApp or by phone.' },
+  { icon: 'book', title: 'Guidance on choosing', text: 'Not sure which course fits? Tell us your background and we will recommend one.' },
+];
+---
+
+<BaseLayout
+  seo={{
+    title: 'Enrol Now - Reserve Your Seat',
+    description: 'Submit your enrolment request for a PTCA course in Karachi. Share your name, mobile, email, education and location, and admissions will confirm your batch.',
+    canonical: '/enroll/',
+  }}
+>
+  <section class="page-hero">
+    <div class="container">
+      <Breadcrumbs items={[{ name: 'Home', path: '/' }, { name: 'Enrol now', path: '/enroll/' }]} />
+      <h1>Enrol in a PTCA course</h1>
+      <p class="page-hero__lead">
+        Complete the short form below. It takes under a minute, and our admissions
+        team will contact you within one working day with fees, batch dates and
+        registration details.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container contact-grid">
+      <div>
+        <div class="card">
+          <h2 style="margin-bottom:1.5rem">Your enrolment request</h2>
+          <EnrollForm courses={courses} />
+        </div>
+      </div>
+
+      <aside>
+        <div class="grid" style="gap:1rem">
+          {reassurance.map((item) => (
+            <div class="card">
+              <div class="card__icon"><Icon name={item.icon as any} size={24} /></div>
+              <h3>{item.title}</h3>
+              <p>{item.text}</p>
+            </div>
+          ))}
+        </div>
+
+        <div class="card" style="margin-top:1.5rem">
+          <h3>Prefer to talk?</h3>
+          <p>Our admissions team is available during working hours.</p>
+          <div class="grid" style="gap:0.6rem; margin-top:1rem">
+            <a class="btn btn--whatsapp btn--block" href={whatsappLink()} target="_blank" rel="noopener">
+              <Icon name="whatsapp" size={16} />
+              Chat on WhatsApp
+            </a>
+            <a class="btn btn--outline btn--block" href={telHref}>
+              <Icon name="phone" size={16} />
+              {SITE.phone.display}
+            </a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+</BaseLayout>

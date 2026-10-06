@@ -1,0 +1,113 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { getPublishedCourses } from '@lib/content';
+import { SITE, whatsappLink, telHref, mailHref } from '@data/site';
+import Breadcrumbs from '@components/ui/Breadcrumbs.astro';
+import ContactForm from '@components/forms/ContactForm.astro';
+import Accordion from '@components/ui/Accordion.astro';
+import { faqSchema } from '@lib/schema';
+import Icon from '@components/ui/Icon.astro';
+
+const courses = (await getPublishedCourses()).map((course) => ({
+  id: course.id,
+  title: course.data.title,
+}));
+
+const contactFaqs = [
+  {
+    q: 'How can I enrol in a PTCA course?',
+    a: 'Submit the enrolment form or contact the admissions team on WhatsApp. The team will guide you through the relevant batch and the registration process.',
+  },
+  {
+    q: 'Which learning modes are available?',
+    a: 'Learning modes vary by course and may include physical, online or hybrid delivery. Each course page lists its available modes.',
+  },
+  {
+    q: 'Can your team help me select the right course?',
+    a: 'Yes. Share your education, experience and career goals and the admissions team will recommend a suitable programme.',
+  },
+  {
+    q: 'Where can I confirm fees and schedules?',
+    a: 'Fees, batch dates and class timings are confirmed directly with PTCA because they may change by intake and learning mode.',
+  },
+];
+---
+
+<BaseLayout
+  seo={{
+    title: 'Contact PTCA Karachi - Call, WhatsApp & Visit',
+    description: 'Contact Prime Tax & Corporate Academy in PECHS Block 6, Shahrah-e-Faisal, Karachi. Call +92 310 5070070, email info@ptcapakistan.pk or send an enquiry.',
+    canonical: '/contact/',
+  }}
+  schemaNodes={[faqSchema(contactFaqs)]}
+>
+  <section class="page-hero">
+    <div class="container">
+      <Breadcrumbs items={[{ name: 'Home', path: '/' }, { name: 'Contact', path: '/contact/' }]} />
+      <h1>Let&rsquo;s discuss your professional learning goals</h1>
+      <p class="page-hero__lead">
+        Need help choosing a course, learning mode or upcoming batch? Contact our
+        admissions team for clear guidance and course information.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container contact-grid">
+      <div>
+        <ul class="info-list">
+          <li>
+            <span class="info-list__icon"><Icon name="pin" size={20} /></span>
+            <div>
+              <h3>Office</h3>
+              <p>{SITE.address.singleLine}</p>
+              <a href={SITE.mapsUrl} target="_blank" rel="noopener">Get directions</a>
+            </div>
+          </li>
+          <li>
+            <span class="info-list__icon"><Icon name="phone" size={20} /></span>
+            <div>
+              <h3>Phone &amp; WhatsApp</h3>
+              <a href={telHref}>{SITE.phone.display}</a>
+            </div>
+          </li>
+          <li>
+            <span class="info-list__icon"><Icon name="mail" size={20} /></span>
+            <div>
+              <h3>Email</h3>
+              <a href={mailHref}>{SITE.email}</a>
+            </div>
+          </li>
+          <li>
+            <span class="info-list__icon"><Icon name="whatsapp" size={20} /></span>
+            <div>
+              <h3>Quick response</h3>
+              <a href={whatsappLink()} target="_blank" rel="noopener">Message admissions on WhatsApp</a>
+            </div>
+          </li>
+        </ul>
+
+        <div class="map-embed" style="margin-top:2rem">
+          <iframe
+            title="PTCA office location map"
+            src="https://www.google.com/maps?q=PECHS+Block+6+Shahrah-e-Faisal+Karachi&output=embed"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+          ></iframe>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 style="margin-bottom:1.5rem">Send an enquiry</h2>
+        <ContactForm courses={courses} />
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--soft">
+    <div class="container container--narrow">
+      <h2 style="margin-bottom:1.5rem">Frequently asked questions</h2>
+      <Accordion items={contactFaqs.map((f) => ({ title: f.q, html: `<p>${f.a}</p>` }))} firstOpen />
+    </div>
+  </section>
+</BaseLayout>

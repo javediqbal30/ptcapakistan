@@ -1,0 +1,269 @@
+/* ==========================================================================
+   Forms - inputs, selects, choice groups, validation, multi-step enrolment
+   ========================================================================== */
+
+.form {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.form-grid {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+}
+
+.field {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.field--full {
+  grid-column: 1 / -1;
+}
+
+.field > label,
+.fieldset > legend {
+  font-family: var(--font-heading);
+  font-size: var(--fs-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--heading);
+}
+
+.field .req {
+  color: var(--brand-600);
+  margin-left: 2px;
+}
+
+.field__hint {
+  font-size: var(--fs-xs);
+  color: var(--muted-2);
+}
+
+.input,
+.select,
+.textarea {
+  width: 100%;
+  padding: 0.8rem 0.95rem;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-md);
+  font-size: var(--fs-sm);
+  color: var(--ink);
+  transition: border-color var(--dur-fast) var(--ease),
+    box-shadow var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: var(--muted-2);
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+  outline: none;
+  border-color: var(--brand-500);
+  box-shadow: var(--focus-ring);
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 7rem;
+}
+
+.select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%235f6b76' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.9rem center;
+  padding-right: 2.4rem;
+}
+
+/* --- Choice groups (radio / checkbox) ------------------------------------ */
+
+.fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.choice-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.choice {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-sm);
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease),
+    background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+
+.choice input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  cursor: pointer;
+}
+
+.choice:has(input:checked) {
+  border-color: var(--brand-500);
+  background: var(--brand-50);
+  color: var(--brand-800);
+  font-weight: var(--weight-semibold);
+}
+
+.choice:has(input:focus-visible) {
+  box-shadow: var(--focus-ring);
+}
+
+/* --- Consent ------------------------------------------------------------- */
+
+.consent {
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+  font-size: var(--fs-xs);
+  color: var(--muted);
+}
+
+.consent input {
+  margin-top: 0.2rem;
+  width: 18px;
+  height: 18px;
+  accent-color: var(--brand-500);
+  flex: none;
+}
+
+.consent a {
+  text-decoration: underline;
+}
+
+/* --- Validation ---------------------------------------------------------- */
+
+.input[aria-invalid='true'],
+.select[aria-invalid='true'],
+.textarea[aria-invalid='true'] {
+  border-color: var(--danger);
+  background: #fff7f6;
+}
+
+.field__error {
+  font-size: var(--fs-xs);
+  color: var(--danger);
+  font-weight: var(--weight-medium);
+}
+
+.field__error:empty {
+  display: none;
+}
+
+/* --- Multi-step enrolment ------------------------------------------------ */
+
+.enroll {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.enroll__head {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.form-progress {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+.form-progress__bar {
+  height: 5px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-muted);
+  overflow: hidden;
+}
+
+.form-progress__bar::after {
+  content: '';
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--brand-500);
+  border-radius: inherit;
+  transition: width var(--dur-slow) var(--ease);
+}
+
+.form-progress__bar[data-state='done']::after {
+  width: 100%;
+}
+
+.form-progress__bar[data-state='active']::after {
+  width: 50%;
+}
+
+.step-panel {
+  display: none;
+}
+
+.step-panel.is-active {
+  display: grid;
+  gap: var(--space-5);
+  animation: fade-up var(--dur-slow) var(--ease);
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.step-heading {
+  font-size: var(--fs-2xs);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted-2);
+  font-weight: var(--weight-semibold);
+}
+
+.step-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.enroll__summary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1rem;
+  background: var(--brand-50);
+  border-radius: var(--radius-md);
+  font-size: var(--fs-sm);
+  color: var(--brand-800);
+}
+
+/* Honeypot field - hidden from humans, catches naive bots. */
+.hp-field {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}

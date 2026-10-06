@@ -1,0 +1,14 @@
+---
+import { whatsappLink } from '@data/site';
+import Icon from '@components/ui/Icon.astro';
+---
+
+<a
+  class="whatsapp-float"
+  href={whatsappLink("Hi PTCA, I'd like guidance on choosing a course.")}
+  target="_blank"
+  rel="noopener"
+  aria-label="Chat with PTCA on WhatsApp"
+>
+  <Icon name="whatsapp" size={28} strokeWidth={1.9} />
+</a>

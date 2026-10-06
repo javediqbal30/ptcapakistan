@@ -1,0 +1,163 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { getPublishedCourses, coursePath } from '@lib/content';
+import Breadcrumbs from '@components/ui/Breadcrumbs.astro';
+import CourseCard from '@components/ui/CourseCard.astro';
+import CtaBanner from '@components/ui/CtaBanner.astro';
+
+const courses = await getPublishedCourses();
+
+const categories = [...new Set(courses.map((c) => c.data.category))];
+const modes = [...new Set(courses.flatMap((c) => c.data.modes))];
+---
+
+<BaseLayout
+  seo={{
+    title: 'Taxation & Corporate Courses in Pakistan',
+    description: 'Compare PTCA courses in tax litigation, sales tax, human resources, company secretarial practice and intellectual property. Karachi, online and hybrid.',
+    canonical: '/courses/',
+  }}
+>
+  <section class="page-hero">
+    <div class="container">
+      <Breadcrumbs items={[{ name: 'Home', path: '/' }, { name: 'Courses', path: '/courses/' }]} />
+      <h1>Professional tax &amp; corporate courses</h1>
+      <p class="page-hero__lead">
+        Six career-focused programmes built around Pakistan practice — taxation,
+        tax litigation, sales tax, human resources, corporate secretarial practice
+        and intellectual property.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="filter-bar" data-filter-bar>
+        <div class="choice-row">
+          <button class="choice is-active" type="button" data-filter-category="all" aria-pressed="true">
+            All courses
+          </button>
+          {categories.map((category) => (
+            <button class="choice" type="button" data-filter-category={category} aria-pressed="false">
+              {category}
+            </button>
+          ))}
+        </div>
+        <div class="choice-row">
+          <span class="filter-bar__label">Mode</span>
+          {modes.map((mode) => (
+            <button class="choice" type="button" data-filter-mode={mode} aria-pressed="false">
+              {mode}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div class="grid grid--3" data-course-grid>
+        {courses.map((course) => (
+          <div
+            data-course-card
+            data-category={course.data.category}
+            data-modes={course.data.modes.join('|')}
+          >
+            <CourseCard course={course} />
+          </div>
+        ))}
+      </div>
+
+      <p class="filter-bar__empty" data-filter-empty hidden>
+        No courses match that combination of filters.
+      </p>
+    </div>
+  </section>
+
+  <section class="section section--soft">
+    <div class="container">
+      <h2 style="margin-bottom:1.5rem">Compare courses at a glance</h2>
+      <div class="table-wrap">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th scope="col">Course</th>
+              <th scope="col">Category</th>
+              <th scope="col">Duration</th>
+              <th scope="col">Mode</th>
+              <th scope="col">Certificate</th>
+              <th scope="col"><span class="sr-only">Enrol</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            {courses.map((course) => (
+              <tr>
+                <th scope="row">{course.data.title}</th>
+                <td>{course.data.category}</td>
+                <td>{course.data.duration}</td>
+                <td>{course.data.modes.join(', ')}</td>
+                <td>{course.data.certificateName ?? 'Certificate of participation'}</td>
+                <td><a class="btn btn--primary btn--sm" href={coursePath(course)}>Enrol</a></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <CtaBanner
+    title="Not sure which course fits you?"
+    text="Share your education, experience and career goals and the admissions team will recommend a suitable programme."
+    primaryLabel="Talk to admissions"
+    primaryHref="/admissions/"
+  />
+
+  <script>
+    // Client-side filtering. Buttons toggle a category and/or a learning mode;
+    // cards are hidden with the `hidden` attribute so the markup stays fully
+    // server-rendered and crawlable.
+    const bar = document.querySelector<HTMLElement>('[data-filter-bar]');
+    if (bar) {
+      const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-course-card]'));
+      const empty = document.querySelector<HTMLElement>('[data-filter-empty]');
+      const state = { category: 'all', mode: 'all' };
+
+      const apply = () => {
+        let visible = 0;
+        cards.forEach((card) => {
+          const matchesCategory =
+            state.category === 'all' || card.dataset.category === state.category;
+          const matchesMode =
+            state.mode === 'all' || (card.dataset.modes ?? '').split('|').includes(state.mode);
+          const show = matchesCategory && matchesMode;
+          card.hidden = !show;
+          if (show) visible += 1;
+        });
+        if (empty) empty.hidden = visible > 0;
+      };
+
+      const syncPressed = (attribute: string, value: string) => {
+        bar.querySelectorAll<HTMLButtonElement>(`[${attribute}]`).forEach((button) => {
+          const match = button.getAttribute(attribute) === value;
+          button.setAttribute('aria-pressed', String(match));
+          button.classList.toggle('is-active', match);
+        });
+      };
+
+      bar.querySelectorAll<HTMLButtonElement>('[data-filter-category]').forEach((button) =>
+        button.addEventListener('click', () => {
+          state.category = button.dataset.filterCategory ?? 'all';
+          syncPressed('data-filter-category', state.category);
+          apply();
+        })
+      );
+
+      bar.querySelectorAll<HTMLButtonElement>('[data-filter-mode]').forEach((button) =>
+        button.addEventListener('click', () => {
+          const mode = button.dataset.filterMode ?? 'all';
+          state.mode = state.mode === mode ? 'all' : mode;
+          syncPressed('data-filter-mode', state.mode);
+          apply();
+        })
+      );
+    }
+  </script>
+</BaseLayout>

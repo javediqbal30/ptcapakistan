@@ -1,0 +1,92 @@
+---
+import { FOOTER_QUICK_LINKS } from '@data/navigation';
+import { SITE, telHref, mailHref } from '@data/site';
+import { getPublishedCourses, coursePath } from '@lib/content';
+import Icon from '@components/ui/Icon.astro';
+import Logo from '@components/ui/Logo.astro';
+
+const courses = await getPublishedCourses();
+const year = new Date().getFullYear();
+
+const socials = [
+  { key: 'facebook', url: SITE.social.facebook },
+  { key: 'linkedin', url: SITE.social.linkedin },
+  { key: 'instagram', url: SITE.social.instagram },
+  { key: 'youtube', url: SITE.social.youtube },
+].filter((s) => s.url);
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer__grid">
+      <div class="footer__brand">
+        <a class="brand" href="/">
+          <Logo size={58} />
+          <span class="brand__text">
+            <span class="brand__name">{SITE.legalName}</span>
+          </span>
+        </a>
+        <p class="footer__about">
+          Practical, career-focused education in taxation, corporate compliance,
+          human resource management and secretarial practice.
+        </p>
+        {socials.length > 0 && (
+          <ul class="footer__social">
+            {socials.map((s) => (
+              <li>
+                <a href={s.url} target="_blank" rel="noopener" aria-label={`${SITE.shortName} on ${s.key}`}>
+                  <Icon name={s.key as any} size={18} />
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      <nav class="footer" aria-labelledby="footer-links">
+        <h4 id="footer-links">Quick Links</h4>
+        <ul class="footer__links">
+          {FOOTER_QUICK_LINKS.map((link) => (
+            <li><a href={link.href}>{link.label}</a></li>
+          ))}
+        </ul>
+      </nav>
+
+      <nav class="footer" aria-labelledby="footer-courses">
+        <h4 id="footer-courses">Professional Courses</h4>
+        <ul class="footer__links">
+          {courses.map((course) => (
+            <li><a href={coursePath(course)}>{course.data.shortTitle}</a></li>
+          ))}
+        </ul>
+      </nav>
+
+      <div class="footer">
+        <h4>Contact</h4>
+        <ul class="footer__contact">
+          <li>
+            <Icon name="pin" size={18} />
+            <span>{SITE.address.singleLine}</span>
+          </li>
+          <li>
+            <Icon name="phone" size={18} />
+            <a href={telHref}>{SITE.phone.display}</a>
+          </li>
+          <li>
+            <Icon name="mail" size={18} />
+            <a href={mailHref}>{SITE.email}</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <p>© {year} {SITE.legalName}. All rights reserved.</p>
+      <ul class="footer__legal">
+        <li><a href="/privacy-policy/">Privacy Policy</a></li>
+        <li><a href="/terms/">Terms</a></li>
+        <li><a href="/refund-policy/">Refund Policy</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>

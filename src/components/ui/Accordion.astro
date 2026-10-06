@@ -1,0 +1,48 @@
+---
+/**
+ * Native <details> accordion. No JS, fully accessible, and content is present
+ * in the initial HTML (important for search and generative engines).
+ */
+export interface AccordionItem {
+  title: string;
+  /** Bullet list content (curriculum modules). */
+  points?: string[];
+  /** Rich HTML content (used by FAQs). */
+  html?: string;
+}
+
+interface Props {
+  items: AccordionItem[];
+  /** Prefix each heading with a zero-padded index. */
+  numbered?: boolean;
+  /** Open the first panel by default. */
+  firstOpen?: boolean;
+}
+
+const { items, numbered = false, firstOpen = false } = Astro.props;
+---
+
+<div class="accordion">
+  {items.map((item, index) => (
+    <details open={firstOpen && index === 0}>
+      <summary>
+        <span>
+          {numbered && (
+            <span class="accordion__index">
+              {String(index + 1).padStart(2, '0')}
+            </span>
+          )}
+          {item.title}
+        </span>
+      </summary>
+      <div class="accordion__panel">
+        {item.points && item.points.length > 0 && (
+          <ul>
+            {item.points.map((point) => <li>{point}</li>)}
+          </ul>
+        )}
+        {item.html && <div set:html={item.html} />}
+      </div>
+    </details>
+  ))}
+</div>
