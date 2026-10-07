@@ -30,7 +30,16 @@ const jsonLd = graph(organizationSchema(), websiteSchema(), ...schemaNodes);
     <title>{meta.title}</title>
     <meta name="description" content={meta.description} />
     <link rel="canonical" href={meta.canonical} />
-    {meta.noindex && <meta name="robots" content="noindex, nofollow" />}
+    {
+      meta.noindex ? (
+        <meta name="robots" content="noindex, nofollow" />
+      ) : (
+        <meta
+          name="robots"
+          content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+        />
+      )
+    }
 
     <meta name="theme-color" content="#22A74A" />
     <meta name="format-detection" content="telephone=no" />
@@ -42,6 +51,7 @@ const jsonLd = graph(organizationSchema(), websiteSchema(), ...schemaNodes);
     <meta property="og:description" content={meta.description} />
     <meta property="og:url" content={meta.canonical} />
     <meta property="og:image" content={meta.ogImage} />
+    <meta property="og:image:alt" content={`${SITE.legalName} - ${SITE.slogan}`} />
     <meta property="og:locale" content="en_PK" />
 
     <!-- Twitter -->
@@ -58,9 +68,17 @@ const jsonLd = graph(organizationSchema(), websiteSchema(), ...schemaNodes);
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap"
     />
 
-    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="sitemap" type="application/xml" href="/sitemap-index.xml" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={`${SITE.legalName} - Articles`}
+      href="/rss.xml"
+    />
+    <link rel="manifest" href="/site.webmanifest" />
 
     <!-- Icons: rasterised from the master artwork by `npm run assets` -->
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <link rel="icon" type="image/png" sizes="320x320" href="/logo-mark.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />

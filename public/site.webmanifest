@@ -1,0 +1,16 @@
+{
+  "name": "Prime Tax & Corporate Academy",
+  "short_name": "PTCA",
+  "description": "Practical, career-focused training in taxation, sales tax, tax litigation, HR and corporate compliance from Karachi, Pakistan.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "browser",
+  "lang": "en-PK",
+  "background_color": "#ffffff",
+  "theme_color": "#22A74A",
+  "icons": [
+    { "src": "/favicon-32.png", "sizes": "32x32", "type": "image/png" },
+    { "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "/logo-mark.png", "sizes": "320x320", "type": "image/png", "purpose": "any" }
+  ]
+}

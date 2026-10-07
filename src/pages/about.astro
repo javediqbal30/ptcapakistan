@@ -6,7 +6,6 @@ import { breadcrumbSchema } from '@lib/schema';
 import Breadcrumbs from '@components/ui/Breadcrumbs.astro';
 import SectionHead from '@components/ui/SectionHead.astro';
 import MentorCard from '@components/ui/MentorCard.astro';
-import Logo from '@components/ui/Logo.astro';
 import Icon from '@components/ui/Icon.astro';
 
 const mentors = await getPublishedMentors();
@@ -142,16 +141,13 @@ const whyUs = [
             ))}
           </div>
         </div>
-        <div class="card card--centred">
-          <div style="display:inline-block">
-            <Logo size={150} />
-          </div>
-          <h3 style="margin-top:1.5rem">{SITE.slogan}</h3>
-          <p style="margin-top:0.75rem">
-            Our emblem pairs a globe &mdash; local and international taxation
-            &mdash; with three stars representing the three stages of every
-            programme: learning, practice and progress.
-          </p>
+        <div class="split__media">
+          <img
+            src="/Training_approachs.webp"
+            alt="PTCA training approach - understand, practise, apply"
+            loading="lazy"
+            decoding="async"
+          />
         </div>
       </div>
     </div>

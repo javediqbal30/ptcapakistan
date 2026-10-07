@@ -24,6 +24,9 @@ export default defineConfig({
   adapter: cloudflare({
     // Pages are static, so no image-resizing service is needed at runtime.
     imageService: 'compile',
+    // Dev only: the workerd runtime crashes on this Windows machine. The code
+    // reads process.env (see scripts/preload-env.mjs), not Cloudflare bindings.
+    platformProxy: { enabled: false },
   }),
 
   build: {
@@ -51,6 +54,16 @@ export default defineConfig({
       filter: (page) => !page.includes('/thank-you/') && !page.includes('/404'),
       changefreq: 'weekly',
       lastmod: new Date(),
+      // Hint crawlers about relative importance of page types.
+      serialize(item) {
+        const path = new URL(item.url).pathname;
+        if (path === '/') item.priority = 1.0;
+        else if (/^\/(courses|admissions|enroll)\/$/.test(path)) item.priority = 0.9;
+        else if (path.startsWith('/courses/')) item.priority = 0.9;
+        else if (/^\/(about|contact|mentors)\/$/.test(path)) item.priority = 0.7;
+        else item.priority = 0.5;
+        return item;
+      },
     }),
   ],
 
