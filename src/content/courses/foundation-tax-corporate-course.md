@@ -1,6 +1,6 @@
 ---
-title: Foundation Certification in Tax & Corporate
-shortTitle: Foundation in Tax & Corporate
+title: Foundation Certification in Tax & Corporate Course
+shortTitle: Foundation in Tax & Corporate Course
 category: Taxation
 order: 5
 summary: >-
@@ -59,7 +59,7 @@ careerPaths:
   - Accounts & Tax Officer
   - Compliance Support Officer
   - Corporate Secretariat Assistant
-certificateName: Foundation Certification in Tax & Corporate
+certificateName: Foundation Certification in Tax & Corporate Course
 mentors: []
 faqs:
   - q: Is this a beginner-friendly tax course in Pakistan?

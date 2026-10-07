@@ -489,7 +489,7 @@ Sitemap: https://ptcapakistan.pk/sitemap.xml
 - [Advanced Certificate in Taxation & Litigation](https://ptcapakistan.pk/courses/advanced-taxation-litigation-course/): 30-40 hours
 - [Certified Sales Tax Specialist](https://ptcapakistan.pk/courses/sales-tax-course-pakistan/): 3 months
 - [CHRP](https://ptcapakistan.pk/courses/chrp-hr-course-karachi/): 3 months
-- [Company Secretary & Secretarial Practices](https://ptcapakistan.pk/courses/company-secretary-course-pakistan/): 12 weeks
+- [Corporate Law and Secretarial Practices Course](https://ptcapakistan.pk/courses/company-secretary-course-pakistan/): 12 weeks
 - [Foundation Certification in Tax & Corporate](https://ptcapakistan.pk/courses/foundation-tax-corporate-course/): 48-50 hours
 - [Intellectual Property Course](https://ptcapakistan.pk/courses/intellectual-property-course-pakistan/): 3-6 months
 

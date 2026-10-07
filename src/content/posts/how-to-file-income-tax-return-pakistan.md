@@ -62,7 +62,7 @@ withholding tax rates on a range of transactions, so it is worth verifying.
 
 If your situation involves business income, audits or notices, structured
 training can help you file, respond and represent confidently. Explore PTCA's
-**[Foundation Certification in Tax & Corporate](/courses/foundation-tax-corporate-course/)**.
+**[Foundation Certification in Tax & Corporate Course](/courses/foundation-tax-corporate-course/)**.
 
 > This article is for educational purposes. Tax law changes with each Finance
 > Act; confirm current requirements with the FBR or a qualified professional.

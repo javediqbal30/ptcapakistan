@@ -1,6 +1,6 @@
 ---
-title: Advanced Certificate in Taxation & Litigation
-shortTitle: Advanced Taxation & Litigation
+title: Advanced Certificate in Taxation & Litigation Course
+shortTitle: Advanced Taxation & Litigation Course
 category: Taxation
 order: 1
 summary: >-
@@ -63,7 +63,7 @@ careerPaths:
   - Tax Practitioner
   - Appellate Support Professional
   - Corporate Tax Compliance Specialist
-certificateName: Advanced Certificate in Taxation & Litigation
+certificateName: Advanced Certificate in Taxation & Litigation Course
 mentors:
   - zohaib-akhtar
 faqs:

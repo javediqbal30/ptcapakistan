@@ -1,0 +1,247 @@
+---
+/**
+ * Interactive "mesh" background for the hero.
+ *
+ * A fixed, evenly spaced triangular mesh (nodes joined by edges) sits behind
+ * the hero. At rest it is almost invisible - a faint architectural texture.
+ * When the cursor moves over the hero, the edges, nodes and facets near it
+ * light up and ease back out as it leaves, so the structure appears to
+ * "connect" around the pointer.
+ *
+ * Colours come from the PTCA logo (laurel green + globe grey). The canvas is
+ * decorative (aria-hidden) and sits behind the hero content.
+ *
+ * Performance / accessibility:
+ *   - The mesh is static; the animation loop only runs while the cursor is
+ *     over the hero or the glow is still fading out, then it stops.
+ *   - The mesh is fainter behind the text column so copy stays easy to read.
+ *   - Touch devices and `prefers-reduced-motion` get the static mesh only.
+ */
+---
+
+<canvas class="hero-network" data-hero-network aria-hidden="true"></canvas>
+
+<style>
+  .hero-network {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    pointer-events: none;
+  }
+</style>
+
+<script>
+  const canvas = document.querySelector<HTMLCanvasElement>('[data-hero-network]');
+  const hero = canvas?.closest<HTMLElement>('.hero');
+  const ctx = canvas?.getContext('2d');
+
+  if (canvas && hero && ctx) {
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    // Logo palette.
+    const GREEN = '34, 167, 74';
+    const GREY = '95, 107, 118';
+
+    type Node = { x: number; y: number; level: number; fade: number };
+
+    let width = 0;
+    let height = 0;
+    let nodes: Node[] = [];
+    let edges: Array<[number, number]> = [];
+    let tris: Array<[number, number, number]> = [];
+    let radius = 210;
+    let raf = 0;
+    let running = false;
+    const pointer = { x: 0, y: 0, active: false };
+
+    // Deterministic jitter so the mesh looks identical on every load/resize.
+    const rng = (seed: number) => () => {
+      seed |= 0;
+      seed = (seed + 0x6d2b79f5) | 0;
+      let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+
+    const build = () => {
+      const rect = hero.getBoundingClientRect();
+      width = rect.width;
+      height = rect.height;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      const small = width < 700;
+      const cell = small ? 54 : 72;
+      const rowH = cell * 0.866;
+      radius = small ? 150 : 215;
+
+      const cols = Math.ceil(width / cell) + 3;
+      const rows = Math.ceil(height / rowH) + 3;
+      const rand = rng(7);
+      const jitter = cell * 0.16;
+
+      nodes = [];
+      for (let j = 0; j < rows; j++) {
+        for (let i = 0; i < cols; i++) {
+          const x = (i - 1) * cell + (j % 2 ? cell / 2 : 0) + (rand() - 0.5) * 2 * jitter;
+          const y = (j - 1) * rowH + (rand() - 0.5) * 2 * jitter;
+          // Fainter behind the copy (left), full strength towards the right.
+          const fade = 0.35 + 0.65 * Math.min(Math.max(x / (width * 0.75), 0), 1);
+          nodes.push({ x, y, level: 0, fade });
+        }
+      }
+
+      const at = (i: number, j: number) =>
+        i < 0 || j < 0 || i >= cols || j >= rows ? -1 : j * cols + i;
+
+      edges = [];
+      tris = [];
+      const link = (a: number, b: number) => {
+        if (a >= 0 && b >= 0) edges.push([a, b]);
+      };
+      const tri = (a: number, b: number, c: number) => {
+        if (a >= 0 && b >= 0 && c >= 0) tris.push([a, b, c]);
+      };
+
+      for (let j = 0; j < rows; j++) {
+        for (let i = 0; i < cols; i++) {
+          const a = at(i, j);
+          const b = at(i + 1, j);
+          link(a, b);
+          if (j % 2 === 0) {
+            const c = at(i, j + 1);
+            const d = at(i - 1, j + 1);
+            link(a, c);
+            link(a, d);
+            tri(a, d, c);
+            tri(a, b, c);
+          } else {
+            const e = at(i, j + 1);
+            const f = at(i + 1, j + 1);
+            link(a, e);
+            link(a, f);
+            tri(a, e, f);
+            tri(a, b, f);
+          }
+        }
+      }
+    };
+
+    /** Eases every node's glow towards its target; returns true while still animating. */
+    const update = () => {
+      let busy = false;
+      for (const n of nodes) {
+        let target = 0;
+        if (pointer.active) {
+          const d = Math.hypot(pointer.x - n.x, pointer.y - n.y);
+          if (d < radius) target = Math.pow(1 - d / radius, 1.7);
+        }
+        n.level += (target - n.level) * 0.14;
+        if (n.level < 0.003 && target === 0) n.level = 0;
+        else busy = true;
+      }
+      return busy;
+    };
+
+    const draw = () => {
+      ctx.clearRect(0, 0, width, height);
+
+      // Faint facets that fill in around the cursor.
+      for (const [a, b, c] of tris) {
+        const level = (nodes[a].level + nodes[b].level + nodes[c].level) / 3;
+        if (level < 0.04) continue;
+        ctx.fillStyle = `rgba(${GREEN}, ${level * 0.09})`;
+        ctx.beginPath();
+        ctx.moveTo(nodes[a].x, nodes[a].y);
+        ctx.lineTo(nodes[b].x, nodes[b].y);
+        ctx.lineTo(nodes[c].x, nodes[c].y);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      // Edges: barely-there at rest, green and crisp near the cursor.
+      ctx.lineWidth = 1;
+      for (const [ai, bi] of edges) {
+        const a = nodes[ai];
+        const b = nodes[bi];
+        const level = (a.level + b.level) / 2;
+        const fade = (a.fade + b.fade) / 2;
+        const alpha = 0.075 * fade + level * 0.55;
+        ctx.strokeStyle = level > 0.01 ? `rgba(${GREEN}, ${alpha})` : `rgba(${GREY}, ${alpha})`;
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.stroke();
+      }
+
+      // Nodes on top.
+      for (const n of nodes) {
+        const alpha = 0.16 * n.fade + n.level * 0.85;
+        ctx.fillStyle = n.level > 0.01 ? `rgba(${GREEN}, ${alpha})` : `rgba(${GREY}, ${alpha})`;
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, 1.4 + n.level * 2.2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    };
+
+    const loop = () => {
+      const busy = update();
+      draw();
+      if (busy || pointer.active) {
+        raf = requestAnimationFrame(loop);
+      } else {
+        running = false;
+      }
+    };
+
+    const wake = () => {
+      if (running || reduceMotion.matches) return;
+      running = true;
+      raf = requestAnimationFrame(loop);
+    };
+
+    hero.addEventListener(
+      'pointermove',
+      (event: PointerEvent) => {
+        // Touch has no hover; skip it so no glow gets stuck on the screen.
+        if (event.pointerType === 'touch' || reduceMotion.matches) return;
+        const rect = hero.getBoundingClientRect();
+        pointer.x = event.clientX - rect.left;
+        pointer.y = event.clientY - rect.top;
+        pointer.active = true;
+        wake();
+      },
+      { passive: true }
+    );
+
+    hero.addEventListener('pointerleave', () => {
+      pointer.active = false;
+      wake(); // let the glow ease out
+    });
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        cancelAnimationFrame(raf);
+        running = false;
+      } else if (pointer.active) {
+        wake();
+      }
+    });
+
+    let resizeTimer = 0;
+    new ResizeObserver(() => {
+      window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(() => {
+        build();
+        draw();
+      }, 120);
+    }).observe(hero);
+
+    build();
+    draw();
+  }
+</script>

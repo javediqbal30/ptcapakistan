@@ -491,15 +491,65 @@
 /* --- Trust strip --------------------------------------------------------- */
 
 .trust-strip {
+  position: relative;
+  overflow: hidden;
+  background: #ffffff;
   border-block: 1px solid var(--line);
-  background: var(--surface);
 }
 
 .trust-strip__grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
-  gap: var(--space-6);
-  padding-block: var(--space-7);
+  gap: var(--space-5);
+  padding-block: var(--space-8);
+}
+
+/* Each figure sits on its own card with a gold accent rule, so the strip
+   reads as a set of credentials rather than loose numbers. */
+.trust-strip .stat {
+  position: relative;
+  padding: var(--space-6) var(--space-4) var(--space-5);
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition:
+    transform var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease),
+    border-color var(--dur) var(--ease);
+}
+
+.trust-strip .stat::before {
+  content: '';
+  display: block;
+  width: 2.5rem;
+  height: 3px;
+  margin: 0 auto var(--space-4);
+  border-radius: var(--radius-pill);
+  background: linear-gradient(90deg, var(--brand-500), var(--brand-300));
+}
+
+.trust-strip .stat:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--brand-300);
+}
+
+.trust-strip .stat__value {
+  color: var(--brand-600);
+  font-weight: var(--weight-extrabold);
+  font-size: clamp(var(--fs-3xl), 3.4vw, 2.6rem);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.trust-strip .stat__label {
+  margin-top: var(--space-3);
+  color: var(--ink-soft);
+  font-size: var(--fs-xs);
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 /* --- CTA banner ---------------------------------------------------------- */

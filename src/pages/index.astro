@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
 import HeroRotator from '@components/ui/HeroRotator.astro';
+import HeroNetwork from '@components/ui/HeroNetwork.astro';
 import { SITE, whatsappLink } from '@data/site';
 import { getPublishedCourses, getPublishedMentors, getPublishedPosts, postPath, formatDate } from '@lib/content';
 import { faqSchema } from '@lib/schema';
@@ -20,7 +21,7 @@ const posts = (await getPublishedPosts()).slice(0, 3);
 const homeFaqs = [
   {
     q: 'What courses does PTCA offer in Karachi?',
-    a: 'PTCA offers six professional programmes: Advanced Certificate in Taxation & Litigation, Certified Sales Tax Specialist, Certified Human Resource Professional (CHRP), Company Secretary & Secretarial Practices, Foundation Certification in Tax & Corporate, and an Intellectual Property course.',
+    a: 'PTCA offers six professional programmes: Advanced Certificate in Taxation & Litigation Course, Certified Sales Tax Specialist Course, Certified Human Resource Professional (CHRP) Course, Corporate Law and Secretarial Practices Course, Foundation Certification in Tax & Corporate Course, and Intellectual Property Course.',
   },
   {
     q: 'Are the courses available online or only on campus?',
@@ -73,7 +74,7 @@ const careerPaths = courses.flatMap((c) => c.data.careerPaths).slice(0, 12);
 <BaseLayout
   seo={{
     title: 'PTCA | Tax & Corporate Courses in Karachi, Pakistan',
-    description: 'Practical taxation, sales tax, tax litigation, CHRP and company secretary courses in Karachi. Online, physical and hybrid. Enrol at PTCA today.',
+    description: 'Practical taxation, sales tax, tax litigation, CHRP and corporate law and secretarial practices courses in Karachi. Online, physical and hybrid. Enrol at PTCA today.',
     canonical: '/',
     bareTitle: true,
   }}
@@ -81,11 +82,11 @@ const careerPaths = courses.flatMap((c) => c.data.careerPaths).slice(0, 12);
 >
   <section class="hero">
     <div class="hero__bg" aria-hidden="true" data-parallax>
-      <span class="hero__grid-lines"></span>
       <span class="hero__orb hero__orb--1"></span>
       <span class="hero__orb hero__orb--2"></span>
       <span class="hero__orb hero__orb--3"></span>
       <span class="hero__spotlight"></span>
+      <HeroNetwork />
     </div>
 
     <div class="container hero__grid">
@@ -179,6 +180,7 @@ const careerPaths = courses.flatMap((c) => c.data.careerPaths).slice(0, 12);
         eyebrow="Professional programmes"
         title="Courses built for real practice"
         lead="Six structured programmes spanning taxation, litigation, sales tax, human resources, corporate secretarial practice and intellectual property."
+        align="center"
       />
       <div class="grid grid--3">
         {courses.map((course) => <CourseCard course={course} />)}

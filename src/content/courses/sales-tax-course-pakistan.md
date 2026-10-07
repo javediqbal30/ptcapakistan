@@ -1,6 +1,6 @@
 ---
-title: Certified Sales Tax Specialist
-shortTitle: Certified Sales Tax Specialist
+title: Certified Sales Tax Specialist Course
+shortTitle: Certified Sales Tax Specialist Course
 category: Taxation
 order: 2
 summary: >-
@@ -57,7 +57,7 @@ careerPaths:
   - Indirect Tax Specialist
   - Accounts & Tax Officer
   - Freelance Tax Consultant
-certificateName: Certified Sales Tax Specialist
+certificateName: Certified Sales Tax Specialist Course
 mentors:
   - zohaib-akhtar
 faqs:

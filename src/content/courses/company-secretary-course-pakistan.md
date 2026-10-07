@@ -1,6 +1,6 @@
 ﻿---
-title: Company Secretary & Secretarial Practices
-shortTitle: Company Secretary & Secretarial Practices
+title: Corporate Law and Secretarial Practices Course
+shortTitle: Corporate Law and Secretarial Practices Course
 category: Corporate
 order: 3
 summary: >-
@@ -61,11 +61,11 @@ careerPaths:
   - Compliance Officer
   - Governance Executive
   - Regulatory Affairs Officer
-certificateName: Company Secretary & Secretarial Practices
+certificateName: Corporate Law and Secretarial Practices Course
 mentors:
   - rukhsana-rustam-khan
 faqs:
-  - q: What does the Company Secretary course cover in Pakistan?
+  - q: What does the Corporate Law and Secretarial Practices course cover in Pakistan?
     a: Company law and secretarial practice, incorporation, post-incorporation compliance, corporate documentation, governance, meetings and minutes, and SECP filings.
   - q: How long does the course run and how many sessions per week?
     a: The programme runs up to twelve weeks with two sessions per week, offered in physical (Karachi), online and hybrid modes.
@@ -73,9 +73,9 @@ faqs:
     a: SECP, FBR, BOI, chambers, PSEB, PEC and IPO Pakistan are covered so learners understand the wider registration and compliance landscape.
   - q: Is this suitable for a law or business student?
     a: Yes. It is designed for corporate professionals, law and business students, entrepreneurs and compliance teams alike.
-  - q: Company secretary course ki fees kya hai?
+  - q: Corporate Law and Secretarial Practices course ki fees kya hai?
     a: Fees vary by intake and learning mode and are confirmed by the admissions team. Please contact admissions for current details.
-seoTitle: "Company Secretary Course Pakistan: SECP Compliance"
+seoTitle: "Corporate Law and Secretarial Practices Course Pakistan: SECP"
 seoDescription: 12-week practical course on incorporation, SECP filings, board meetings, minutes, statutory registers and corporate governance. Karachi, online and hybrid.
 updated: 2026-04-10
 ---

@@ -1,6 +1,6 @@
 ---
-title: Certified Human Resource Professional (CHRP)
-shortTitle: CHRP – Human Resource Professional
+title: Certified Human Resource Professional (CHRP) Course
+shortTitle: CHRP – Human Resource Professional Course
 category: Human Resources
 order: 4
 summary: >-
@@ -82,7 +82,7 @@ careerPaths:
   - Payroll Officer
   - HR Generalist
   - HR Business Partner
-certificateName: Certified Human Resource Professional (CHRP)
+certificateName: Certified Human Resource Professional (CHRP) Course
 mentors:
   - rukhsana-rustam-khan
 faqs:
