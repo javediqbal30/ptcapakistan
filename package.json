@@ -13,10 +13,10 @@
     "astro": "astro",
     "assets": "node scripts/generate-brand-assets.mjs",
     "db:migrate": "node scripts/db-migrate.mjs",
-    "start:prod": "node -r ./scripts/preload-env.mjs ./dist/server/entry.mjs"
+    "deploy": "astro build && wrangler deploy"
   },
   "dependencies": {
-    "@astrojs/node": "^9.5.5",
+    "@astrojs/cloudflare": "^12.6.13",
     "@astrojs/sitemap": "^3.5.0",
     "@neondatabase/serverless": "^1.2.0",
     "@portabletext/to-html": "^6.0.0",
@@ -25,7 +25,8 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
-    "typescript": "^5.9.0"
+    "typescript": "^5.9.0",
+    "wrangler": "^4.148.0"
   },
   "engines": {
     "node": ">=20.3.0"

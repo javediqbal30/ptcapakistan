@@ -1,0 +1,14 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ptcapakistan",
+  "main": "./dist/_worker.js/index.js",
+  "compatibility_date": "2025-09-01",
+  // nodejs_compat also populates `process.env` with secrets/vars, which
+  // src/lib/db.ts and src/lib/sanity.ts read.
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "binding": "ASSETS",
+    "directory": "./dist"
+  },
+  "observability": { "enabled": true }
+}

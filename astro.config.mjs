@@ -1,7 +1,7 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
-import node from '@astrojs/node';
+import cloudflare from '@astrojs/cloudflare';
 
 // Canonical production origin. Every canonical tag, sitemap entry and
 // schema URL is derived from this single value - never hard-code it elsewhere.
@@ -15,13 +15,15 @@ export default defineConfig({
   // crawlers and generative engines (GPTBot, PerplexityBot, etc.) read them
   // without executing JavaScript.
   //
-  // The Node adapter is what makes the lead API possible: every page still
-  // builds as static HTML, while only `src/pages/api/*` opt out of
-  // prerendering (see `export const prerender = false` in those routes) and
-  // run on the server, where they can write to Neon Postgres.
+  // The Cloudflare adapter is what makes the lead API possible: every page
+  // still builds as static HTML served from Cloudflare's asset layer, while
+  // only `src/pages/api/*` opt out of prerendering (see
+  // `export const prerender = false` in those routes) and run in a Worker,
+  // where they can write to Neon Postgres.
   output: 'static',
-  adapter: node({
-    mode: 'standalone',
+  adapter: cloudflare({
+    // Pages are static, so no image-resizing service is needed at runtime.
+    imageService: 'compile',
   }),
 
   build: {
@@ -37,6 +39,7 @@ export default defineConfig({
     allowedDomains: [
       { hostname: 'ptcapakistan.pk' },
       { hostname: 'www.ptcapakistan.pk' },
+      { hostname: '*.workers.dev' },
       { hostname: 'localhost' },
       { hostname: '127.0.0.1' },
     ],

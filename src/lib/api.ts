@@ -18,6 +18,9 @@ import {
 
 /** Client IP: honours the platform proxy, falls back to the raw socket. */
 function clientIp(request: Request): string | null {
+  // Cloudflare sets cf-connecting-ip to the real visitor address.
+  const cf = request.headers.get('cf-connecting-ip');
+  if (cf) return cf;
   const forwarded = request.headers.get('x-forwarded-for');
   if (forwarded) return forwarded.split(',')[0]?.trim() ?? null;
   return request.headers.get('x-real-ip');
