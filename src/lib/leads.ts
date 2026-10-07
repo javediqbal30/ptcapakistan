@@ -50,7 +50,7 @@ const clean = (value: unknown, max: number): string | null => {
 const PATTERNS = {
   name: /^[A-Za-z][A-Za-z\s.'-]{2,}$/,
   phone: /^(03\d{9}|\+923\d{9})$/,
-  email: /^[^\s@]+@[^s@]+\.[^\s@]{2,}$/,
+  email: /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/,
 } as const;
 
 export class LeadValidationError extends Error {

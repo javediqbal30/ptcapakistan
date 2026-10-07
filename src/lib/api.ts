@@ -46,7 +46,16 @@ export function createLeadHandler(source: LeadSource): APIRoute {
       ? new Response(null, { status: 303, headers: { Location: '/thank-you/' } })
       : text('Thank you.');
 
-  return async ({ request }) => {
+  return async ({ request, locals }) => {
+    // On Cloudflare, secrets live on the Worker `env`. `process.env` is normally
+    // populated from it (nodejs_compat), but copy it across explicitly so the
+    // database client works regardless of that flag/date combination.
+    const workerEnv = (locals as { runtime?: { env?: Record<string, unknown> } }).runtime?.env;
+    const workerDbUrl = workerEnv?.DATABASE_URL;
+    if (typeof workerDbUrl === 'string' && !process.env.DATABASE_URL) {
+      process.env.DATABASE_URL = workerDbUrl;
+    }
+
     if (request.method !== 'POST') {
       return text('Method not allowed', 405);
     }
