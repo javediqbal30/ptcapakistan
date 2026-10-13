@@ -1,0 +1,99 @@
+---
+/**
+ * ProvincialSalesTaxCalc.astro
+ * SRB / PRA Services Tax Calculator — Sindh 13%, Punjab 16%
+ */
+---
+
+<div class="pstc">
+  <h2 class="calc-subheading">SRB / PRA Services Tax Calculator</h2>
+  <p class="calc-lead">Calculate provincial services tax for Sindh (SRB) and Punjab (PRA).</p>
+
+  <form id="pstc-form" class="calc-form" novalidate>
+    <div class="form-row">
+      <label for="pstc-province" class="form-label">Province / Authority</label>
+      <select id="pstc-province" name="province" class="form-select">
+        <option value="sindh">Sindh — SRB (13%)</option>
+        <option value="punjab">Punjab — PRA (16%)</option>
+        <option value="kpk">KPK (15%)</option>
+        <option value="balochistan">Balochistan (15%)</option>
+        <option value="ict">Islamabad (ICT) — 15%</option>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <label for="pstc-amount" class="form-label">Service Value (PKR)</label>
+      <div class="input-wrap">
+        <span class="input-prefix">Rs.</span>
+        <input type="number" id="pstc-amount" name="amount" class="form-input" placeholder="e.g. 500,000" min="0" step="1000" required />
+      </div>
+      <span class="form-error" id="pstc-error" aria-live="polite"></span>
+    </div>
+
+    <div class="form-row">
+      <label class="form-label">Calculation Type</label>
+      <div class="toggle-group" role="group">
+        <label class="toggle-btn"><input type="radio" name="mode" value="add" checked /><span>Add Tax</span></label>
+        <label class="toggle-btn"><input type="radio" name="mode" value="remove" /><span>Extract Tax</span></label>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn--primary btn--block calc-submit">Calculate</button>
+  </form>
+
+  <div id="pstc-result" class="pstc__result" hidden aria-live="polite">
+    <div class="result-header">
+      <div class="result-badge" id="pstc-badge"></div>
+      <button type="button" class="result-reset" id="pstc-reset">↩ Recalculate</button>
+    </div>
+    <div class="result-cards">
+      <div class="result-card result-card--main">
+        <span class="result-card__label" id="pstc-main-label"></span>
+        <span class="result-card__value" id="pstc-main-value"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Tax Amount</span>
+        <span class="result-card__value" id="pstc-tax"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label" id="pstc-sub-label"></span>
+        <span class="result-card__value" id="pstc-sub-value"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const fmt = (n:number) => 'Rs. ' + Math.round(n).toLocaleString('en-PK');
+  const rates: Record<string, number> = { sindh: 0.13, punjab: 0.16, kpk: 0.15, balochistan: 0.15, ict: 0.15 };
+  const names: Record<string, string> = { sindh: 'SRB (Sindh)', punjab: 'PRA (Punjab)', kpk: 'KPK', balochistan: 'Balochistan', ict: 'ICT' };
+  const form = document.getElementById('pstc-form') as HTMLFormElement;
+  const err = document.getElementById('pstc-error')!;
+  const result = document.getElementById('pstc-result')!;
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    err.textContent = '';
+    const province = (document.getElementById('pstc-province') as HTMLSelectElement).value;
+    const amount = parseFloat((document.getElementById('pstc-amount') as HTMLInputElement).value);
+    const mode = (form.querySelector('input[name="mode"]:checked') as HTMLInputElement).value;
+    if (!amount || amount < 0) { err.textContent = 'Please enter a valid amount.'; return; }
+    const rate = rates[province] || 0.15;
+    let net, gross, tax;
+    if (mode === 'add') { net = amount; tax = amount * rate; gross = net + tax;
+      (document.getElementById('pstc-main-label')!).textContent = 'Gross (incl. Tax)';
+      (document.getElementById('pstc-main-value')!).textContent = fmt(gross);
+      (document.getElementById('pstc-sub-label')!).textContent = 'Net (excl. Tax)';
+      (document.getElementById('pstc-sub-value')!).textContent = fmt(net);
+    } else { gross = amount; net = amount / (1 + rate); tax = gross - net;
+      (document.getElementById('pstc-main-label')!).textContent = 'Net (excl. Tax)';
+      (document.getElementById('pstc-main-value')!).textContent = fmt(net);
+      (document.getElementById('pstc-sub-label')!).textContent = 'Gross (incl. Tax)';
+      (document.getElementById('pstc-sub-value')!).textContent = fmt(gross);
+    }
+    (document.getElementById('pstc-tax')!).textContent = fmt(tax);
+    (document.getElementById('pstc-badge')!).textContent = `${names[province]} — ${(rate*100).toFixed(0)}%`;
+    form.hidden = true; result.hidden = false;
+    result.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+  document.getElementById('pstc-reset')!.addEventListener('click', () => { form.reset(); form.hidden = false; result.hidden = true; });
+</script>

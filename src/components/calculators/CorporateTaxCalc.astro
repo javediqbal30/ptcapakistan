@@ -1,0 +1,82 @@
+---
+/**
+ * CorporateTaxCalc.astro
+ * Pakistan Corporate Tax Calculator — 29% standard rate on taxable profits.
+ * Includes banking sector and small company rates.
+ */
+---
+
+<div class="ctc">
+  <h2 class="calc-subheading">Corporate Tax Calculator</h2>
+  <p class="calc-lead">Calculate corporate income tax for companies, AOP and SMEs in Pakistan.</p>
+
+  <form id="ctc-form" class="calc-form" novalidate>
+    <div class="form-row">
+      <label for="ctc-profit" class="form-label">Annual Taxable Profit (PKR)</label>
+      <div class="input-wrap">
+        <span class="input-prefix">Rs.</span>
+        <input type="number" id="ctc-profit" name="profit" class="form-input" placeholder="e.g. 10,000,000" min="0" step="10000" required />
+      </div>
+      <span class="form-error" id="ctc-error" aria-live="polite"></span>
+    </div>
+
+    <div class="form-row">
+      <label for="ctc-type" class="form-label">Entity Type</label>
+      <select id="ctc-type" name="type" class="form-select">
+        <option value="company">Public/Private Limited Company (29%)</option>
+        <option value="banking">Banking Company (39%)</option>
+        <option value="small">Small Company (20%)</option>
+        <option value="aop">AOP (15%)</option>
+      </select>
+    </div>
+
+    <button type="submit" class="btn btn--primary btn--block calc-submit">Calculate Corporate Tax</button>
+  </form>
+
+  <div id="ctc-result" class="ctc__result" hidden aria-live="polite">
+    <div class="result-header">
+      <div class="result-badge" id="ctc-badge"></div>
+      <button type="button" class="result-reset" id="ctc-reset">↩ Recalculate</button>
+    </div>
+    <div class="result-cards">
+      <div class="result-card result-card--main">
+        <span class="result-card__label">Corporate Tax Payable</span>
+        <span class="result-card__value" id="ctc-tax"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Tax Rate Applied</span>
+        <span class="result-card__value" id="ctc-rate"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Net Profit After Tax</span>
+        <span class="result-card__value" id="ctc-net"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const fmt = (n:number) => 'Rs. ' + Math.round(n).toLocaleString('en-PK');
+  const rates: Record<string, number> = { company: 0.29, banking: 0.39, small: 0.20, aop: 0.15 };
+  const labels: Record<string, string> = { company: '29%', banking: '39%', small: '20%', aop: '15%' };
+  const form = document.getElementById('ctc-form') as HTMLFormElement;
+  const err = document.getElementById('ctc-error')!;
+  const result = document.getElementById('ctc-result')!;
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    err.textContent = '';
+    const profit = parseFloat((document.getElementById('ctc-profit') as HTMLInputElement).value);
+    const type = (document.getElementById('ctc-type') as HTMLSelectElement).value;
+    if (!profit || profit < 0) { err.textContent = 'Please enter a valid profit amount.'; return; }
+    const rate = rates[type] || 0.29;
+    const tax = profit * rate;
+    const net = profit - tax;
+    (document.getElementById('ctc-tax')!).textContent = fmt(tax);
+    (document.getElementById('ctc-rate')!).textContent = labels[type] || '29%';
+    (document.getElementById('ctc-net')!).textContent = fmt(net);
+    (document.getElementById('ctc-badge')!).textContent = `Corporate Tax — ${labels[type]}`;
+    form.hidden = true; result.hidden = false;
+    result.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+  document.getElementById('ctc-reset')!.addEventListener('click', () => { form.reset(); form.hidden = false; result.hidden = true; });
+</script>

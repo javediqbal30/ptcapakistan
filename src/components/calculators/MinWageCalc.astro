@@ -1,0 +1,89 @@
+---
+/**
+ * MinWageCalc.astro
+ * Pakistan Minimum Wage Compliance Checker — Province-wise 2024-25.
+ */
+---
+
+<div class="mwc">
+  <h2 class="calc-subheading">Minimum Wage Compliance Checker</h2>
+  <p class="calc-lead">Check if your salary meets the minimum wage for your province.</p>
+
+  <form id="mwc-form" class="calc-form" novalidate>
+    <div class="form-row">
+      <label for="mwc-province" class="form-label">Province</label>
+      <select id="mwc-province" name="province" class="form-select">
+        <option value="punjab">Punjab</option>
+        <option value="sindh">Sindh</option>
+        <option value="kpk">KPK</option>
+        <option value="balochistan">Balochistan</option>
+        <option value="ict">Islamabad (ICT)</option>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <label for="mwc-salary" class="form-label">Your Monthly Salary (PKR)</label>
+      <div class="input-wrap">
+        <span class="input-prefix">Rs.</span>
+        <input type="number" id="mwc-salary" name="salary" class="form-input" placeholder="e.g. 40,000" min="0" step="500" required />
+      </div>
+      <span class="form-error" id="mwc-error" aria-live="polite"></span>
+    </div>
+
+    <button type="submit" class="btn btn--primary btn--block calc-submit">Check Compliance</button>
+  </form>
+
+  <div id="mwc-result" class="mwc__result" hidden aria-live="polite">
+    <div class="result-header">
+      <div class="result-badge" id="mwc-badge"></div>
+      <button type="button" class="result-reset" id="mwc-reset">↩ Recalculate</button>
+    </div>
+    <div class="result-cards">
+      <div class="result-card result-card--main" id="mwc-status-card">
+        <span class="result-card__label">Compliance Status</span>
+        <span class="result-card__value" id="mwc-status" style="font-size:var(--fs-xl);"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Your Salary</span>
+        <span class="result-card__value" id="mwc-yours"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Minimum Wage</span>
+        <span class="result-card__value" id="mwc-min"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Difference</span>
+        <span class="result-card__value" id="mwc-diff"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const fmt = (n:number) => 'Rs. ' + Math.round(n).toLocaleString('en-PK');
+  const minWages: Record<string, number> = { punjab: 37000, sindh: 37000, kpk: 36000, balochistan: 36000, ict: 37000 };
+  const form = document.getElementById('mwc-form') as HTMLFormElement;
+  const err = document.getElementById('mwc-error')!;
+  const result = document.getElementById('mwc-result')!;
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    err.textContent = '';
+    const province = (document.getElementById('mwc-province') as HTMLSelectElement).value;
+    const salary = parseFloat((document.getElementById('mwc-salary') as HTMLInputElement).value);
+    if (!salary || salary < 0) { err.textContent = 'Please enter a valid salary.'; return; }
+    const minWage = minWages[province] || 37000;
+    const compliant = salary >= minWage;
+    const diff = salary - minWage;
+    (document.getElementById('mwc-status')!).textContent = compliant ? '✓ Compliant' : '✗ Below Minimum';
+    (document.getElementById('mwc-yours')!).textContent = fmt(salary);
+    (document.getElementById('mwc-min')!).textContent = fmt(minWage);
+    (document.getElementById('mwc-diff')!).textContent = (diff >= 0 ? '+' : '') + fmt(diff);
+    (document.getElementById('mwc-badge')!).textContent = province.toUpperCase();
+    const card = document.getElementById('mwc-status-card')!;
+    card.style.background = compliant ? 'var(--brand-50)' : '#fef2f2';
+    card.style.borderColor = compliant ? 'var(--brand-200)' : '#fca5a5';
+    form.hidden = true; result.hidden = false;
+    result.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+  document.getElementById('mwc-reset')!.addEventListener('click', () => { form.reset(); form.hidden = false; result.hidden = true; });
+</script>

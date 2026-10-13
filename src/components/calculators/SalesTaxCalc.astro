@@ -1,0 +1,96 @@
+---
+/**
+ * SalesTaxCalc.astro
+ * Pakistan Sales Tax / GST Calculator — 17% standard rate.
+ * Add or remove tax from any amount.
+ */
+---
+
+<div class="stc">
+  <h2 class="calc-subheading">Sales Tax / GST Calculator</h2>
+  <p class="calc-lead">Add or remove 17% Pakistan sales tax (GST) from any amount.</p>
+
+  <form id="stc-form" class="calc-form" novalidate>
+    <div class="form-row">
+      <label class="form-label">Calculation Type</label>
+      <div class="toggle-group" role="group">
+        <label class="toggle-btn"><input type="radio" name="mode" value="add" checked /><span>Add Tax (Net → Gross)</span></label>
+        <label class="toggle-btn"><input type="radio" name="mode" value="remove" /><span>Remove Tax (Gross → Net)</span></label>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label for="stc-amount" class="form-label">Amount (PKR)</label>
+      <div class="input-wrap">
+        <span class="input-prefix">Rs.</span>
+        <input type="number" id="stc-amount" name="amount" class="form-input" placeholder="e.g. 100,000" min="0" step="100" required />
+      </div>
+      <span class="form-error" id="stc-error" aria-live="polite"></span>
+    </div>
+
+    <div class="form-row">
+      <label for="stc-rate" class="form-label">Tax Rate <span class="form-hint">default 17% GST</span></label>
+      <div class="input-wrap input-wrap--suffix">
+        <input type="number" id="stc-rate" name="rate" class="form-input" value="17" min="0" max="100" step="0.5" />
+        <span class="input-suffix">%</span>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn--primary btn--block calc-submit">Calculate</button>
+  </form>
+
+  <div id="stc-result" class="stc__result" hidden aria-live="polite">
+    <div class="result-header">
+      <div class="result-badge" id="stc-badge"></div>
+      <button type="button" class="result-reset" id="stc-reset">↩ Recalculate</button>
+    </div>
+    <div class="result-cards">
+      <div class="result-card result-card--main">
+        <span class="result-card__label" id="stc-main-label"></span>
+        <span class="result-card__value" id="stc-main-value"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Tax Amount</span>
+        <span class="result-card__value" id="stc-tax"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label" id="stc-sub-label"></span>
+        <span class="result-card__value" id="stc-sub-value"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const fmt = (n:number) => 'Rs. ' + Math.round(n).toLocaleString('en-PK');
+  const form = document.getElementById('stc-form') as HTMLFormElement;
+  const err = document.getElementById('stc-error')!;
+  const result = document.getElementById('stc-result')!;
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    err.textContent = '';
+    const mode = (form.querySelector('input[name="mode"]:checked') as HTMLInputElement).value;
+    const amount = parseFloat((document.getElementById('stc-amount') as HTMLInputElement).value);
+    const rate = parseFloat((document.getElementById('stc-rate') as HTMLInputElement).value) || 17;
+    if (!amount || amount < 0) { err.textContent = 'Please enter a valid amount.'; return; }
+    let net, gross, tax;
+    if (mode === 'add') {
+      net = amount; tax = amount * rate / 100; gross = net + tax;
+      (document.getElementById('stc-main-label')!).textContent = 'Gross Amount (incl. Tax)';
+      (document.getElementById('stc-main-value')!).textContent = fmt(gross);
+      (document.getElementById('stc-sub-label')!).textContent = 'Net Amount ( excl. Tax)';
+      (document.getElementById('stc-sub-value')!).textContent = fmt(net);
+    } else {
+      gross = amount; net = amount / (1 + rate / 100); tax = gross - net;
+      (document.getElementById('stc-main-label')!).textContent = 'Net Amount (excl. Tax)';
+      (document.getElementById('stc-main-value')!).textContent = fmt(net);
+      (document.getElementById('stc-sub-label')!).textContent = 'Gross Amount (incl. Tax)';
+      (document.getElementById('stc-sub-value')!).textContent = fmt(gross);
+    }
+    (document.getElementById('stc-tax')!).textContent = fmt(tax);
+    (document.getElementById('stc-badge')!).textContent = `${rate}% Sales Tax`;
+    form.hidden = true; result.hidden = false;
+    result.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+  document.getElementById('stc-reset')!.addEventListener('click', () => { form.reset(); form.hidden = false; result.hidden = true; });
+</script>

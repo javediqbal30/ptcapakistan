@@ -458,18 +458,19 @@ const careerPaths = courses.flatMap((c) => c.data.careerPaths).slice(0, 12);
             <div
               class="corporate-program-icon"
               style="
-                width: 48px;
-                height: 48px;
+                width: 52px;
+                height: 52px;
                 border-radius: var(--radius-md);
-                background: var(--surface-muted);
+                background: var(--brand-50, #eaf7ef);
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 margin-bottom: var(--space-3);
                 flex-shrink: 0;
+                color: var(--brand-500, #22a74a);
               "
             >
-              <Icon name={program.icon} size="24" style="color: var(--brand-900);" />
+              <Icon name={program.icon} size="28" strokeWidth={2} />
             </div>
 
             <h3 style="font-weight: 600; margin-bottom: var(--space-1);">

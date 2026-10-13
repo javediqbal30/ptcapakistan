@@ -1,0 +1,111 @@
+---
+/**
+ * EmployeeCostCalc.astro
+ * Total Employee Cost Calculator — Salary + all statutory contributions.
+ */
+---
+
+<div class="ecc">
+  <h2 class="calc-subheading">Total Employee Cost Calculator</h2>
+  <p class="calc-lead">Calculate the true annual and monthly cost of an employee.</p>
+
+  <form id="ecc-form" class="calc-form" novalidate>
+    <div class="form-row">
+      <label for="ecc-gross" class="form-label">Monthly Gross Salary (PKR)</label>
+      <div class="input-wrap">
+        <span class="input-prefix">Rs.</span>
+        <input type="number" id="ecc-gross" name="gross" class="form-input" placeholder="e.g. 100,000" min="0" step="1000" required />
+      </div>
+      <span class="form-error" id="ecc-error" aria-live="polite"></span>
+    </div>
+
+    <div class="form-row">
+      <label for="ecc-basic" class="form-label">Monthly Basic Salary (PKR) <span class="form-hint">for PF calculation</span></label>
+      <div class="input-wrap">
+        <span class="input-prefix">Rs.</span>
+        <input type="number" id="ecc-basic" name="basic" class="form-input" placeholder="e.g. 60,000" min="0" step="1000" />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label class="form-label">Statutory Contributions</label>
+      <div class="toggle-group" role="group" style="flex-wrap:wrap;">
+        <label class="toggle-btn"><input type="checkbox" id="ecc-eobi" checked /><span>EOBI</span></label>
+        <label class="toggle-btn"><input type="checkbox" id="ecc-essi" checked /><span>ESSI</span></label>
+        <label class="toggle-btn"><input type="checkbox" id="ecc-pf" checked /><span>Provident Fund</span></label>
+        <label class="toggle-btn"><input type="checkbox" id="ecc-gratuity" checked /><span>Gratuity</span></label>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn--primary btn--block calc-submit">Calculate Employee Cost</button>
+  </form>
+
+  <div id="ecc-result" class="ecc__result" hidden aria-live="polite">
+    <div class="result-header">
+      <div class="result-badge">Total CTC</div>
+      <button type="button" class="result-reset" id="ecc-reset">↩ Recalculate</button>
+    </div>
+    <div class="result-cards">
+      <div class="result-card result-card--main">
+        <span class="result-card__label">Total Monthly Cost to Employer</span>
+        <span class="result-card__value" id="ecc-monthly-total"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Annual Cost</span>
+        <span class="result-card__value" id="ecc-annual"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Gross Salary</span>
+        <span class="result-card__value" id="ecc-gross-val"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Statutory Contributions</span>
+        <span class="result-card__value" id="ecc-contributions"></span>
+      </div>
+    </div>
+    <h3 class="calc-section-heading">Breakdown</h3>
+    <table class="calc-table" id="ecc-breakdown">
+      <thead><tr><th>Component</th><th>Monthly (PKR)</th><th>Annual (PKR)</th></tr></thead>
+      <tbody id="ecc-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  const fmt = (n:number) => 'Rs. ' + Math.round(n).toLocaleString('en-PK');
+  const MIN_WAGE = 37000;
+  const form = document.getElementById('ecc-form') as HTMLFormElement;
+  const err = document.getElementById('ecc-error')!;
+  const result = document.getElementById('ecc-result')!;
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    err.textContent = '';
+    const gross = parseFloat((document.getElementById('ecc-gross') as HTMLInputElement).value);
+    const basic = parseFloat((document.getElementById('ecc-basic') as HTMLInputElement).value) || gross * 0.6;
+    if (!gross || gross < 0) { err.textContent = 'Please enter a valid salary.'; return; }
+    const rows: {label:string; monthly:number}[] = [{label:'Gross Salary', monthly:gross}];
+    let contributions = 0;
+    if ((document.getElementById('ecc-eobi') as HTMLInputElement).checked) {
+      const eobi = MIN_WAGE * 0.05; rows.push({label:'EOBI (Employer 5%)', monthly:eobi}); contributions += eobi;
+    }
+    if ((document.getElementById('ecc-essi') as HTMLInputElement).checked) {
+      const essi = gross * 0.06; rows.push({label:'ESSI (Employer 6%)', monthly:essi}); contributions += essi;
+    }
+    if ((document.getElementById('ecc-pf') as HTMLInputElement).checked) {
+      const pf = basic * 0.0833; rows.push({label:'Provident Fund (8.33%)', monthly:pf}); contributions += pf;
+    }
+    if ((document.getElementById('ecc-gratuity') as HTMLInputElement).checked) {
+      const grat = (gross / 26) * 30 / 12; rows.push({label:'Gratuity (1/12 per year)', monthly:grat}); contributions += grat;
+    }
+    const total = gross + contributions;
+    (document.getElementById('ecc-monthly-total')!).textContent = fmt(total);
+    (document.getElementById('ecc-annual')!).textContent = fmt(total * 12);
+    (document.getElementById('ecc-gross-val')!).textContent = fmt(gross);
+    (document.getElementById('ecc-contributions')!).textContent = fmt(contributions);
+    const body = document.getElementById('ecc-body')!;
+    body.innerHTML = rows.map(r => `<tr><td>${r.label}</td><td>${fmt(r.monthly)}</td><td>${fmt(r.monthly*12)}</td></tr>`).join('') + `<tr class="row--active"><td><strong>Total</strong></td><td><strong>${fmt(total)}</strong></td><td><strong>${fmt(total*12)}</strong></td></tr>`;
+    form.hidden = true; result.hidden = false;
+    result.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+  document.getElementById('ecc-reset')!.addEventListener('click', () => { form.reset(); form.hidden = false; result.hidden = true; });
+</script>

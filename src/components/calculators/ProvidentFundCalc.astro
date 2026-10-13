@@ -1,0 +1,100 @@
+---
+/**
+ * ProvidentFundCalc.astro
+ * Pakistan Provident Fund Calculator — 8.33%-10% of basic salary monthly.
+ */
+---
+
+<div class="pfc">
+  <h2 class="calc-subheading">Provident Fund Calculator</h2>
+  <p class="calc-lead">Calculate monthly provident fund contributions and total accumulation.</p>
+
+  <form id="pfc-form" class="calc-form" novalidate>
+    <div class="form-row">
+      <label for="pfc-basic" class="form-label">Monthly Basic Salary (PKR)</label>
+      <div class="input-wrap">
+        <span class="input-prefix">Rs.</span>
+        <input type="number" id="pfc-basic" name="basic" class="form-input" placeholder="e.g. 80,000" min="0" step="1000" required />
+      </div>
+      <span class="form-error" id="pfc-error" aria-live="polite"></span>
+    </div>
+
+    <div class="form-row">
+      <label for="pfc-rate" class="form-label">Contribution Rate <span class="form-hint">employer + employee each</span></label>
+      <div class="input-wrap input-wrap--suffix">
+        <input type="number" id="pfc-rate" name="rate" class="form-input" value="8.33" min="0" max="20" step="0.01" />
+        <span class="input-suffix">%</span>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label for="pfc-years" class="form-label">Years of Service</label>
+      <input type="number" id="pfc-years" name="years" class="form-input" value="10" min="1" max="40" step="1" required />
+    </div>
+
+    <div class="form-row">
+      <label for="pfc-interest" class="form-label">Annual Interest Rate <span class="form-hint">default 12%</span></label>
+      <div class="input-wrap input-wrap--suffix">
+        <input type="number" id="pfc-interest" name="interest" class="form-input" value="12" min="0" max="30" step="0.5" />
+        <span class="input-suffix">%</span>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn--primary btn--block calc-submit">Calculate Provident Fund</button>
+  </form>
+
+  <div id="pfc-result" class="pfc__result" hidden aria-live="polite">
+    <div class="result-header">
+      <div class="result-badge">Provident Fund</div>
+      <button type="button" class="result-reset" id="pfc-reset">↩ Recalculate</button>
+    </div>
+    <div class="result-cards">
+      <div class="result-card result-card--main">
+        <span class="result-card__label">Total Accumulated Fund</span>
+        <span class="result-card__value" id="pfc-total"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Monthly Contribution (both)</span>
+        <span class="result-card__value" id="pfc-monthly"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Total Contributed</span>
+        <span class="result-card__value" id="pfc-contributed"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Interest Earned</span>
+        <span class="result-card__value" id="pfc-interest-val"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const fmt = (n:number) => 'Rs. ' + Math.round(n).toLocaleString('en-PK');
+  const form = document.getElementById('pfc-form') as HTMLFormElement;
+  const err = document.getElementById('pfc-error')!;
+  const result = document.getElementById('pfc-result')!;
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    err.textContent = '';
+    const basic = parseFloat((document.getElementById('pfc-basic') as HTMLInputElement).value);
+    const rate = parseFloat((document.getElementById('pfc-rate') as HTMLInputElement).value) || 8.33;
+    const years = parseInt((document.getElementById('pfc-years') as HTMLInputElement).value) || 1;
+    const interest = parseFloat((document.getElementById('pfc-interest') as HTMLInputElement).value) || 12;
+    if (!basic || basic < 0) { err.textContent = 'Please enter a valid basic salary.'; return; }
+    const monthlyContribution = basic * (rate / 100) * 2; // employer + employee
+    const monthlyInterest = interest / 100 / 12;
+    // Future value of annuity
+    const months = years * 12;
+    const fv = monthlyContribution * ((Math.pow(1 + monthlyInterest, months) - 1) / monthlyInterest);
+    const totalContributed = monthlyContribution * months;
+    const interestEarned = fv - totalContributed;
+    (document.getElementById('pfc-total')!).textContent = fmt(fv);
+    (document.getElementById('pfc-monthly')!).textContent = fmt(monthlyContribution);
+    (document.getElementById('pfc-contributed')!).textContent = fmt(totalContributed);
+    (document.getElementById('pfc-interest-val')!).textContent = fmt(interestEarned);
+    form.hidden = true; result.hidden = false;
+    result.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+  document.getElementById('pfc-reset')!.addEventListener('click', () => { form.reset(); form.hidden = false; result.hidden = true; });
+</script>

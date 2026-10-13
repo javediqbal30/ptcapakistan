@@ -1,0 +1,139 @@
+---
+/**
+ * CapitalGainsCalc.astro
+ * Pakistan Capital Gains Tax (CGT) Calculator
+ * CGT on securities and property — filer/non-filer rates with holding period.
+ */
+---
+
+<div class="cgt">
+  <h2 class="calc-subheading">Capital Gains Tax Calculator</h2>
+  <p class="calc-lead">Calculate CGT on shares, property and other assets in Pakistan.</p>
+
+  <form id="cgt-form" class="calc-form" novalidate>
+    <div class="form-row">
+      <label for="cgt-type" class="form-label">Asset Type</label>
+      <select id="cgt-type" name="type" class="form-select">
+        <option value="securities">Securities (Shares)</option>
+        <option value="property">Immovable Property</option>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <label for="cgt-purchase" class="form-label">Purchase Price (PKR)</label>
+      <div class="input-wrap">
+        <span class="input-prefix">Rs.</span>
+        <input type="number" id="cgt-purchase" name="purchase" class="form-input" placeholder="e.g. 1,000,000" min="0" step="1000" required />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label for="cgt-sale" class="form-label">Sale Price (PKR)</label>
+      <div class="input-wrap">
+        <span class="input-prefix">Rs.</span>
+        <input type="number" id="cgt-sale" name="sale" class="form-input" placeholder="e.g. 2,000,000" min="0" step="1000" required />
+      </div>
+      <span class="form-error" id="cgt-error" aria-live="polite"></span>
+    </div>
+
+    <div class="form-row">
+      <label for="cgt-holding" class="form-label">Holding Period (years)</label>
+      <input type="number" id="cgt-holding" name="holding" class="form-input" placeholder="e.g. 2" min="0" step="1" required />
+    </div>
+
+    <div class="form-row">
+      <label class="form-label">Filer Status</label>
+      <div class="toggle-group" role="group">
+        <label class="toggle-btn"><input type="radio" name="filer" value="filer" checked /><span>Filer</span></label>
+        <label class="toggle-btn"><input type="radio" name="filer" value="nonfiler" /><span>Non-Filer</span></label>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn--primary btn--block calc-submit">Calculate CGT</button>
+  </form>
+
+  <div id="cgt-result" class="cgt__result" hidden aria-live="polite">
+    <div class="result-header">
+      <div class="result-badge" id="cgt-badge"></div>
+      <button type="button" class="result-reset" id="cgt-reset">↩ Recalculate</button>
+    </div>
+    <div class="result-cards">
+      <div class="result-card result-card--main">
+        <span class="result-card__label">Capital Gains Tax Payable</span>
+        <span class="result-card__value" id="cgt-tax"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Capital Gain</span>
+        <span class="result-card__value" id="cgt-gain"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Tax Rate Applied</span>
+        <span class="result-card__value" id="cgt-rate"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Net Gain After Tax</span>
+        <span class="result-card__value" id="cgt-net"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const fmt = (n:number) => 'Rs. ' + Math.round(n).toLocaleString('en-PK');
+  const form = document.getElementById('cgt-form') as HTMLFormElement;
+  const err = document.getElementById('cgt-error')!;
+  const result = document.getElementById('cgt-result')!;
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    err.textContent = '';
+    const type = (document.getElementById('cgt-type') as HTMLSelectElement).value;
+    const purchase = parseFloat((document.getElementById('cgt-purchase') as HTMLInputElement).value);
+    const sale = parseFloat((document.getElementById('cgt-sale') as HTMLInputElement).value);
+    const holding = parseFloat((document.getElementById('cgt-holding') as HTMLInputElement).value);
+    const filer = (form.querySelector('input[name="filer"]:checked') as HTMLInputElement).value;
+    if (!purchase || !sale || sale < purchase) { err.textContent = 'Sale price must be greater than purchase price.'; return; }
+    const gain = sale - purchase;
+    let rate = 0;
+    if (type === 'securities') {
+      // Securities: filer rates based on holding period
+      if (filer === 'filer') {
+        if (holding <= 1) rate = 0.15;
+        else if (holding <= 2) rate = 0.125;
+        else if (holding <= 3) rate = 0.10;
+        else if (holding <= 5) rate = 0.075;
+        else rate = 0;
+      } else {
+        if (holding <= 1) rate = 0.225;
+        else if (holding <= 2) rate = 0.1875;
+        else if (holding <= 3) rate = 0.15;
+        else if (holding <= 5) rate = 0.1125;
+        else rate = 0;
+      }
+    } else {
+      // Property: filer rates based on holding period
+      if (filer === 'filer') {
+        if (holding <= 1) rate = 0.15;
+        else if (holding <= 2) rate = 0.10;
+        else if (holding <= 3) rate = 0.075;
+        else if (holding <= 5) rate = 0.05;
+        else rate = 0;
+      } else {
+        if (holding <= 1) rate = 0.225;
+        else if (holding <= 2) rate = 0.15;
+        else if (holding <= 3) rate = 0.1125;
+        else if (holding <= 5) rate = 0.075;
+        else rate = 0;
+      }
+    }
+    const tax = gain * rate;
+    const net = gain - tax;
+    (document.getElementById('cgt-tax')!).textContent = fmt(tax);
+    (document.getElementById('cgt-gain')!).textContent = fmt(gain);
+    (document.getElementById('cgt-rate')!).textContent = (rate * 100).toFixed(1) + '%';
+    (document.getElementById('cgt-net')!).textContent = fmt(net);
+    (document.getElementById('cgt-badge')!).textContent = `${type === 'securities' ? 'Securities' : 'Property'} — ${filer === 'filer' ? 'Filer' : 'Non-Filer'}`;
+    form.hidden = true; result.hidden = false;
+    result.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+  document.getElementById('cgt-reset')!.addEventListener('click', () => { form.reset(); form.hidden = false; result.hidden = true; });
+</script>

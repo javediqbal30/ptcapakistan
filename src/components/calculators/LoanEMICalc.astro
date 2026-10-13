@@ -1,0 +1,102 @@
+---
+/**
+ * LoanEMICalc.astro
+ * Loan EMI Calculator — Monthly installment formula.
+ * EMI = P × r × (1+r)^n / ((1+r)^n - 1)
+ */
+---
+
+<div class="lec2">
+  <h2 class="calc-subheading">Loan EMI Calculator</h2>
+  <p class="calc-lead">Calculate your monthly loan installment for any amount.</p>
+
+  <form id="lec2-form" class="calc-form" novalidate>
+    <div class="form-row">
+      <label for="lec2-principal" class="form-label">Loan Amount (PKR)</label>
+      <div class="input-wrap">
+        <span class="input-prefix">Rs.</span>
+        <input type="number" id="lec2-principal" name="principal" class="form-input" placeholder="e.g. 2,000,000" min="0" step="10000" required />
+      </div>
+      <span class="form-error" id="lec2-error" aria-live="polite"></span>
+    </div>
+
+    <div class="form-row">
+      <label for="lec2-rate" class="form-label">Annual Interest Rate</label>
+      <div class="input-wrap input-wrap--suffix">
+        <input type="number" id="lec2-rate" name="rate" class="form-input" value="18" min="0" max="50" step="0.1" />
+        <span class="input-suffix">%</span>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label for="lec2-tenure" class="form-label">Loan Tenure (months)</label>
+      <input type="number" id="lec2-tenure" name="tenure" class="form-input" value="60" min="1" max="360" step="1" required />
+    </div>
+
+    <button type="submit" class="btn btn--primary btn--block calc-submit">Calculate EMI</button>
+  </form>
+
+  <div id="lec2-result" class="lec2__result" hidden aria-live="polite">
+    <div class="result-header">
+      <div class="result-badge">Loan EMI</div>
+      <button type="button" class="result-reset" id="lec2-reset">↩ Recalculate</button>
+    </div>
+    <div class="result-cards">
+      <div class="result-card result-card--main">
+        <span class="result-card__label">Monthly Installment (EMI)</span>
+        <span class="result-card__value" id="lec2-emi"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Total Interest</span>
+        <span class="result-card__value" id="lec2-interest"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Total Payable</span>
+        <span class="result-card__value" id="lec2-total"></span>
+      </div>
+    </div>
+    <h3 class="calc-section-heading">Amortization Schedule (first 12 months)</h3>
+    <table class="calc-table" id="lec2-schedule">
+      <thead><tr><th>Month</th><th>EMI (PKR)</th><th>Interest (PKR)</th><th>Principal (PKR)</th><th>Balance (PKR)</th></tr></thead>
+      <tbody id="lec2-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  const fmt = (n:number) => 'Rs. ' + Math.round(n).toLocaleString('en-PK');
+  const form = document.getElementById('lec2-form') as HTMLFormElement;
+  const err = document.getElementById('lec2-error')!;
+  const result = document.getElementById('lec2-result')!;
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    err.textContent = '';
+    const principal = parseFloat((document.getElementById('lec2-principal') as HTMLInputElement).value);
+    const annualRate = parseFloat((document.getElementById('lec2-rate') as HTMLInputElement).value) || 0;
+    const tenure = parseInt((document.getElementById('lec2-tenure') as HTMLInputElement).value) || 1;
+    if (!principal || principal < 0) { err.textContent = 'Please enter a valid loan amount.'; return; }
+    const monthlyRate = annualRate / 100 / 12;
+    let emi: number;
+    if (monthlyRate === 0) { emi = principal / tenure; }
+    else { emi = principal * monthlyRate * Math.pow(1 + monthlyRate, tenure) / (Math.pow(1 + monthlyRate, tenure) - 1); }
+    const totalPayable = emi * tenure;
+    const totalInterest = totalPayable - principal;
+    (document.getElementById('lec2-emi')!).textContent = fmt(emi);
+    (document.getElementById('lec2-interest')!).textContent = fmt(totalInterest);
+    (document.getElementById('lec2-total')!).textContent = fmt(totalPayable);
+    // Amortization schedule (first 12 months)
+    let balance = principal;
+    const rows: string[] = [];
+    const maxRows = Math.min(12, tenure);
+    for (let m = 1; m <= maxRows; m++) {
+      const interest = balance * monthlyRate;
+      const principalPart = emi - interest;
+      balance -= principalPart;
+      rows.push(`<tr><td>${m}</td><td>${fmt(emi)}</td><td>${fmt(interest)}</td><td>${fmt(principalPart)}</td><td>${fmt(Math.max(0,balance))}</td></tr>`);
+    }
+    document.getElementById('lec2-body')!.innerHTML = rows.join('');
+    form.hidden = true; result.hidden = false;
+    result.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+  document.getElementById('lec2-reset')!.addEventListener('click', () => { form.reset(); form.hidden = false; result.hidden = true; });
+</script>

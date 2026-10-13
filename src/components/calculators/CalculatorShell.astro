@@ -1,0 +1,313 @@
+---
+/**
+ * CalculatorShell.astro
+ * Shared layout wrapper for every individual calculator page.
+ * Renders: breadcrumb, hero heading, the calculator widget slot,
+ * SEO content section, related calculators and a course CTA.
+ */
+import Icon from '@components/ui/Icon.astro';
+import type { Calculator } from '@data/calculators';
+import { CALCULATORS } from '@data/calculators';
+
+interface Props {
+  calc: Calculator;
+  /** Related calculator slugs to show at bottom */
+  related?: string[];
+}
+
+const { calc, related = [] } = Astro.props;
+
+const categoryLabels: Record<string, string> = {
+  'taxation':   'Taxation',
+  'hr-payroll': 'HR & Payroll',
+  'corporate':  'Corporate & Legal',
+  'finance':    'General Finance',
+};
+
+const relatedCalcs = related
+  .map((slug) => CALCULATORS.find((c) => c.slug === slug))
+  .filter(Boolean) as Calculator[];
+
+const courseCtaMap: Record<string, { label: string; href: string }> = {
+  'taxation':   { label: 'Learn Taxation & Tax Compliance', href: '/courses/advanced-taxation-litigation-course/' },
+  'hr-payroll': { label: 'Learn HR Management (CHRP)',      href: '/courses/chrp-hr-course-karachi/'             },
+  'corporate':  { label: 'Learn Corporate Law & Secretarial', href: '/courses/company-secretary-course-pakistan/' },
+  'finance':    { label: 'Explore Our Courses',             href: '/courses/'                                     },
+};
+const courseCta = courseCtaMap[calc.category] ?? courseCtaMap['finance'];
+---
+
+<!-- Breadcrumb -->
+<nav class="breadcrumb-nav" aria-label="Breadcrumb">
+  <div class="container">
+    <ol class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
+      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a href="/" itemprop="item"><span itemprop="name">Home</span></a>
+        <meta itemprop="position" content="1" />
+      </li>
+      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a href="/calculators/" itemprop="item"><span itemprop="name">Calculators</span></a>
+        <meta itemprop="position" content="2" />
+      </li>
+      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <span itemprop="name">{calc.label}</span>
+        <meta itemprop="position" content="3" />
+      </li>
+    </ol>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="calc-hero">
+  <div class="container calc-hero__inner">
+    <div class="calc-hero__badge">
+      <Icon name={calc.icon as any} size={18} />
+      {categoryLabels[calc.category]}
+    </div>
+    <h1 class="calc-hero__title">{calc.label}</h1>
+    <p class="calc-hero__lead">{calc.summary}</p>
+  </div>
+</section>
+
+<!-- Calculator Widget -->
+<section class="section calc-section">
+  <div class="container">
+    <div class="calc-grid">
+      <!-- The actual calculator component goes here -->
+      <div class="calc-widget">
+        <slot />
+      </div>
+
+      <!-- Sidebar -->
+      <aside class="calc-sidebar">
+        <div class="calc-sidebar__card">
+          <h3>Need Professional Help?</h3>
+          <p>Our qualified mentors can help you apply these calculations to real-world scenarios.</p>
+          <a href={courseCta.href} class="btn btn--primary btn--sm" style="width:100%;justify-content:center;margin-top:var(--space-3);">
+            {courseCta.label}
+            <Icon name="arrow-right" size={14} />
+          </a>
+          <a href="/corporate-training/" class="btn btn--ghost btn--sm" style="width:100%;justify-content:center;margin-top:var(--space-2);">
+            Corporate Training
+            <Icon name="arrow-right" size={14} />
+          </a>
+        </div>
+
+        <div class="calc-sidebar__card" style="margin-top:var(--space-4);">
+          <h3>Disclaimer</h3>
+          <p style="font-size:var(--fs-sm);color:var(--muted);line-height:1.6;">
+            This calculator is for educational purposes only. Results are estimates based on FBR official data. Consult a qualified tax professional for formal advice.
+          </p>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- SEO Content (injected by each calculator page) -->
+<slot name="content" />
+
+<!-- Related Calculators -->
+{relatedCalcs.length > 0 && (
+  <section class="section" style="background:var(--surface-soft);padding-block:var(--space-8);">
+    <div class="container">
+      <h2 style="font-size:var(--fs-xl);font-weight:700;margin-bottom:var(--space-5);text-align:center;">
+        Related Calculators
+      </h2>
+      <div class="related-calcs">
+        {relatedCalcs.map((rc) => (
+          <a href={`/calculators/${rc.slug}/`} class="related-calc-card">
+            <div class="related-calc-card__icon">
+              <Icon name={rc.icon as any} size={22} />
+            </div>
+            <div>
+              <strong>{rc.label}</strong>
+              <span>{rc.summary}</span>
+            </div>
+            <Icon name="arrow-right" size={16} />
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
+
+<style>
+  /* ── Breadcrumb ─────────────────────────────────────────────────── */
+  .breadcrumb-nav {
+    background: var(--surface-soft);
+    border-bottom: 1px solid var(--line);
+    padding: var(--space-2) 0;
+  }
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: var(--fs-sm);
+    color: var(--muted);
+  }
+  .breadcrumb li + li::before {
+    content: '/';
+    color: var(--line-strong);
+  }
+  .breadcrumb a { color: var(--muted); text-decoration: none; }
+  .breadcrumb a:hover { color: var(--brand-600); }
+
+  /* ── Hero ───────────────────────────────────────────────────────── */
+  .calc-hero {
+    background: linear-gradient(135deg, var(--brand-900) 0%, var(--brand-700) 100%);
+    color: #fff;
+    padding: var(--space-8) 0 var(--space-7);
+    overflow: hidden;
+    position: relative;
+  }
+  .calc-hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(255,255,255,.08) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .calc-hero__inner { max-width: 760px; text-align: left; position: relative; z-index: 1; }
+  .calc-hero__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.25);
+    border-radius: var(--radius-pill);
+    padding: var(--space-1) var(--space-3);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    letter-spacing: .04em;
+    margin-bottom: var(--space-4);
+  }
+  .calc-hero__title {
+    font-size: var(--fs-3xl);
+    font-weight: 800;
+    line-height: var(--lh-tight);
+    margin: 0 0 var(--space-3);
+    color: #fff;
+    word-wrap: break-word;
+  }
+  .calc-hero__lead {
+    font-size: var(--fs-lg);
+    opacity: .9;
+    margin: 0;
+    line-height: var(--lh-base);
+  }
+
+  /* Mobile hero */
+  @media (max-width: 640px) {
+    .calc-hero {
+      padding: var(--space-6) 0 var(--space-6);
+    }
+    .calc-hero__title {
+      font-size: var(--fs-2xl);
+    }
+    .calc-hero__lead {
+      font-size: var(--fs-base);
+    }
+    .calc-hero__badge {
+      font-size: var(--fs-xs);
+      padding: var(--space-1) var(--space-2);
+    }
+  }
+
+  /* ── Calculator Grid ────────────────────────────────────────────── */
+  .calc-section { padding-block: var(--space-8); }
+  .calc-grid {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: var(--space-7);
+    align-items: start;
+  }
+  @media (max-width: 860px) {
+    .calc-grid { grid-template-columns: 1fr; }
+    .calc-sidebar { order: -1; }
+  }
+
+  /* ── Widget Box ─────────────────────────────────────────────────── */
+  .calc-widget {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: var(--space-7);
+  }
+  @media (max-width: 600px) {
+    .calc-widget { padding: var(--space-5); }
+  }
+
+  /* ── Sidebar ────────────────────────────────────────────────────── */
+  .calc-sidebar__card {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: var(--space-5);
+  }
+  .calc-sidebar__card h3 {
+    font-size: var(--fs-base);
+    font-weight: 700;
+    margin: 0 0 var(--space-2);
+  }
+  .calc-sidebar__card p {
+    font-size: var(--fs-sm);
+    color: var(--muted);
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  /* ── Related ────────────────────────────────────────────────────── */
+  .related-calcs {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-3);
+  }
+  .related-calc-card {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+    text-decoration: none;
+    color: inherit;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow var(--dur-fast), transform var(--dur-fast);
+  }
+  .related-calc-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+  .related-calc-card__icon {
+    width: 44px; height: 44px;
+    border-radius: var(--radius-md);
+    background: var(--brand-50);
+    color: var(--brand-600);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .related-calc-card div { flex: 1; min-width: 0; }
+  .related-calc-card strong {
+    display: block;
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+  .related-calc-card span {
+    font-size: var(--fs-xs);
+    color: var(--muted);
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .related-calc-card > svg { color: var(--muted); flex-shrink: 0; }
+</style>

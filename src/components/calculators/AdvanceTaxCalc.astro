@@ -1,0 +1,96 @@
+---
+/**
+ * AdvanceTaxCalc.astro
+ * Pakistan Advance Tax Calculator — Section 147, Income Tax Ordinance 2001
+ * Quarterly advance tax for business owners, AOP and companies.
+ */
+---
+
+<div class="atc">
+  <h2 class="calc-subheading">Advance Tax Calculator</h2>
+  <p class="calc-lead">Section 147 — Estimate quarterly advance tax for businesses and AOPs.</p>
+
+  <form id="atc-form" class="calc-form" novalidate>
+    <div class="form-row">
+      <label for="atc-income" class="form-label">Estimated Annual Taxable Income (PKR)</label>
+      <div class="input-wrap">
+        <span class="input-prefix">Rs.</span>
+        <input type="number" id="atc-income" name="income" class="form-input" placeholder="e.g. 5,000,000" min="0" step="10000" required />
+      </div>
+      <span class="form-error" id="atc-error" aria-live="polite"></span>
+    </div>
+
+    <div class="form-row">
+      <label for="atc-type" class="form-label">Taxpayer Type</label>
+      <select id="atc-type" name="type" class="form-select">
+        <option value="aop">AOP (Association of Persons)</option>
+        <option value="company">Company</option>
+        <option value="individual">Individual / Business</option>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <label for="atc-paid" class="form-label">Tax Already Paid / Withheld <span class="form-hint">(optional)</span></label>
+      <div class="input-wrap">
+        <span class="input-prefix">Rs.</span>
+        <input type="number" id="atc-paid" name="paid" class="form-input" placeholder="e.g. 200,000" min="0" step="1000" />
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn--primary btn--block calc-submit">Calculate Advance Tax</button>
+  </form>
+
+  <div id="atc-result" class="atc__result" hidden aria-live="polite">
+    <div class="result-header">
+      <div class="result-badge">Section 147</div>
+      <button type="button" class="result-reset" id="atc-reset">↩ Recalculate</button>
+    </div>
+    <div class="result-cards">
+      <div class="result-card result-card--main">
+        <span class="result-card__label">Quarterly Advance Tax</span>
+        <span class="result-card__value" id="atc-quarterly"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Annual Tax Liability</span>
+        <span class="result-card__value" id="atc-annual"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Remaining After Withholding</span>
+        <span class="result-card__value" id="atc-remaining"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Effective Rate</span>
+        <span class="result-card__value" id="atc-rate"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const fmt = (n:number) => 'Rs. ' + Math.round(n).toLocaleString('en-PK');
+  // Simplified tax rates by taxpayer type
+  const rates: Record<string, number> = { aop: 0.15, company: 0.29, individual: 0.15 };
+  const form = document.getElementById('atc-form') as HTMLFormElement;
+  const err = document.getElementById('atc-error')!;
+  const result = document.getElementById('atc-result')!;
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    err.textContent = '';
+    const income = parseFloat((document.getElementById('atc-income') as HTMLInputElement).value);
+    const type = (document.getElementById('atc-type') as HTMLSelectElement).value;
+    const paid = parseFloat((document.getElementById('atc-paid') as HTMLInputElement).value) || 0;
+    if (!income || income < 0) { err.textContent = 'Please enter a valid income.'; return; }
+    const rate = rates[type] || 0.15;
+    const annualTax = income * rate;
+    const remaining = Math.max(0, annualTax - paid);
+    const quarterly = remaining / 4;
+    const effRate = income > 0 ? (annualTax / income) * 100 : 0;
+    (document.getElementById('atc-quarterly')!).textContent = fmt(quarterly);
+    (document.getElementById('atc-annual')!).textContent = fmt(annualTax);
+    (document.getElementById('atc-remaining')!).textContent = fmt(remaining);
+    (document.getElementById('atc-rate')!).textContent = effRate.toFixed(1) + '%';
+    form.hidden = true; result.hidden = false;
+    result.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+  document.getElementById('atc-reset')!.addEventListener('click', () => { form.reset(); form.hidden = false; result.hidden = true; });
+</script>

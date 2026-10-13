@@ -1,0 +1,94 @@
+---
+/**
+ * TaxPenaltyCalc.astro
+ * Pakistan Tax Penalty & Surcharge Calculator
+ * Late filing penalty (Section 182) + default surcharge (KIBOR+3%).
+ */
+---
+
+<div class="tpc">
+  <h2 class="calc-subheading">Tax Penalty & Surcharge Calculator</h2>
+  <p class="calc-lead">Calculate late filing penalties and default surcharge on unpaid taxes.</p>
+
+  <form id="tpc-form" class="calc-form" novalidate>
+    <div class="form-row">
+      <label for="tpc-tax" class="form-label">Unpaid Tax Amount (PKR)</label>
+      <div class="input-wrap">
+        <span class="input-prefix">Rs.</span>
+        <input type="number" id="tpc-tax" name="tax" class="form-input" placeholder="e.g. 500,000" min="0" step="1000" required />
+      </div>
+      <span class="form-error" id="tpc-error" aria-live="polite"></span>
+    </div>
+
+    <div class="form-row">
+      <label for="tpc-delay" class="form-label">Delay in Filing (days)</label>
+      <input type="number" id="tpc-delay" name="delay" class="form-input" placeholder="e.g. 30" min="0" step="1" required />
+    </div>
+
+    <div class="form-row">
+      <label for="tpc-kibor" class="form-label">KIBOR Rate <span class="form-hint">default 12%</span></label>
+      <div class="input-wrap input-wrap--suffix">
+        <input type="number" id="tpc-kibor" name="kibor" class="form-input" value="12" min="0" max="30" step="0.1" />
+        <span class="input-suffix">%</span>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn--primary btn--block calc-submit">Calculate Penalty</button>
+  </form>
+
+  <div id="tpc-result" class="tpc__result" hidden aria-live="polite">
+    <div class="result-header">
+      <div class="result-badge">Section 182</div>
+      <button type="button" class="result-reset" id="tpc-reset">↩ Recalculate</button>
+    </div>
+    <div class="result-cards">
+      <div class="result-card result-card--main">
+        <span class="result-card__label">Total Penalty + Surcharge</span>
+        <span class="result-card__value" id="tpc-total"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Late Filing Penalty</span>
+        <span class="result-card__value" id="tpc-penalty"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Default Surcharge</span>
+        <span class="result-card__value" id="tpc-surcharge"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Total Payable (Tax + Penalty)</span>
+        <span class="result-card__value" id="tpc-payable"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const fmt = (n:number) => 'Rs. ' + Math.round(n).toLocaleString('en-PK');
+  const form = document.getElementById('tpc-form') as HTMLFormElement;
+  const err = document.getElementById('tpc-error')!;
+  const result = document.getElementById('tpc-result')!;
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    err.textContent = '';
+    const tax = parseFloat((document.getElementById('tpc-tax') as HTMLInputElement).value);
+    const delay = parseInt((document.getElementById('tpc-delay') as HTMLInputElement).value);
+    const kibor = parseFloat((document.getElementById('tpc-kibor') as HTMLInputElement).value) || 12;
+    if (!tax || tax < 0) { err.textContent = 'Please enter a valid tax amount.'; return; }
+    if (!delay || delay < 0) { err.textContent = 'Please enter delay in days.'; return; }
+    // Late filing penalty: 0.1% per day of tax due, capped at 50% of tax
+    const penaltyRate = Math.min(delay * 0.001, 0.50);
+    const penalty = tax * penaltyRate;
+    // Default surcharge: KIBOR + 3% annualized on unpaid tax
+    const surchargeRate = (kibor + 3) / 100;
+    const surcharge = tax * surchargeRate * (delay / 365);
+    const total = penalty + surcharge;
+    const payable = tax + total;
+    (document.getElementById('tpc-total')!).textContent = fmt(total);
+    (document.getElementById('tpc-penalty')!).textContent = fmt(penalty);
+    (document.getElementById('tpc-surcharge')!).textContent = fmt(surcharge);
+    (document.getElementById('tpc-payable')!).textContent = fmt(payable);
+    form.hidden = true; result.hidden = false;
+    result.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+  document.getElementById('tpc-reset')!.addEventListener('click', () => { form.reset(); form.hidden = false; result.hidden = true; });
+</script>

@@ -1,0 +1,115 @@
+---
+/**
+ * ZakatCalc.astro
+ * Pakistan Zakat Calculator — 2.5% on zakatable wealth above Nisab.
+ */
+---
+
+<div class="zc">
+  <h2 class="calc-subheading">Zakat Calculator</h2>
+  <p class="calc-lead">Calculate your annual Zakat obligation (2.5% of zakatable wealth).</p>
+
+  <form id="zc-form" class="calc-form" novalidate>
+    <div class="form-row">
+      <label for="zc-cash" class="form-label">Cash & Bank Balance (PKR)</label>
+      <div class="input-wrap">
+        <span class="input-prefix">Rs.</span>
+        <input type="number" id="zc-cash" name="cash" class="form-input" placeholder="e.g. 500,000" min="0" step="1000" />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label for="zc-gold" class="form-label">Gold Value (PKR)</label>
+      <div class="input-wrap">
+        <span class="input-prefix">Rs.</span>
+        <input type="number" id="zc-gold" name="gold" class="form-input" placeholder="e.g. 200,000" min="0" step="1000" />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label for="zc-silver" class="form-label">Silver Value (PKR)</label>
+      <div class="input-wrap">
+        <span class="input-prefix">Rs.</span>
+        <input type="number" id="zc-silver" name="silver" class="form-input" placeholder="e.g. 50,000" min="0" step="1000" />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label for="zc-inventory" class="form-label">Business Inventory Value (PKR)</label>
+      <div class="input-wrap">
+        <span class="input-prefix">Rs.</span>
+        <input type="number" id="zc-inventory" name="inventory" class="form-input" placeholder="e.g. 100,000" min="0" step="1000" />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label for="zc-investments" class="form-label">Investments & Receivables (PKR)</label>
+      <div class="input-wrap">
+        <span class="input-prefix">Rs.</span>
+        <input type="number" id="zc-investments" name="investments" class="form-input" placeholder="e.g. 300,000" min="0" step="1000" />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label for="zc-debts" class="form-label">Outstanding Debts (PKR) <span class="form-hint">deducted</span></label>
+      <div class="input-wrap">
+        <span class="input-prefix">Rs.</span>
+        <input type="number" id="zc-debts" name="debts" class="form-input" placeholder="e.g. 100,000" min="0" step="1000" />
+      </div>
+      <span class="form-error" id="zc-error" aria-live="polite"></span>
+    </div>
+
+    <button type="submit" class="btn btn--primary btn--block calc-submit">Calculate Zakat</button>
+  </form>
+
+  <div id="zc-result" class="zc__result" hidden aria-live="polite">
+    <div class="result-header">
+      <div class="result-badge">2.5% Zakat</div>
+      <button type="button" class="result-reset" id="zc-reset">↩ Recalculate</button>
+    </div>
+    <div class="result-cards">
+      <div class="result-card result-card--main">
+        <span class="result-card__label">Zakat Payable</span>
+        <span class="result-card__value" id="zc-zakat"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Zakatable Wealth</span>
+        <span class="result-card__value" id="zc-wealth"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Nisab Threshold</span>
+        <span class="result-card__value" id="zc-nisab"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Status</span>
+        <span class="result-card__value" id="zc-status" style="font-size:var(--fs-lg);"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const fmt = (n:number) => 'Rs. ' + Math.round(n).toLocaleString('en-PK');
+  // Nisab ~ value of 87.48g gold ≈ Rs. 1,800,000 (approx, adjustable)
+  const NISAB = 1_800_000;
+  const form = document.getElementById('zc-form') as HTMLFormElement;
+  const err = document.getElementById('zc-error')!;
+  const result = document.getElementById('zc-result')!;
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    err.textContent = '';
+    const val = (id:string) => parseFloat((document.getElementById(id) as HTMLInputElement).value) || 0;
+    const totalAssets = val('zc-cash') + val('zc-gold') + val('zc-silver') + val('zc-inventory') + val('zc-investments');
+    const debts = val('zc-debts');
+    const zakatable = Math.max(0, totalAssets - debts);
+    const eligible = zakatable >= NISAB;
+    const zakat = eligible ? zakatable * 0.025 : 0;
+    (document.getElementById('zc-zakat')!).textContent = fmt(zakat);
+    (document.getElementById('zc-wealth')!).textContent = fmt(zakatable);
+    (document.getElementById('zc-nisab')!).textContent = fmt(NISAB);
+    (document.getElementById('zc-status')!).textContent = eligible ? 'Zakat Due' : 'Below Nisab';
+    form.hidden = true; result.hidden = false;
+    result.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+  document.getElementById('zc-reset')!.addEventListener('click', () => { form.reset(); form.hidden = false; result.hidden = true; });
+</script>

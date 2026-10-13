@@ -1,0 +1,88 @@
+---
+/**
+ * SuperTaxCalc.astro
+ * Pakistan Super Tax Calculator — Section 4C, Income Tax Ordinance 2001
+ * Applies to high-income earners and companies.
+ */
+---
+
+<div class="spt">
+  <h2 class="calc-subheading">Super Tax Calculator</h2>
+  <p class="calc-lead">Section 4C — Super tax on high-income entities (above PKR 150M).</p>
+
+  <form id="spt-form" class="calc-form" novalidate>
+    <div class="form-row">
+      <label for="spt-income" class="form-label">Annual Taxable Income (PKR)</label>
+      <div class="input-wrap">
+        <span class="input-prefix">Rs.</span>
+        <input type="number" id="spt-income" name="income" class="form-input" placeholder="e.g. 200,000,000" min="0" step="1000000" required />
+      </div>
+      <span class="form-error" id="spt-error" aria-live="polite"></span>
+    </div>
+
+    <div class="form-row">
+      <label for="spt-type" class="form-label">Entity Type</label>
+      <select id="spt-type" name="type" class="form-select">
+        <option value="company">Company / Banking</option>
+        <option value="individual">Individual / AOP</option>
+      </select>
+    </div>
+
+    <button type="submit" class="btn btn--primary btn--block calc-submit">Calculate Super Tax</button>
+  </form>
+
+  <div id="spt-result" class="spt__result" hidden aria-live="polite">
+    <div class="result-header">
+      <div class="result-badge">Section 4C</div>
+      <button type="button" class="result-reset" id="spt-reset">↩ Recalculate</button>
+    </div>
+    <div class="result-cards">
+      <div class="result-card result-card--main">
+        <span class="result-card__label">Super Tax Payable</span>
+        <span class="result-card__value" id="spt-tax"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Income Threshold</span>
+        <span class="result-card__value" id="spt-threshold"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Super Tax Rate</span>
+        <span class="result-card__value" id="spt-rate"></span>
+      </div>
+    </div>
+    <p style="font-size:var(--fs-sm);color:var(--muted);margin-top:var(--space-4);">
+      Note: Super tax is applied in addition to regular income tax. Rates may vary based on Finance Act of the applicable year.
+    </p>
+  </div>
+</div>
+
+<script>
+  const fmt = (n:number) => 'Rs. ' + Math.round(n).toLocaleString('en-PK');
+  const form = document.getElementById('spt-form') as HTMLFormElement;
+  const err = document.getElementById('spt-error')!;
+  const result = document.getElementById('spt-result')!;
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    err.textContent = '';
+    const income = parseFloat((document.getElementById('spt-income') as HTMLInputElement).value);
+    const type = (document.getElementById('spt-type') as HTMLSelectElement).value;
+    if (!income || income < 0) { err.textContent = 'Please enter a valid income.'; return; }
+    // Super tax thresholds and rates (simplified based on recent Finance Acts)
+    let threshold = 150_000_000;
+    let rate = 0;
+    if (type === 'company') {
+      if (income > 500_000_000) { threshold = 500_000_000; rate = 0.10; }
+      else if (income > 150_000_000) { threshold = 150_000_000; rate = 0.08; }
+    } else {
+      if (income > 500_000_000) { threshold = 500_000_000; rate = 0.04; }
+      else if (income > 150_000_000) { threshold = 150_000_000; rate = 0.01; }
+    }
+    const superTax = income > threshold ? (income - threshold) * rate : 0;
+    (document.getElementById('spt-tax')!).textContent = fmt(superTax);
+    (document.getElementById('spt-threshold')!).textContent = fmt(threshold);
+    (document.getElementById('spt-rate')!).textContent = (rate * 100).toFixed(0) + '%';
+    form.hidden = true; result.hidden = false;
+    result.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+  document.getElementById('spt-reset')!.addEventListener('click', () => { form.reset(); form.hidden = false; result.hidden = true; });
+</script>

@@ -1,0 +1,103 @@
+---
+/**
+ * InterestCalc.astro
+ * Simple & Compound Interest Calculator.
+ */
+---
+
+<div class="ic">
+  <h2 class="calc-subheading">Simple & Compound Interest Calculator</h2>
+  <p class="calc-lead">Compare simple and compound interest on savings or investments.</p>
+
+  <form id="ic-form" class="calc-form" novalidate>
+    <div class="form-row">
+      <label for="ic-principal" class="form-label">Principal Amount (PKR)</label>
+      <div class="input-wrap">
+        <span class="input-prefix">Rs.</span>
+        <input type="number" id="ic-principal" name="principal" class="form-input" placeholder="e.g. 100,000" min="0" step="1000" required />
+      </div>
+      <span class="form-error" id="ic-error" aria-live="polite"></span>
+    </div>
+
+    <div class="form-row">
+      <label for="ic-rate" class="form-label">Annual Interest Rate</label>
+      <div class="input-wrap input-wrap--suffix">
+        <input type="number" id="ic-rate" name="rate" class="form-input" value="10" min="0" max="50" step="0.1" />
+        <span class="input-suffix">%</span>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label for="ic-years" class="form-label">Time Period (years)</label>
+      <input type="number" id="ic-years" name="years" class="form-input" value="5" min="1" max="50" step="1" required />
+    </div>
+
+    <div class="form-row">
+      <label for="ic-freq" class="form-label">Compounding Frequency</label>
+      <select id="ic-freq" name="freq" class="form-select">
+        <option value="1">Annually (1×/year)</option>
+        <option value="2">Semi-Annually (2×/year)</option>
+        <option value="4">Quarterly (4×/year)</option>
+        <option value="12" selected>Monthly (12×/year)</option>
+      </select>
+    </div>
+
+    <button type="submit" class="btn btn--primary btn--block calc-submit">Calculate Interest</button>
+  </form>
+
+  <div id="ic-result" class="ic__result" hidden aria-live="polite">
+    <div class="result-header">
+      <div class="result-badge">Interest</div>
+      <button type="button" class="result-reset" id="ic-reset">↩ Recalculate</button>
+    </div>
+    <div class="result-cards">
+      <div class="result-card result-card--main">
+        <span class="result-card__label">Compound Interest Final Amount</span>
+        <span class="result-card__value" id="ic-compound-total"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Simple Interest Final Amount</span>
+        <span class="result-card__value" id="ic-simple-total"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Compound Interest Earned</span>
+        <span class="result-card__value" id="ic-compound-interest"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Simple Interest Earned</span>
+        <span class="result-card__value" id="ic-simple-interest"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const fmt = (n:number) => 'Rs. ' + Math.round(n).toLocaleString('en-PK');
+  const form = document.getElementById('ic-form') as HTMLFormElement;
+  const err = document.getElementById('ic-error')!;
+  const result = document.getElementById('ic-result')!;
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    err.textContent = '';
+    const principal = parseFloat((document.getElementById('ic-principal') as HTMLInputElement).value);
+    const rate = parseFloat((document.getElementById('ic-rate') as HTMLInputElement).value) || 0;
+    const years = parseFloat((document.getElementById('ic-years') as HTMLInputElement).value) || 1;
+    const freq = parseInt((document.getElementById('ic-freq') as HTMLSelectElement).value) || 1;
+    if (!principal || principal < 0) { err.textContent = 'Please enter a valid principal.'; return; }
+    // Simple interest
+    const simpleInterest = principal * rate / 100 * years;
+    const simpleTotal = principal + simpleInterest;
+    // Compound interest
+    const r = rate / 100 / freq;
+    const n = freq * years;
+    const compoundTotal = principal * Math.pow(1 + r, n);
+    const compoundInterest = compoundTotal - principal;
+    (document.getElementById('ic-compound-total')!).textContent = fmt(compoundTotal);
+    (document.getElementById('ic-simple-total')!).textContent = fmt(simpleTotal);
+    (document.getElementById('ic-compound-interest')!).textContent = fmt(compoundInterest);
+    (document.getElementById('ic-simple-interest')!).textContent = fmt(simpleInterest);
+    form.hidden = true; result.hidden = false;
+    result.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+  document.getElementById('ic-reset')!.addEventListener('click', () => { form.reset(); form.hidden = false; result.hidden = true; });
+</script>

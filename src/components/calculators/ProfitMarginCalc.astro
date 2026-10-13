@@ -1,0 +1,92 @@
+---
+/**
+ * ProfitMarginCalc.astro
+ * Business Profit Margin Calculator — Gross & net margin.
+ */
+---
+
+<div class="pmc">
+  <h2 class="calc-subheading">Profit Margin Calculator</h2>
+  <p class="calc-lead">Calculate gross and net profit margin for your business.</p>
+
+  <form id="pmc-form" class="calc-form" novalidate>
+    <div class="form-row">
+      <label for="pmc-revenue" class="form-label">Total Revenue (PKR)</label>
+      <div class="input-wrap">
+        <span class="input-prefix">Rs.</span>
+        <input type="number" id="pmc-revenue" name="revenue" class="form-input" placeholder="e.g. 1,000,000" min="0" step="1000" required />
+      </div>
+      <span class="form-error" id="pmc-error" aria-live="polite"></span>
+    </div>
+
+    <div class="form-row">
+      <label for="pmc-cogs" class="form-label">Cost of Goods Sold (PKR)</label>
+      <div class="input-wrap">
+        <span class="input-prefix">Rs.</span>
+        <input type="number" id="pmc-cogs" name="cogs" class="form-input" placeholder="e.g. 600,000" min="0" step="1000" required />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label for="pmc-expenses" class="form-label">Operating Expenses (PKR)</label>
+      <div class="input-wrap">
+        <span class="input-prefix">Rs.</span>
+        <input type="number" id="pmc-expenses" name="expenses" class="form-input" placeholder="e.g. 150,000" min="0" step="1000" />
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn--primary btn--block calc-submit">Calculate Margin</button>
+  </form>
+
+  <div id="pmc-result" class="pmc__result" hidden aria-live="polite">
+    <div class="result-header">
+      <div class="result-badge">Profit Margin</div>
+      <button type="button" class="result-reset" id="pmc-reset">↩ Recalculate</button>
+    </div>
+    <div class="result-cards">
+      <div class="result-card result-card--main">
+        <span class="result-card__label">Net Profit Margin</span>
+        <span class="result-card__value" id="pmc-net-margin"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Gross Profit Margin</span>
+        <span class="result-card__value" id="pmc-gross-margin"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Gross Profit</span>
+        <span class="result-card__value" id="pmc-gross-profit"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Net Profit</span>
+        <span class="result-card__value" id="pmc-net-profit"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const fmt = (n:number) => 'Rs. ' + Math.round(n).toLocaleString('en-PK');
+  const pct = (n:number) => n.toFixed(2) + '%';
+  const form = document.getElementById('pmc-form') as HTMLFormElement;
+  const err = document.getElementById('pmc-error')!;
+  const result = document.getElementById('pmc-result')!;
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    err.textContent = '';
+    const revenue = parseFloat((document.getElementById('pmc-revenue') as HTMLInputElement).value);
+    const cogs = parseFloat((document.getElementById('pmc-cogs') as HTMLInputElement).value) || 0;
+    const expenses = parseFloat((document.getElementById('pmc-expenses') as HTMLInputElement).value) || 0;
+    if (!revenue || revenue < 0) { err.textContent = 'Please enter a valid revenue.'; return; }
+    const grossProfit = revenue - cogs;
+    const netProfit = grossProfit - expenses;
+    const grossMargin = revenue > 0 ? (grossProfit / revenue) * 100 : 0;
+    const netMargin = revenue > 0 ? (netProfit / revenue) * 100 : 0;
+    (document.getElementById('pmc-net-margin')!).textContent = pct(netMargin);
+    (document.getElementById('pmc-gross-margin')!).textContent = pct(grossMargin);
+    (document.getElementById('pmc-gross-profit')!).textContent = fmt(grossProfit);
+    (document.getElementById('pmc-net-profit')!).textContent = fmt(netProfit);
+    form.hidden = true; result.hidden = false;
+    result.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+  document.getElementById('pmc-reset')!.addEventListener('click', () => { form.reset(); form.hidden = false; result.hidden = true; });
+</script>

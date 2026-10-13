@@ -1,0 +1,216 @@
+/* ==========================================================================
+   Shared calculator styles — used by all 25 calculator components.
+   Imported once via the [slug].astro dynamic route.
+   Each component only adds its own unique layout/heading styles.
+   ========================================================================== */
+
+/* ── Form rows ────────────────────────────────────────────────────── */
+.calc-form { display: flex; flex-direction: column; gap: var(--space-4); }
+.form-row { display: flex; flex-direction: column; gap: var(--space-2); }
+.form-row--inline { flex-direction: row; gap: var(--space-3); align-items: flex-end; }
+.form-row--inline > * { flex: 1; }
+
+.form-label {
+  font-weight: 600;
+  font-size: var(--fs-sm);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.form-hint { font-weight: 400; color: var(--muted); font-size: var(--fs-xs); }
+
+/* ── Inputs ──────────────────────────────────────────────────────── */
+.form-select,
+.form-input {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  background: var(--surface);
+  color: var(--ink);
+  outline: none;
+  transition: border-color var(--dur-fast);
+}
+.form-select:focus,
+.form-input:focus {
+  border-color: var(--brand-500);
+  box-shadow: var(--focus-ring);
+}
+
+.input-wrap { position: relative; }
+.input-prefix {
+  position: absolute;
+  left: var(--space-4);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  pointer-events: none;
+  user-select: none;
+}
+.input-wrap .form-input { padding-left: 2.75rem; }
+.input-suffix {
+  position: absolute;
+  right: var(--space-4);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  pointer-events: none;
+  user-select: none;
+}
+.input-wrap--suffix .form-input { padding-right: 3rem; }
+
+.form-error { color: var(--danger); font-size: var(--fs-xs); min-height: 1em; }
+
+/* ── Toggle buttons ──────────────────────────────────────────────── */
+.toggle-group {
+  display: flex;
+  gap: var(--space-2);
+  background: var(--surface-muted);
+  border-radius: var(--radius-md);
+  padding: var(--space-1);
+  width: fit-content;
+}
+.toggle-btn { cursor: pointer; }
+.toggle-btn input { position: absolute; opacity: 0; width: 0; }
+.toggle-btn span {
+  display: block;
+  padding: var(--space-2) var(--space-4);
+  border-radius: calc(var(--radius-md) - 4px);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--muted);
+  transition: background var(--dur-fast), color var(--dur-fast);
+  user-select: none;
+}
+.toggle-btn input:checked + span {
+  background: var(--surface);
+  color: var(--brand-600);
+  font-weight: 600;
+  box-shadow: var(--shadow-xs);
+}
+
+/* ── Submit / Reset ──────────────────────────────────────────────── */
+.calc-submit {
+  margin-top: var(--space-2);
+  padding-block: var(--space-3);
+  font-size: var(--fs-base);
+}
+.btn--block { width: 100%; justify-content: center; }
+
+/* ── Result panel ────────────────────────────────────────────────── */
+.result-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-5);
+}
+.result-badge {
+  background: var(--brand-50);
+  color: var(--brand-700);
+  border: 1px solid var(--brand-200);
+  border-radius: var(--radius-pill);
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+.result-reset {
+  background: none;
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--muted);
+  transition: border-color var(--dur-fast), color var(--dur-fast);
+}
+.result-reset:hover { border-color: var(--brand-500); color: var(--brand-600); }
+
+.result-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+@media (max-width: 500px) { .result-cards { grid-template-columns: 1fr; } }
+
+.result-card {
+  background: var(--surface-soft);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.result-card--main {
+  background: var(--brand-50);
+  border: 1.5px solid var(--brand-200);
+  grid-column: 1 / -1;
+}
+.result-card__label { font-size: var(--fs-xs); color: var(--muted); font-weight: 500; }
+.result-card__value { font-size: var(--fs-2xl); font-weight: 800; color: var(--brand-700); }
+.result-card--main .result-card__value { font-size: var(--fs-3xl); }
+
+/* ── Tables ──────────────────────────────────────────────────────── */
+.calc-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-sm);
+}
+.calc-table th {
+  text-align: left;
+  font-weight: 600;
+  padding: var(--space-2) var(--space-3);
+  background: var(--surface-muted);
+  border-bottom: 2px solid var(--line);
+}
+.calc-table td {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--line);
+}
+.calc-table .row--active td {
+  background: var(--brand-50);
+  color: var(--brand-800);
+  font-weight: 600;
+}
+
+/* ── Details / accordion ─────────────────────────────────────────── */
+.calc-details {
+  margin-top: var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.calc-details summary {
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--surface-soft);
+  color: var(--brand-700);
+  list-style: none;
+}
+.calc-details summary::-webkit-details-marker { display: none; }
+.calc-details[open] summary { border-bottom: 1px solid var(--line); }
+.calc-details .calc-table { margin: 0; }
+
+/* ── Section heading inside calculator ───────────────────────────── */
+.calc-section-heading {
+  font-size: var(--fs-base);
+  font-weight: 700;
+  margin: var(--space-5) 0 var(--space-3);
+}
+.calc-subheading {
+  font-size: var(--fs-2xl);
+  font-weight: 800;
+  margin: 0 0 var(--space-2);
+}
+.calc-lead {
+  color: var(--muted);
+  margin: 0 0 var(--space-6);
+  font-size: var(--fs-sm);
+}

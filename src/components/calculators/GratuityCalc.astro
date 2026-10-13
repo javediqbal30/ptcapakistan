@@ -1,0 +1,80 @@
+---
+/**
+ * GratuityCalc.astro
+ * Pakistan Gratuity Calculator — (Last salary ÷ 26) × 30 × years of service.
+ */
+---
+
+<div class="gc">
+  <h2 class="calc-subheading">Gratuity Calculator</h2>
+  <p class="calc-lead">Calculate end-of-service gratuity using Pakistan labor law formula.</p>
+
+  <form id="gc-form" class="calc-form" novalidate>
+    <div class="form-row">
+      <label for="gc-salary" class="form-label">Last Gross Monthly Salary (PKR)</label>
+      <div class="input-wrap">
+        <span class="input-prefix">Rs.</span>
+        <input type="number" id="gc-salary" name="salary" class="form-input" placeholder="e.g. 100,000" min="0" step="1000" required />
+      </div>
+      <span class="form-error" id="gc-error" aria-live="polite"></span>
+    </div>
+
+    <div class="form-row">
+      <label for="gc-years" class="form-label">Years of Service</label>
+      <input type="number" id="gc-years" name="years" class="form-input" placeholder="e.g. 5" min="0" step="0.5" required />
+    </div>
+
+    <div class="form-row">
+      <label for="gc-days" class="form-label">Working Days per Month <span class="form-hint">default 26</span></label>
+      <input type="number" id="gc-days" name="days" class="form-input" value="26" min="20" max="31" step="1" />
+    </div>
+
+    <button type="submit" class="btn btn--primary btn--block calc-submit">Calculate Gratuity</button>
+  </form>
+
+  <div id="gc-result" class="gc__result" hidden aria-live="polite">
+    <div class="result-header">
+      <div class="result-badge">Gratuity</div>
+      <button type="button" class="result-reset" id="gc-reset">↩ Recalculate</button>
+    </div>
+    <div class="result-cards">
+      <div class="result-card result-card--main">
+        <span class="result-card__label">Total Gratuity Payable</span>
+        <span class="result-card__value" id="gc-total"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Daily Rate</span>
+        <span class="result-card__value" id="gc-daily"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Gratuity per Year</span>
+        <span class="result-card__value" id="gc-per-year"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const fmt = (n:number) => 'Rs. ' + Math.round(n).toLocaleString('en-PK');
+  const form = document.getElementById('gc-form') as HTMLFormElement;
+  const err = document.getElementById('gc-error')!;
+  const result = document.getElementById('gc-result')!;
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    err.textContent = '';
+    const salary = parseFloat((document.getElementById('gc-salary') as HTMLInputElement).value);
+    const years = parseFloat((document.getElementById('gc-years') as HTMLInputElement).value);
+    const days = parseInt((document.getElementById('gc-days') as HTMLInputElement).value) || 26;
+    if (!salary || salary < 0) { err.textContent = 'Please enter a valid salary.'; return; }
+    if (!years || years < 0) { err.textContent = 'Please enter valid years of service.'; return; }
+    const dailyRate = salary / days;
+    const perYear = dailyRate * 30;
+    const total = perYear * years;
+    (document.getElementById('gc-total')!).textContent = fmt(total);
+    (document.getElementById('gc-daily')!).textContent = fmt(dailyRate);
+    (document.getElementById('gc-per-year')!).textContent = fmt(perYear);
+    form.hidden = true; result.hidden = false;
+    result.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+  document.getElementById('gc-reset')!.addEventListener('click', () => { form.reset(); form.hidden = false; result.hidden = true; });
+</script>

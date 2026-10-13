@@ -1,0 +1,74 @@
+---
+/**
+ * LeaveEncashmentCalc.astro
+ * Pakistan Leave Encashment — Basic salary ÷ 26 × unused leave days.
+ */
+---
+
+<div class="lec">
+  <h2 class="calc-subheading">Leave Encashment Calculator</h2>
+  <p class="calc-lead">Calculate leave encashment payment for unused annual leave.</p>
+
+  <form id="lec-form" class="calc-form" novalidate>
+    <div class="form-row">
+      <label for="lec-basic" class="form-label">Monthly Basic Salary (PKR)</label>
+      <div class="input-wrap">
+        <span class="input-prefix">Rs.</span>
+        <input type="number" id="lec-basic" name="basic" class="form-input" placeholder="e.g. 80,000" min="0" step="1000" required />
+      </div>
+      <span class="form-error" id="lec-error" aria-live="polite"></span>
+    </div>
+
+    <div class="form-row">
+      <label for="lec-days" class="form-label">Unused Leave Days</label>
+      <input type="number" id="lec-days" name="days" class="form-input" placeholder="e.g. 15" min="0" step="0.5" required />
+    </div>
+
+    <div class="form-row">
+      <label for="lec-wdays" class="form-label">Working Days per Month <span class="form-hint">default 26</span></label>
+      <input type="number" id="lec-wdays" name="wdays" class="form-input" value="26" min="20" max="31" step="1" />
+    </div>
+
+    <button type="submit" class="btn btn--primary btn--block calc-submit">Calculate Encashment</button>
+  </form>
+
+  <div id="lec-result" class="lec__result" hidden aria-live="polite">
+    <div class="result-header">
+      <div class="result-badge">Leave Encashment</div>
+      <button type="button" class="result-reset" id="lec-reset">↩ Recalculate</button>
+    </div>
+    <div class="result-cards">
+      <div class="result-card result-card--main">
+        <span class="result-card__label">Total Encashment Payable</span>
+        <span class="result-card__value" id="lec-total"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Daily Rate</span>
+        <span class="result-card__value" id="lec-daily"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const fmt = (n:number) => 'Rs. ' + Math.round(n).toLocaleString('en-PK');
+  const form = document.getElementById('lec-form') as HTMLFormElement;
+  const err = document.getElementById('lec-error')!;
+  const result = document.getElementById('lec-result')!;
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    err.textContent = '';
+    const basic = parseFloat((document.getElementById('lec-basic') as HTMLInputElement).value);
+    const days = parseFloat((document.getElementById('lec-days') as HTMLInputElement).value);
+    const wdays = parseInt((document.getElementById('lec-wdays') as HTMLInputElement).value) || 26;
+    if (!basic || basic < 0) { err.textContent = 'Please enter a valid basic salary.'; return; }
+    if (!days || days < 0) { err.textContent = 'Please enter valid leave days.'; return; }
+    const daily = basic / wdays;
+    const total = daily * days;
+    (document.getElementById('lec-total')!).textContent = fmt(total);
+    (document.getElementById('lec-daily')!).textContent = fmt(daily);
+    form.hidden = true; result.hidden = false;
+    result.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+  document.getElementById('lec-reset')!.addEventListener('click', () => { form.reset(); form.hidden = false; result.hidden = true; });
+</script>

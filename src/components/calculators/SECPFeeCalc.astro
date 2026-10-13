@@ -1,0 +1,111 @@
+---
+/**
+ * SECPFeeCalc.astro
+ * SECP Company Registration Fee Calculator — Fee by authorized share capital.
+ */
+---
+
+<div class="sec">
+  <h2 class="calc-subheading">SECP Registration Fee Calculator</h2>
+  <p class="calc-lead">Calculate SECP company incorporation fees based on share capital.</p>
+
+  <form id="sec-form" class="calc-form" novalidate>
+    <div class="form-row">
+      <label for="sec-type" class="form-label">Company Type</label>
+      <select id="sec-type" name="type" class="form-select">
+        <option value="private">Private Limited Company</option>
+        <option value="smc">SMC (Single Member Company)</option>
+        <option value="public">Public Limited Company</option>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <label for="sec-capital" class="form-label">Authorized Share Capital (PKR)</label>
+      <div class="input-wrap">
+        <span class="input-prefix">Rs.</span>
+        <input type="number" id="sec-capital" name="capital" class="form-input" placeholder="e.g. 1,000,000" min="0" step="10000" required />
+      </div>
+      <span class="form-error" id="sec-error" aria-live="polite"></span>
+    </div>
+
+    <button type="submit" class="btn btn--primary btn--block calc-submit">Calculate SECP Fee</button>
+  </form>
+
+  <div id="sec-result" class="sec__result" hidden aria-live="polite">
+    <div class="result-header">
+      <div class="result-badge" id="sec-badge"></div>
+      <button type="button" class="result-reset" id="sec-reset">↩ Recalculate</button>
+    </div>
+    <div class="result-cards">
+      <div class="result-card result-card--main">
+        <span class="result-card__label">Total Registration Fee</span>
+        <span class="result-card__value" id="sec-total"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Filing Fee</span>
+        <span class="result-card__value" id="sec-filing"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Name Reservation</span>
+        <span class="result-card__value" id="sec-name"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Other Fees</span>
+        <span class="result-card__value" id="sec-other"></span>
+      </div>
+    </div>
+    <h3 class="calc-section-heading">Fee Breakdown</h3>
+    <table class="calc-table" id="sec-breakdown">
+      <thead><tr><th>Fee Component</th><th>Amount (PKR)</th></tr></thead>
+      <tbody id="sec-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  const fmt = (n:number) => 'Rs. ' + Math.round(n).toLocaleString('en-PK');
+  // SECP fee slabs based on authorized share capital
+  function calcFilingFee(capital:number) {
+    if (capital <= 100000) return 500;
+    if (capital <= 500000) return 1500;
+    if (capital <= 1000000) return 2500;
+    if (capital <= 5000000) return 5000;
+    if (capital <= 10000000) return 10000;
+    if (capital <= 50000000) return 20000;
+    if (capital <= 100000000) return 40000;
+    return 50000;
+  }
+  const form = document.getElementById('sec-form') as HTMLFormElement;
+  const err = document.getElementById('sec-error')!;
+  const result = document.getElementById('sec-result')!;
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    err.textContent = '';
+    const type = (document.getElementById('sec-type') as HTMLSelectElement).value;
+    const capital = parseFloat((document.getElementById('sec-capital') as HTMLInputElement).value);
+    if (!capital || capital < 0) { err.textContent = 'Please enter a valid share capital.'; return; }
+    const filingFee = calcFilingFee(capital);
+    const nameFee = 500; // name reservation
+    const smcExtra = type === 'smc' ? 500 : 0;
+    const publicExtra = type === 'public' ? 2000 : 0;
+    const other = nameFee + smcExtra + publicExtra;
+    const total = filingFee + other;
+    const rows = [
+      {label:'Name Reservation', amount:nameFee},
+      {label:'Registration/Filing Fee', amount:filingFee},
+      ...(smcExtra ? [{label:'SMC Surcharge', amount:smcExtra}] : []),
+      ...(publicExtra ? [{label:'Public Ltd Surcharge', amount:publicExtra}] : []),
+      {label:'Total', amount:total},
+    ];
+    (document.getElementById('sec-total')!).textContent = fmt(total);
+    (document.getElementById('sec-filing')!).textContent = fmt(filingFee);
+    (document.getElementById('sec-name')!).textContent = fmt(nameFee);
+    (document.getElementById('sec-other')!).textContent = fmt(other);
+    (document.getElementById('sec-badge')!).textContent = type === 'smc' ? 'SMC' : type === 'public' ? 'Public Ltd' : 'Pvt Ltd';
+    const body = document.getElementById('sec-body')!;
+    body.innerHTML = rows.map((r,i) => `<tr class="${i===rows.length-1?'row--active':''}"><td>${r.label}</td><td>${fmt(r.amount)}</td></tr>`).join('');
+    form.hidden = true; result.hidden = false;
+    result.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+  document.getElementById('sec-reset')!.addEventListener('click', () => { form.reset(); form.hidden = false; result.hidden = true; });
+</script>

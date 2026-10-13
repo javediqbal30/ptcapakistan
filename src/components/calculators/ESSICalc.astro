@@ -1,0 +1,85 @@
+---
+/**
+ * ESSICalc.astro
+ * ESSI / Social Security Calculator — Employer contribution 6% of wages.
+ */
+---
+
+<div class="essi">
+  <h2 class="calc-subheading">ESSI / Social Security Calculator</h2>
+  <p class="calc-lead">Calculate ESSI contributions for PESSI, SESSI, KPESI and BESSI.</p>
+
+  <form id="essi-form" class="calc-form" novalidate>
+    <div class="form-row">
+      <label for="essi-province" class="form-label">Province</label>
+      <select id="essi-province" name="province" class="form-select">
+        <option value="punjab">Punjab — PESSI (6%)</option>
+        <option value="sindh">Sindh — SESSI (6%)</option>
+        <option value="kpk">KPK — KPESI (6%)</option>
+        <option value="balochistan">Balochistan — BESSI (6%)</option>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <label for="essi-gross" class="form-label">Monthly Gross Salary (PKR)</label>
+      <div class="input-wrap">
+        <span class="input-prefix">Rs.</span>
+        <input type="number" id="essi-gross" name="gross" class="form-input" placeholder="e.g. 50,000" min="0" step="1000" required />
+      </div>
+      <span class="form-error" id="essi-error" aria-live="polite"></span>
+    </div>
+
+    <div class="form-row">
+      <label for="essi-employees" class="form-label">Number of Employees</label>
+      <input type="number" id="essi-employees" name="employees" class="form-input" value="5" min="1" step="1" />
+    </div>
+
+    <button type="submit" class="btn btn--primary btn--block calc-submit">Calculate ESSI</button>
+  </form>
+
+  <div id="essi-result" class="essi__result" hidden aria-live="polite">
+    <div class="result-header">
+      <div class="result-badge" id="essi-badge"></div>
+      <button type="button" class="result-reset" id="essi-reset">↩ Recalculate</button>
+    </div>
+    <div class="result-cards">
+      <div class="result-card result-card--main">
+        <span class="result-card__label">Total Monthly ESSI Contribution</span>
+        <span class="result-card__value" id="essi-total"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Per Employee (6%)</span>
+        <span class="result-card__value" id="essi-per"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Annual Total</span>
+        <span class="result-card__value" id="essi-annual"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const fmt = (n:number) => 'Rs. ' + Math.round(n).toLocaleString('en-PK');
+  const names: Record<string,string> = { punjab: 'PESSI', sindh: 'SESSI', kpk: 'KPESI', balochistan: 'BESSI' };
+  const form = document.getElementById('essi-form') as HTMLFormElement;
+  const err = document.getElementById('essi-error')!;
+  const result = document.getElementById('essi-result')!;
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    err.textContent = '';
+    const province = (document.getElementById('essi-province') as HTMLSelectElement).value;
+    const gross = parseFloat((document.getElementById('essi-gross') as HTMLInputElement).value);
+    const employees = parseInt((document.getElementById('essi-employees') as HTMLInputElement).value) || 1;
+    if (!gross || gross < 0) { err.textContent = 'Please enter a valid salary.'; return; }
+    const perEmployee = gross * 0.06;
+    const total = perEmployee * employees;
+    (document.getElementById('essi-total')!).textContent = fmt(total);
+    (document.getElementById('essi-per')!).textContent = fmt(perEmployee);
+    (document.getElementById('essi-annual')!).textContent = fmt(total * 12);
+    (document.getElementById('essi-badge')!).textContent = names[province] || 'ESSI';
+    form.hidden = true; result.hidden = false;
+    result.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+  document.getElementById('essi-reset')!.addEventListener('click', () => { form.reset(); form.hidden = false; result.hidden = true; });
+</script>

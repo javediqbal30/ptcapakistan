@@ -1,0 +1,106 @@
+---
+/**
+ * InflationCalc.astro
+ * Pakistan Inflation Adjustment Calculator — Adjust PKR for inflation.
+ */
+---
+
+<div class="ifc">
+  <h2 class="calc-subheading">Inflation Adjustment Calculator</h2>
+  <p class="calc-lead">Adjust any PKR amount for inflation over the years.</p>
+
+  <form id="ifc-form" class="calc-form" novalidate>
+    <div class="form-row">
+      <label for="ifc-amount" class="form-label">Original Amount (PKR)</label>
+      <div class="input-wrap">
+        <span class="input-prefix">Rs.</span>
+        <input type="number" id="ifc-amount" name="amount" class="form-input" placeholder="e.g. 100,000" min="0" step="1000" required />
+      </div>
+      <span class="form-error" id="ifc-error" aria-live="polite"></span>
+    </div>
+
+    <div class="form-row">
+      <label for="ifc-from" class="form-label">From Year</label>
+      <select id="ifc-from" name="from" class="form-select">
+        <option value="2010">2010</option>
+        <option value="2015">2015</option>
+        <option value="2020">2020</option>
+        <option value="2023" selected>2023</option>
+        <option value="2024">2024</option>
+        <option value="2025">2025</option>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <label for="ifc-to" class="form-label">To Year</label>
+      <select id="ifc-to" name="to" class="form-select">
+        <option value="2024">2024</option>
+        <option value="2025">2025</option>
+        <option value="2026" selected>2026</option>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <label for="ifc-rate" class="form-label">Average Annual Inflation Rate <span class="form-hint">default 12%</span></label>
+      <div class="input-wrap input-wrap--suffix">
+        <input type="number" id="ifc-rate" name="rate" class="form-input" value="12" min="0" max="50" step="0.1" />
+        <span class="input-suffix">%</span>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn--primary btn--block calc-submit">Calculate Adjusted Value</button>
+  </form>
+
+  <div id="ifc-result" class="ifc__result" hidden aria-live="polite">
+    <div class="result-header">
+      <div class="result-badge" id="ifc-badge"></div>
+      <button type="button" class="result-reset" id="ifc-reset">↩ Recalculate</button>
+    </div>
+    <div class="result-cards">
+      <div class="result-card result-card--main">
+        <span class="result-card__label">Adjusted Value (in today's PKR)</span>
+        <span class="result-card__value" id="ifc-adjusted"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Original Amount</span>
+        <span class="result-card__value" id="ifc-original"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Purchasing Power Loss</span>
+        <span class="result-card__value" id="ifc-loss"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Years</span>
+        <span class="result-card__value" id="ifc-years" style="font-size:var(--fs-lg);"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const fmt = (n:number) => 'Rs. ' + Math.round(n).toLocaleString('en-PK');
+  const form = document.getElementById('ifc-form') as HTMLFormElement;
+  const err = document.getElementById('ifc-error')!;
+  const result = document.getElementById('ifc-result')!;
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    err.textContent = '';
+    const amount = parseFloat((document.getElementById('ifc-amount') as HTMLInputElement).value);
+    const fromYear = parseInt((document.getElementById('ifc-from') as HTMLSelectElement).value);
+    const toYear = parseInt((document.getElementById('ifc-to') as HTMLSelectElement).value);
+    const rate = parseFloat((document.getElementById('ifc-rate') as HTMLInputElement).value) || 12;
+    if (!amount || amount < 0) { err.textContent = 'Please enter a valid amount.'; return; }
+    if (toYear <= fromYear) { err.textContent = 'To year must be after from year.'; return; }
+    const years = toYear - fromYear;
+    const adjusted = amount * Math.pow(1 + rate / 100, years);
+    const loss = adjusted - amount;
+    (document.getElementById('ifc-adjusted')!).textContent = fmt(adjusted);
+    (document.getElementById('ifc-original')!).textContent = fmt(amount);
+    (document.getElementById('ifc-loss')!).textContent = fmt(loss);
+    (document.getElementById('ifc-years')!).textContent = String(years);
+    (document.getElementById('ifc-badge')!).textContent = `${fromYear} → ${toYear}`;
+    form.hidden = true; result.hidden = false;
+    result.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+  document.getElementById('ifc-reset')!.addEventListener('click', () => { form.reset(); form.hidden = false; result.hidden = true; });
+</script>

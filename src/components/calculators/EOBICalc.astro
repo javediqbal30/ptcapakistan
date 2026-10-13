@@ -1,0 +1,76 @@
+---
+/**
+ * EOBICalc.astro
+ * EOBI Contribution Calculator — Employer 5% + Employee 1% on minimum wage.
+ */
+---
+
+<div class="eobi">
+  <h2 class="calc-subheading">EOBI Contribution Calculator</h2>
+  <p class="calc-lead">Calculate monthly EOBI contributions for employer and employee.</p>
+
+  <form id="eobi-form" class="calc-form" novalidate>
+    <div class="form-row">
+      <label for="eobi-employees" class="form-label">Number of Employees</label>
+      <input type="number" id="eobi-employees" name="employees" class="form-input" value="10" min="1" step="1" required />
+    </div>
+
+    <div class="form-row">
+      <label for="eobi-minwage" class="form-label">Minimum Wage (PKR) <span class="form-hint">default Rs. 37,000</span></label>
+      <div class="input-wrap">
+        <span class="input-prefix">Rs.</span>
+        <input type="number" id="eobi-minwage" name="minwage" class="form-input" value="37000" min="0" step="500" />
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn--primary btn--block calc-submit">Calculate EOBI</button>
+  </form>
+
+  <div id="eobi-result" class="eobi__result" hidden aria-live="polite">
+    <div class="result-header">
+      <div class="result-badge">EOBI</div>
+      <button type="button" class="result-reset" id="eobi-reset">↩ Recalculate</button>
+    </div>
+    <div class="result-cards">
+      <div class="result-card result-card--main">
+        <span class="result-card__label">Total Monthly EOBI Contribution</span>
+        <span class="result-card__value" id="eobi-total"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Employer Share (5%)</span>
+        <span class="result-card__value" id="eobi-employer"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Employee Share (1%)</span>
+        <span class="result-card__value" id="eobi-employee"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Annual Total</span>
+        <span class="result-card__value" id="eobi-annual"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const fmt = (n:number) => 'Rs. ' + Math.round(n).toLocaleString('en-PK');
+  const form = document.getElementById('eobi-form') as HTMLFormElement;
+  const result = document.getElementById('eobi-result')!;
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const employees = parseInt((document.getElementById('eobi-employees') as HTMLInputElement).value) || 1;
+    const minWage = parseFloat((document.getElementById('eobi-minwage') as HTMLInputElement).value) || 37000;
+    const employerPerEmployee = minWage * 0.05;
+    const employeePerEmployee = minWage * 0.01;
+    const employerTotal = employerPerEmployee * employees;
+    const employeeTotal = employeePerEmployee * employees;
+    const monthlyTotal = employerTotal + employeeTotal;
+    (document.getElementById('eobi-total')!).textContent = fmt(monthlyTotal);
+    (document.getElementById('eobi-employer')!).textContent = fmt(employerTotal);
+    (document.getElementById('eobi-employee')!).textContent = fmt(employeeTotal);
+    (document.getElementById('eobi-annual')!).textContent = fmt(monthlyTotal * 12);
+    form.hidden = true; result.hidden = false;
+    result.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+  document.getElementById('eobi-reset')!.addEventListener('click', () => { form.reset(); form.hidden = false; result.hidden = true; });
+</script>

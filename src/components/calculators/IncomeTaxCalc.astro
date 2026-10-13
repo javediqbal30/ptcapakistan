@@ -1,0 +1,477 @@
+---
+/**
+ * IncomeTaxCalc.astro
+ * Pakistan Salaried Income Tax Calculator — Tax Years 2022-23 to 2026-27
+ * Formula: FBR official slab rates under Section 149 / Income Tax Ordinance 2001
+ */
+import { TAX_YEARS, CURRENT_TAX_YEAR } from '@data/taxSlabs';
+---
+
+<div class="itc">
+  <h2 class="itc__heading">Calculate Your Income Tax</h2>
+  <p class="itc__sub">Enter your monthly or annual salary to see your tax liability for any tax year.</p>
+
+  <form id="itc-form" class="itc__form" novalidate>
+
+    <!-- Tax Year Selector -->
+    <div class="form-row">
+      <label for="itc-year" class="form-label">
+        Tax Year
+        <span class="form-hint">FBR Finance Act year</span>
+      </label>
+      <select id="itc-year" name="year" class="form-select">
+        {TAX_YEARS.map((ty) => (
+          <option value={ty.year} selected={ty.year === CURRENT_TAX_YEAR}>
+            {ty.label}
+          </option>
+        ))}
+      </select>
+    </div>
+
+    <!-- Salary Input Mode -->
+    <div class="form-row">
+      <label class="form-label">Salary Type</label>
+      <div class="toggle-group" role="group">
+        <label class="toggle-btn">
+          <input type="radio" name="salaryType" value="monthly" checked />
+          <span>Monthly</span>
+        </label>
+        <label class="toggle-btn">
+          <input type="radio" name="salaryType" value="annual" />
+          <span>Annual</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Amount -->
+    <div class="form-row">
+      <label for="itc-amount" class="form-label">
+        <span id="itc-amount-label">Monthly Gross Salary (PKR)</span>
+      </label>
+      <div class="input-wrap">
+        <span class="input-prefix">Rs.</span>
+        <input
+          type="number"
+          id="itc-amount"
+          name="amount"
+          class="form-input"
+          placeholder="e.g. 150,000"
+          min="0"
+          step="1000"
+          required
+        />
+      </div>
+      <span class="form-error" id="itc-error" aria-live="polite"></span>
+    </div>
+
+    <button type="submit" class="btn btn--primary btn--block itc__submit">
+      Calculate Tax
+    </button>
+  </form>
+
+  <!-- Result Panel -->
+  <div id="itc-result" class="itc__result" hidden aria-live="polite">
+    <div class="result-header">
+      <div class="result-badge" id="itc-year-badge"></div>
+      <button type="button" class="result-reset" id="itc-reset" aria-label="Reset calculator">
+        ↩ Recalculate
+      </button>
+    </div>
+
+    <div class="result-cards">
+      <div class="result-card result-card--main">
+        <span class="result-card__label">Annual Income Tax</span>
+        <span class="result-card__value" id="itc-annual-tax"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Monthly Tax Deduction</span>
+        <span class="result-card__value" id="itc-monthly-tax"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Annual Gross Salary</span>
+        <span class="result-card__value" id="itc-annual-income"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Effective Tax Rate</span>
+        <span class="result-card__value" id="itc-eff-rate"></span>
+      </div>
+    </div>
+
+    <!-- Slab breakdown -->
+    <div class="itc__breakdown">
+      <h3>Tax Slab Applied</h3>
+      <table class="slab-table" id="itc-slab-table">
+        <thead>
+          <tr>
+            <th>Income Range (PKR)</th>
+            <th>Rate</th>
+            <th>Tax on this bracket</th>
+          </tr>
+        </thead>
+        <tbody id="itc-slab-body"></tbody>
+      </table>
+    </div>
+
+    <!-- All slabs for selected year -->
+    <details class="itc__all-slabs">
+      <summary>View all tax slabs for selected year</summary>
+      <table class="slab-table" id="itc-all-slabs-table">
+        <thead>
+          <tr>
+            <th>Annual Income Range (PKR)</th>
+            <th>Rate</th>
+            <th>Formula</th>
+          </tr>
+        </thead>
+        <tbody id="itc-all-slabs-body"></tbody>
+      </table>
+    </details>
+  </div>
+</div>
+
+<script>
+  // ── Data ───────────────────────────────────────────────────────────────────
+  const TAX_DATA: Record<string, { min:number; max:number; base:number; rate:number; label:string }[]> = {
+    '2026-27': [
+      { min:0,         max:600000,   base:0,        rate:0.00,  label:'0%'   },
+      { min:600001,    max:1200000,  base:0,        rate:0.01,  label:'1%'   },
+      { min:1200001,   max:2200000,  base:6000,     rate:0.11,  label:'11%'  },
+      { min:2200001,   max:3200000,  base:116000,   rate:0.20,  label:'20%'  },
+      { min:3200001,   max:4100000,  base:316000,   rate:0.25,  label:'25%'  },
+      { min:4100001,   max:5600000,  base:541000,   rate:0.29,  label:'29%'  },
+      { min:5600001,   max:7000000,  base:976000,   rate:0.32,  label:'32%'  },
+      { min:7000001,   max:Infinity, base:1424000,  rate:0.35,  label:'35%'  },
+    ],
+    '2025-26': [
+      { min:0,         max:600000,   base:0,        rate:0.00,  label:'0%'   },
+      { min:600001,    max:1200000,  base:0,        rate:0.01,  label:'1%'   },
+      { min:1200001,   max:2200000,  base:6000,     rate:0.11,  label:'11%'  },
+      { min:2200001,   max:3200000,  base:116000,   rate:0.23,  label:'23%'  },
+      { min:3200001,   max:4100000,  base:346000,   rate:0.30,  label:'30%'  },
+      { min:4100001,   max:Infinity, base:616000,   rate:0.35,  label:'35%'  },
+    ],
+    '2024-25': [
+      { min:0,         max:600000,   base:0,        rate:0.00,  label:'0%'   },
+      { min:600001,    max:1200000,  base:0,        rate:0.05,  label:'5%'   },
+      { min:1200001,   max:2200000,  base:30000,    rate:0.15,  label:'15%'  },
+      { min:2200001,   max:3200000,  base:180000,   rate:0.25,  label:'25%'  },
+      { min:3200001,   max:4100000,  base:430000,   rate:0.30,  label:'30%'  },
+      { min:4100001,   max:Infinity, base:700000,   rate:0.35,  label:'35%'  },
+    ],
+    '2023-24': [
+      { min:0,         max:600000,   base:0,        rate:0.000, label:'0%'    },
+      { min:600001,    max:1200000,  base:0,        rate:0.025, label:'2.5%'  },
+      { min:1200001,   max:2400000,  base:15000,    rate:0.125, label:'12.5%' },
+      { min:2400001,   max:3600000,  base:165000,   rate:0.225, label:'22.5%' },
+      { min:3600001,   max:6000000,  base:435000,   rate:0.275, label:'27.5%' },
+      { min:6000001,   max:Infinity, base:1095000,  rate:0.350, label:'35%'   },
+    ],
+    '2022-23': [
+      { min:0,         max:600000,   base:0,        rate:0.000, label:'0%'    },
+      { min:600001,    max:1200000,  base:0,        rate:0.025, label:'2.5%'  },
+      { min:1200001,   max:2400000,  base:15000,    rate:0.125, label:'12.5%' },
+      { min:2400001,   max:3600000,  base:165000,   rate:0.200, label:'20%'   },
+      { min:3600001,   max:6000000,  base:405000,   rate:0.250, label:'25%'   },
+      { min:6000001,   max:Infinity, base:1005000,  rate:0.325, label:'32.5%' },
+    ],
+  };
+
+  // ── Helpers ────────────────────────────────────────────────────────────────
+  const fmt = (n: number) =>
+    'Rs. ' + Math.round(n).toLocaleString('en-PK');
+
+  const fmtRange = (min: number, max: number) =>
+    max === Infinity
+      ? `Above ${(min - 1).toLocaleString('en-PK')}`
+      : `${min.toLocaleString('en-PK')} – ${max.toLocaleString('en-PK')}`;
+
+  function calcTax(annual: number, year: string): { tax: number; slabIdx: number } {
+    const slabs = TAX_DATA[year] ?? TAX_DATA['2026-27'];
+    for (let i = 0; i < slabs.length; i++) {
+      const s = slabs[i];
+      if (annual >= s.min && annual <= s.max) {
+        return { tax: s.base + (annual - s.min) * s.rate, slabIdx: i };
+      }
+    }
+    return { tax: 0, slabIdx: 0 };
+  }
+
+  // ── DOM refs ───────────────────────────────────────────────────────────────
+  const form        = document.getElementById('itc-form')        as HTMLFormElement;
+  const yearSelect  = document.getElementById('itc-year')        as HTMLSelectElement;
+  const amountInput = document.getElementById('itc-amount')      as HTMLInputElement;
+  const amountLabel = document.getElementById('itc-amount-label') as HTMLSpanElement;
+  const errorEl     = document.getElementById('itc-error')       as HTMLSpanElement;
+  const resultEl    = document.getElementById('itc-result')      as HTMLDivElement;
+  const resetBtn    = document.getElementById('itc-reset')       as HTMLButtonElement;
+  const yearBadge   = document.getElementById('itc-year-badge')  as HTMLDivElement;
+
+  // Radio buttons
+  const radios = form.querySelectorAll<HTMLInputElement>('input[name="salaryType"]');
+  radios.forEach((r) => {
+    r.addEventListener('change', () => {
+      amountLabel.textContent =
+        r.value === 'monthly' ? 'Monthly Gross Salary (PKR)' : 'Annual Gross Salary (PKR)';
+    });
+  });
+
+  // ── Submit ─────────────────────────────────────────────────────────────────
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    errorEl.textContent = '';
+
+    const year = yearSelect.value;
+    const type = (form.querySelector<HTMLInputElement>('input[name="salaryType"]:checked'))!.value;
+    const raw  = parseFloat(amountInput.value.replace(/,/g, ''));
+
+    if (!raw || raw < 0) {
+      errorEl.textContent = 'Please enter a valid salary amount.';
+      amountInput.focus();
+      return;
+    }
+
+    const annual  = type === 'monthly' ? raw * 12 : raw;
+    const { tax, slabIdx } = calcTax(annual, year);
+    const monthly = tax / 12;
+    const effRate = annual > 0 ? (tax / annual) * 100 : 0;
+
+    // Populate result cards
+    (document.getElementById('itc-annual-tax')    as HTMLElement).textContent = fmt(tax);
+    (document.getElementById('itc-monthly-tax')   as HTMLElement).textContent = fmt(monthly);
+    (document.getElementById('itc-annual-income') as HTMLElement).textContent = fmt(annual);
+    (document.getElementById('itc-eff-rate')      as HTMLElement).textContent = effRate.toFixed(2) + '%';
+    yearBadge.textContent = `FBR Tax Year ${year}`;
+
+    // Slab breakdown (just the applied slab)
+    const slabs = TAX_DATA[year];
+    const slab  = slabs[slabIdx];
+    const slabTax = slab.base + (annual - slab.min) * slab.rate;
+    const slabBody = document.getElementById('itc-slab-body')!;
+    slabBody.innerHTML = `
+      <tr class="slab-row--active">
+        <td>${fmtRange(slab.min, slab.max)}</td>
+        <td>${slab.label}</td>
+        <td>${fmt(slabTax)}</td>
+      </tr>`;
+
+    // All slabs table
+    const allBody = document.getElementById('itc-all-slabs-body')!;
+    allBody.innerHTML = slabs.map((s, i) => `
+      <tr class="${i === slabIdx ? 'slab-row--active' : ''}">
+        <td>${fmtRange(s.min, s.max)}</td>
+        <td>${s.label}</td>
+        <td>Rs. ${s.base.toLocaleString('en-PK')} + ${(s.rate*100).toFixed(1)}% of excess</td>
+      </tr>`).join('');
+
+    // Show result, hide form
+    form.hidden    = true;
+    resultEl.hidden = false;
+    resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  // ── Reset ──────────────────────────────────────────────────────────────────
+  resetBtn.addEventListener('click', () => {
+    form.reset();
+    form.hidden    = false;
+    resultEl.hidden = true;
+    amountInput.focus();
+  });
+</script>
+
+<style>
+  /* ── Container ───────────────────────────────────────────────────── */
+  .itc__heading {
+    font-size: var(--fs-2xl);
+    font-weight: 800;
+    margin: 0 0 var(--space-2);
+  }
+  .itc__sub {
+    color: var(--muted);
+    margin: 0 0 var(--space-6);
+    font-size: var(--fs-sm);
+  }
+
+  /* ── Form ────────────────────────────────────────────────────────── */
+  .itc__form { display: flex; flex-direction: column; gap: var(--space-4); }
+
+  .form-row { display: flex; flex-direction: column; gap: var(--space-2); }
+
+  .form-label {
+    font-weight: 600;
+    font-size: var(--fs-sm);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .form-hint { font-weight: 400; color: var(--muted); font-size: var(--fs-xs); }
+
+  .form-select,
+  .form-input {
+    width: 100%;
+    padding: var(--space-3) var(--space-4);
+    border: 1.5px solid var(--line-strong);
+    border-radius: var(--radius-md);
+    font-family: var(--font-body);
+    font-size: var(--fs-base);
+    background: var(--surface);
+    color: var(--ink);
+    outline: none;
+    transition: border-color var(--dur-fast);
+  }
+  .form-select:focus,
+  .form-input:focus {
+    border-color: var(--brand-500);
+    box-shadow: var(--focus-ring);
+  }
+
+  .input-wrap { position: relative; }
+  .input-prefix {
+    position: absolute;
+    left: var(--space-4);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    font-size: var(--fs-sm);
+    pointer-events: none;
+    user-select: none;
+  }
+  .input-wrap .form-input { padding-left: 2.75rem; }
+
+  .form-error { color: var(--danger); font-size: var(--fs-xs); min-height: 1em; }
+
+  /* ── Toggle buttons ──────────────────────────────────────────────── */
+  .toggle-group {
+    display: flex;
+    gap: var(--space-2);
+    background: var(--surface-muted);
+    border-radius: var(--radius-md);
+    padding: var(--space-1);
+    width: fit-content;
+  }
+  .toggle-btn { cursor: pointer; }
+  .toggle-btn input { position: absolute; opacity: 0; width: 0; }
+  .toggle-btn span {
+    display: block;
+    padding: var(--space-2) var(--space-4);
+    border-radius: calc(var(--radius-md) - 4px);
+    font-size: var(--fs-sm);
+    font-weight: 500;
+    color: var(--muted);
+    transition: background var(--dur-fast), color var(--dur-fast);
+    user-select: none;
+  }
+  .toggle-btn input:checked + span {
+    background: var(--surface);
+    color: var(--brand-600);
+    font-weight: 600;
+    box-shadow: var(--shadow-xs);
+  }
+
+  /* ── Submit ──────────────────────────────────────────────────────── */
+  .itc__submit {
+    margin-top: var(--space-2);
+    padding-block: var(--space-3);
+    font-size: var(--fs-base);
+  }
+  .btn--block { width: 100%; justify-content: center; }
+
+  /* ── Result ──────────────────────────────────────────────────────── */
+  .result-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-5);
+  }
+  .result-badge {
+    background: var(--brand-50);
+    color: var(--brand-700);
+    border: 1px solid var(--brand-200);
+    border-radius: var(--radius-pill);
+    padding: var(--space-1) var(--space-3);
+    font-size: var(--fs-xs);
+    font-weight: 700;
+  }
+  .result-reset {
+    background: none;
+    border: 1.5px solid var(--line-strong);
+    border-radius: var(--radius-md);
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--muted);
+    transition: border-color var(--dur-fast), color var(--dur-fast);
+  }
+  .result-reset:hover { border-color: var(--brand-500); color: var(--brand-600); }
+
+  .result-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+    margin-bottom: var(--space-5);
+  }
+  @media (max-width: 500px) { .result-cards { grid-template-columns: 1fr; } }
+
+  .result-card {
+    background: var(--surface-soft);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+  .result-card--main {
+    background: var(--brand-50);
+    border: 1.5px solid var(--brand-200);
+    grid-column: 1 / -1;
+  }
+  .result-card__label { font-size: var(--fs-xs); color: var(--muted); font-weight: 500; }
+  .result-card__value { font-size: var(--fs-2xl); font-weight: 800; color: var(--brand-700); }
+  .result-card--main .result-card__value { font-size: var(--fs-3xl); }
+
+  /* ── Slab table ──────────────────────────────────────────────────── */
+  .itc__breakdown { margin-top: var(--space-5); }
+  .itc__breakdown h3 { font-size: var(--fs-base); font-weight: 700; margin-bottom: var(--space-3); }
+
+  .slab-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--fs-sm);
+  }
+  .slab-table th {
+    text-align: left;
+    font-weight: 600;
+    padding: var(--space-2) var(--space-3);
+    background: var(--surface-muted);
+    border-bottom: 2px solid var(--line);
+  }
+  .slab-table td {
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 1px solid var(--line);
+  }
+  .slab-row--active td {
+    background: var(--brand-50);
+    color: var(--brand-800);
+    font-weight: 600;
+  }
+
+  /* ── All slabs details ───────────────────────────────────────────── */
+  .itc__all-slabs {
+    margin-top: var(--space-4);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+  .itc__all-slabs summary {
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    cursor: pointer;
+    background: var(--surface-soft);
+    color: var(--brand-700);
+    list-style: none;
+  }
+  .itc__all-slabs summary::-webkit-details-marker { display: none; }
+  .itc__all-slabs[open] summary { border-bottom: 1px solid var(--line); }
+  .itc__all-slabs .slab-table { margin: 0; }
+</style>

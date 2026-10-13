@@ -1,0 +1,149 @@
+---
+/**
+ * Dynamic calculator route — /calculators/[slug]/
+ * Generates one page per calculator from the CALCULATORS registry.
+ * Each calculator component is imported and rendered inside CalculatorShell.
+ */
+import BaseLayout from '@layouts/BaseLayout.astro';
+import CalculatorShell from '@components/calculators/CalculatorShell.astro';
+import { CALCULATORS, getCalculator } from '@data/calculators';
+import '@styles/calculators.css';
+
+// ── Calculator component imports ───────────────────────────────────
+import IncomeTaxCalc from '@components/calculators/IncomeTaxCalc.astro';
+import WithholdingTaxCalc from '@components/calculators/WithholdingTaxCalc.astro';
+import SalesTaxCalc from '@components/calculators/SalesTaxCalc.astro';
+import AdvanceTaxCalc from '@components/calculators/AdvanceTaxCalc.astro';
+import SuperTaxCalc from '@components/calculators/SuperTaxCalc.astro';
+import CorporateTaxCalc from '@components/calculators/CorporateTaxCalc.astro';
+import CapitalGainsCalc from '@components/calculators/CapitalGainsCalc.astro';
+import ProvincialSalesTaxCalc from '@components/calculators/ProvincialSalesTaxCalc.astro';
+import TaxPenaltyCalc from '@components/calculators/TaxPenaltyCalc.astro';
+import ZakatCalc from '@components/calculators/ZakatCalc.astro';
+import NetSalaryCalc from '@components/calculators/NetSalaryCalc.astro';
+import EOBICalc from '@components/calculators/EOBICalc.astro';
+import ESSICalc from '@components/calculators/ESSICalc.astro';
+import GratuityCalc from '@components/calculators/GratuityCalc.astro';
+import ProvidentFundCalc from '@components/calculators/ProvidentFundCalc.astro';
+import LeaveEncashmentCalc from '@components/calculators/LeaveEncashmentCalc.astro';
+import OvertimeCalc from '@components/calculators/OvertimeCalc.astro';
+import MinWageCalc from '@components/calculators/MinWageCalc.astro';
+import EmployeeCostCalc from '@components/calculators/EmployeeCostCalc.astro';
+import SECPFeeCalc from '@components/calculators/SECPFeeCalc.astro';
+import TrademarkFeeCalc from '@components/calculators/TrademarkFeeCalc.astro';
+import LoanEMICalc from '@components/calculators/LoanEMICalc.astro';
+import ProfitMarginCalc from '@components/calculators/ProfitMarginCalc.astro';
+import InterestCalc from '@components/calculators/InterestCalc.astro';
+import InflationCalc from '@components/calculators/InflationCalc.astro';
+
+// ── Slug → Component map ───────────────────────────────────────────
+const componentMap: Record<string, any> = {
+  'income-tax':           IncomeTaxCalc,
+  'withholding-tax':      WithholdingTaxCalc,
+  'sales-tax':            SalesTaxCalc,
+  'advance-tax':          AdvanceTaxCalc,
+  'super-tax':            SuperTaxCalc,
+  'corporate-tax':        CorporateTaxCalc,
+  'capital-gains-tax':    CapitalGainsCalc,
+  'provincial-sales-tax': ProvincialSalesTaxCalc,
+  'tax-penalty':          TaxPenaltyCalc,
+  'zakat':                 ZakatCalc,
+  'net-salary':           NetSalaryCalc,
+  'eobi':                  EOBICalc,
+  'essi':                  ESSICalc,
+  'gratuity':              GratuityCalc,
+  'provident-fund':       ProvidentFundCalc,
+  'leave-encashment':     LeaveEncashmentCalc,
+  'overtime':              OvertimeCalc,
+  'minimum-wage':         MinWageCalc,
+  'employee-cost':        EmployeeCostCalc,
+  'secp-fee':             SECPFeeCalc,
+  'trademark-fee':        TrademarkFeeCalc,
+  'loan-emi':             LoanEMICalc,
+  'profit-margin':        ProfitMarginCalc,
+  'interest':             InterestCalc,
+  'inflation':            InflationCalc,
+};
+
+// ── Related calculators map ────────────────────────────────────────
+const relatedMap: Record<string, string[]> = {
+  'income-tax':           ['withholding-tax', 'net-salary', 'corporate-tax', 'sales-tax'],
+  'withholding-tax':      ['income-tax', 'net-salary', 'advance-tax', 'tax-penalty'],
+  'sales-tax':            ['provincial-sales-tax', 'income-tax', 'corporate-tax', 'advance-tax'],
+  'advance-tax':          ['income-tax', 'corporate-tax', 'tax-penalty', 'withholding-tax'],
+  'super-tax':            ['corporate-tax', 'income-tax', 'advance-tax', 'tax-penalty'],
+  'corporate-tax':        ['income-tax', 'super-tax', 'advance-tax', 'secp-fee'],
+  'capital-gains-tax':    ['income-tax', 'corporate-tax', 'tax-penalty', 'advance-tax'],
+  'provincial-sales-tax': ['sales-tax', 'corporate-tax', 'income-tax', 'tax-penalty'],
+  'tax-penalty':          ['income-tax', 'advance-tax', 'withholding-tax', 'corporate-tax'],
+  'zakat':                 ['income-tax', 'profit-margin', 'interest', 'inflation'],
+  'net-salary':           ['income-tax', 'eobi', 'essi', 'gratuity'],
+  'eobi':                  ['net-salary', 'essi', 'gratuity', 'employee-cost'],
+  'essi':                  ['net-salary', 'eobi', 'gratuity', 'employee-cost'],
+  'gratuity':              ['net-salary', 'provident-fund', 'leave-encashment', 'eobi'],
+  'provident-fund':       ['gratuity', 'net-salary', 'leave-encashment', 'employee-cost'],
+  'leave-encashment':     ['gratuity', 'overtime', 'net-salary', 'provident-fund'],
+  'overtime':              ['leave-encashment', 'minimum-wage', 'net-salary', 'employee-cost'],
+  'minimum-wage':         ['overtime', 'net-salary', 'eobi', 'employee-cost'],
+  'employee-cost':        ['net-salary', 'eobi', 'essi', 'gratuity'],
+  'secp-fee':             ['trademark-fee', 'corporate-tax', 'loan-emi', 'profit-margin'],
+  'trademark-fee':        ['secp-fee', 'corporate-tax', 'profit-margin', 'loan-emi'],
+  'loan-emi':              ['interest', 'profit-margin', 'secp-fee', 'inflation'],
+  'profit-margin':        ['interest', 'loan-emi', 'inflation', 'secp-fee'],
+  'interest':              ['loan-emi', 'profit-margin', 'inflation', 'zakat'],
+  'inflation':            ['interest', 'profit-margin', 'loan-emi', 'zakat'],
+};
+
+// ── Static paths ───────────────────────────────────────────────────
+export function getStaticPaths() {
+  return CALCULATORS.map((calc) => ({
+    params: { slug: calc.slug },
+    props: { calc },
+  }));
+}
+
+const { calc } = Astro.props;
+const CalcComponent = componentMap[calc.slug];
+const related = relatedMap[calc.slug] || [];
+---
+
+<BaseLayout
+  seo={{
+    title: calc.title,
+    description: calc.description,
+    canonical: calc.canonical,
+  }}
+  schemaNodes={[
+    {
+      '@context': 'https://schema.org',
+      '@type': 'WebApplication',
+      name: calc.label,
+      description: calc.description,
+      url: `https://ptcapakistan.pk${calc.canonical}`,
+      applicationCategory: 'FinanceApplication',
+      operatingSystem: 'Web',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'PKR' },
+      keywords: calc.keywords.join(', '),
+    },
+  ]}
+>
+  <CalculatorShell calc={calc} related={related}>
+    {CalcComponent && <CalcComponent />}
+    <!-- SEO content -->
+    <section class="section" slot="content" style="background:var(--surface-soft);padding-block:var(--space-8);">
+      <div class="container" style="max-width:760px;">
+        <h2 style="font-size:var(--fs-2xl);font-weight:800;margin-bottom:var(--space-4);">
+          About {calc.label}
+        </h2>
+        <p style="color:var(--muted);line-height:1.7;margin-bottom:var(--space-4);">
+          {calc.summary}. This calculator is provided free by Prime Tax & Corporate Academy (PTCA)
+          for educational and informational purposes. Results are estimates based on official FBR
+          data and current Pakistan tax laws. For formal advice, consult a qualified professional.
+        </p>
+        <p style="color:var(--muted);line-height:1.7;">
+          Keywords: {calc.keywords.join(', ')}.
+        </p>
+      </div>
+    </section>
+  </CalculatorShell>
+</BaseLayout>

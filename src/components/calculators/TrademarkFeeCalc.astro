@@ -1,0 +1,92 @@
+---
+/**
+ * TrademarkFeeCalc.astro
+ * IPO Pakistan Trademark Fee Calculator — per class fees.
+ */
+---
+
+<div class="tfc">
+  <h2 class="calc-subheading">Trademark Fee Calculator</h2>
+  <p class="calc-lead">Calculate IPO Pakistan trademark registration fees per class.</p>
+
+  <form id="tfc-form" class="calc-form" novalidate>
+    <div class="form-row">
+      <label for="tfc-classes" class="form-label">Number of Trademark Classes</label>
+      <input type="number" id="tfc-classes" name="classes" class="form-input" value="1" min="1" max="45" step="1" required />
+    </div>
+
+    <div class="form-row">
+      <label class="form-label">Services</label>
+      <div class="toggle-group" role="group" style="flex-wrap:wrap;">
+        <label class="toggle-btn"><input type="checkbox" id="tfc-search" checked /><span>Search (Rs. 1,000)</span></label>
+        <label class="toggle-btn"><input type="checkbox" id="tfc-filing" checked /><span>Filing (Rs. 3,000)</span></label>
+        <label class="toggle-btn"><input type="checkbox" id="tfc-reg" checked /><span>Registration (Rs. 9,000)</span></label>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label class="form-label">Applicant Type</label>
+      <div class="toggle-group" role="group">
+        <label class="toggle-btn"><input type="radio" name="applicant" value="standard" checked /><span>Standard</span></label>
+        <label class="toggle-btn"><input type="radio" name="applicant" value="priority" /><span>Priority Claim</span></label>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn--primary btn--block calc-submit">Calculate Trademark Fee</button>
+  </form>
+
+  <div id="tfc-result" class="tfc__result" hidden aria-live="polite">
+    <div class="result-header">
+      <div class="result-badge" id="tfc-badge"></div>
+      <button type="button" class="result-reset" id="tfc-reset">↩ Recalculate</button>
+    </div>
+    <div class="result-cards">
+      <div class="result-card result-card--main">
+        <span class="result-card__label">Total Trademark Fee</span>
+        <span class="result-card__value" id="tfc-total"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Per Class Fee</span>
+        <span class="result-card__value" id="tfc-per"></span>
+      </div>
+      <div class="result-card">
+        <span class="result-card__label">Number of Classes</span>
+        <span class="result-card__value" id="tfc-classes-val"></span>
+      </div>
+    </div>
+    <h3 class="calc-section-heading">Fee Breakdown</h3>
+    <table class="calc-table" id="tfc-breakdown">
+      <thead><tr><th>Service</th><th>Per Class (PKR)</th><th>Total (PKR)</th></tr></thead>
+      <tbody id="tfc-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  const fmt = (n:number) => 'Rs. ' + Math.round(n).toLocaleString('en-PK');
+  const form = document.getElementById('tfc-form') as HTMLFormElement;
+  const result = document.getElementById('tfc-result')!;
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const classes = parseInt((document.getElementById('tfc-classes') as HTMLInputElement).value) || 1;
+    const applicant = (form.querySelector('input[name="applicant"]:checked') as HTMLInputElement).value;
+    const multiplier = applicant === 'priority' ? 1.5 : 1;
+    const fees: {label:string; perClass:number; include:boolean}[] = [
+      {label:'Search Fee', perClass:1000, include:(document.getElementById('tfc-search') as HTMLInputElement).checked},
+      {label:'Filing Fee', perClass:3000, include:(document.getElementById('tfc-filing') as HTMLInputElement).checked},
+      {label:'Registration Fee', perClass:9000, include:(document.getElementById('tfc-reg') as HTMLInputElement).checked},
+    ];
+    const rows = fees.filter(f => f.include).map(f => ({...f, perClass: Math.round(f.perClass * multiplier)}));
+    const perClassTotal = rows.reduce((s, r) => s + r.perClass, 0);
+    const total = perClassTotal * classes;
+    (document.getElementById('tfc-total')!).textContent = fmt(total);
+    (document.getElementById('tfc-per')!).textContent = fmt(perClassTotal);
+    (document.getElementById('tfc-classes-val')!).textContent = String(classes);
+    (document.getElementById('tfc-badge')!).textContent = `${classes} class${classes>1?'es':''}`;
+    const body = document.getElementById('tfc-body')!;
+    body.innerHTML = rows.map(r => `<tr><td>${r.label}</td><td>${fmt(r.perClass)}</td><td>${fmt(r.perClass*classes)}</td></tr>`).join('') + `<tr class="row--active"><td><strong>Total</strong></td><td><strong>${fmt(perClassTotal)}</strong></td><td><strong>${fmt(total)}</strong></td></tr>`;
+    form.hidden = true; result.hidden = false;
+    result.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+  document.getElementById('tfc-reset')!.addEventListener('click', () => { form.reset(); form.hidden = false; result.hidden = true; });
+</script>

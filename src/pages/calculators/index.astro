@@ -1,0 +1,371 @@
+---
+/**
+ * Calculators hub page — /calculators/
+ * Shows all 25 PTCA calculators grouped by category with search/filter.
+ */
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Icon from '@components/ui/Icon.astro';
+import { CALCULATORS, CALC_CATEGORIES } from '@data/calculators';
+import { SITE } from '@data/site';
+
+const categoryColors: Record<string, string> = {
+  taxation: 'var(--brand-500)',
+  'hr-payroll': '#2563eb',
+  corporate: '#d97706',
+  finance: '#7c3aed',
+};
+---
+
+<BaseLayout
+  seo={{
+    title: 'Free Pakistan Tax, HR & Corporate Calculators',
+    description:
+      '25+ free Pakistan calculators for income tax, withholding tax, sales tax, EOBI, gratuity, SECP fees, loan EMI and more. Updated for tax year 2026-27 with FBR official data.',
+    canonical: '/calculators/',
+  }}
+>
+  <!-- Hero -->
+  <section class="calc-hub-hero">
+    <div class="container">
+      <div class="calc-hub-hero__badge">
+        <Icon name="calculator" size={18} />
+        25 Free Calculators
+      </div>
+      <h1>Pakistan Tax, HR & Corporate Calculators</h1>
+      <p>
+        Free online calculators for Pakistani taxation, payroll, corporate compliance and finance.
+        Updated for tax year 2026-27 with official FBR data.
+      </p>
+      <!-- Search -->
+      <div class="calc-search-wrap">
+        <Icon name="search" size={18} class="calc-search-icon" />
+        <input
+          type="text"
+          id="calc-search"
+          class="calc-search"
+          placeholder="Search calculators..."
+          aria-label="Search calculators"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- Category filter -->
+  <section class="section" style="padding-bottom:0;">
+    <div class="container">
+      <div class="calc-filters" role="tablist">
+        <button class="calc-filter-btn is-active" data-filter="all" role="tab">All ({CALCULATORS.length})</button>
+        {CALC_CATEGORIES.map((cat) => {
+          const count = CALCULATORS.filter((c) => c.category === cat.key).length;
+          return (
+            <button class="calc-filter-btn" data-filter={cat.key} role="tab">
+              {cat.label} ({count})
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <!-- Calculator cards -->
+  <section class="section" style="padding-top:var(--space-5);">
+    <div class="container">
+      {CALC_CATEGORIES.map((cat) => (
+        <div class="calc-cat-group" data-category={cat.key}>
+          <h2 class="calc-cat-title">
+            <span class="calc-cat-icon" style={`color:${categoryColors[cat.key]};`}>
+              <Icon name={cat.icon as any} size={22} />
+            </span>
+            {cat.label}
+          </h2>
+          <div class="calc-card-grid">
+            {CALCULATORS.filter((c) => c.category === cat.key).map((calc) => (
+              <a
+                href={`/calculators/${calc.slug}/`}
+                class="calc-card"
+                data-name={calc.label.toLowerCase()}
+                data-category={calc.category}
+              >
+                {calc.featured && <span class="calc-card__featured">Popular</span>}
+                <div class="calc-card__icon" style={`background:${categoryColors[calc.key]}15;color:${categoryColors[calc.key]};`}>
+                  <Icon name={calc.icon as any} size={24} />
+                </div>
+                <div class="calc-card__body">
+                  <h3>{calc.label}</h3>
+                  <p>{calc.summary}</p>
+                </div>
+                <Icon name="arrow-right" size={16} class="calc-card__arrow" />
+              </a>
+            ))}
+          </div>
+        </div>
+      ))}
+
+      <!-- No results message -->
+      <div id="calc-no-results" class="calc-no-results" hidden>
+        <p>No calculators found. Try a different search term.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section" style="background:var(--surface-soft);">
+    <div class="container" style="text-align:center;max-width:680px;">
+      <h2 style="font-size:var(--fs-2xl);font-weight:800;margin-bottom:var(--space-3);">
+        Need Professional Help with Your Calculations?
+      </h2>
+      <p style="color:var(--muted);margin-bottom:var(--space-5);">
+        Our qualified mentors can help you apply these calculations to real-world scenarios.
+        Enroll in our practical taxation, HR and corporate courses today.
+      </p>
+      <a href="/courses/" class="btn btn--primary">
+        Explore Our Courses
+        <Icon name="arrow-right" size={16} />
+      </a>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  // ── Search ──────────────────────────────────────────────────────
+  const searchInput = document.getElementById('calc-search') as HTMLInputElement;
+  const cards = document.querySelectorAll<HTMLElement>('.calc-card');
+  const groups = document.querySelectorAll<HTMLElement>('.calc-cat-group');
+  const noResults = document.getElementById('calc-no-results')!;
+  const filterBtns = document.querySelectorAll<HTMLButtonElement>('.calc-filter-btn');
+
+  let activeFilter = 'all';
+
+  function applyFilters() {
+    const query = searchInput.value.trim().toLowerCase();
+    let visibleCount = 0;
+
+    cards.forEach((card) => {
+      const name = card.dataset.name || '';
+      const cat = card.dataset.category || '';
+      const matchesSearch = !query || name.includes(query);
+      const matchesFilter = activeFilter === 'all' || cat === activeFilter;
+      const visible = matchesSearch && matchesFilter;
+      card.style.display = visible ? '' : 'none';
+      if (visible) visibleCount++;
+    });
+
+    // Hide empty category groups
+    groups.forEach((group) => {
+      const cat = group.dataset.category || '';
+      const visibleCards = group.querySelectorAll<HTMLElement>('.calc-card');
+      const anyVisible = Array.from(visibleCards).some((c) => c.style.display !== 'none');
+      group.style.display = anyVisible ? '' : 'none';
+    });
+
+    noResults.hidden = visibleCount > 0;
+  }
+
+  searchInput.addEventListener('input', applyFilters);
+
+  filterBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach((b) => b.classList.remove('is-active'));
+      btn.classList.add('is-active');
+      activeFilter = btn.dataset.filter || 'all';
+      applyFilters();
+    });
+  });
+</script>
+
+<style>
+  /* ── Hero ──────────────────────────────────────────────────────── */
+  .calc-hub-hero {
+    background: linear-gradient(135deg, var(--brand-900) 0%, var(--brand-700) 100%);
+    color: #fff;
+    padding: var(--space-9) 0 var(--space-8);
+    text-align: center;
+    position: relative;
+  }
+  .calc-hub-hero__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.25);
+    border-radius: var(--radius-pill);
+    padding: var(--space-1) var(--space-3);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    margin-bottom: var(--space-4);
+    position: relative;
+    z-index: 10;
+  }
+  .calc-hub-hero__badge::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 1px;
+    background: rgba(255,255,255,.3);
+    width: 100%;
+  }
+  .calc-hub-hero h1 {
+    font-size: var(--fs-4xl);
+    font-weight: 800;
+    line-height: var(--lh-tight);
+    margin: 0 0 var(--space-3);
+    color: #fff;
+    position: relative;
+    z-index: 10;
+  }
+  .calc-hub-hero p {
+    font-size: var(--fs-lg);
+    opacity: .85;
+    max-width: 620px;
+    margin: 0 auto;
+    line-height: var(--lh-base);
+    position: relative;
+    z-index: 10;
+    padding-top: var(--space-2);
+  }
+
+  /* ── Search ────────────────────────────────────────────────────── */
+  .calc-search-wrap {
+    position: relative;
+    max-width: 480px;
+    margin: var(--space-6) auto 0;
+  }
+  .calc-search-icon {
+    position: absolute;
+    left: var(--space-4);
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255,255,255,.6);
+  }
+  .calc-search {
+    width: 100%;
+    padding: var(--space-3) var(--space-4) var(--space-3) 2.75rem;
+    border: 1.5px solid rgba(255,255,255,.25);
+    border-radius: var(--radius-pill);
+    background: rgba(255,255,255,.1);
+    color: #fff;
+    font-size: var(--fs-base);
+    font-family: var(--font-body);
+    outline: none;
+    backdrop-filter: blur(8px);
+  }
+  .calc-search::placeholder { color: rgba(255,255,255,.5); }
+  .calc-search:focus { border-color: rgba(255,255,255,.5); background: rgba(255,255,255,.15); }
+
+  /* ── Filters ───────────────────────────────────────────────────── */
+  .calc-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    justify-content: center;
+  }
+  .calc-filter-btn {
+    padding: var(--space-2) var(--space-4);
+    border: 1.5px solid var(--line-strong);
+    border-radius: var(--radius-pill);
+    background: var(--surface);
+    color: var(--muted);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--dur-fast);
+  }
+  .calc-filter-btn:hover { border-color: var(--brand-500); color: var(--brand-600); }
+  .calc-filter-btn.is-active {
+    background: var(--brand-500);
+    border-color: var(--brand-500);
+    color: #fff;
+  }
+
+  /* ── Category groups ───────────────────────────────────────────── */
+  .calc-cat-group { margin-bottom: var(--space-8); }
+  .calc-cat-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: var(--fs-xl);
+    font-weight: 700;
+    margin-bottom: var(--space-5);
+  }
+  .calc-cat-icon {
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: var(--radius-md);
+  }
+
+  /* ── Card grid ──────────────────────────────────────────────────── */
+  .calc-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-4);
+  }
+  .calc-card {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: var(--space-5);
+    text-decoration: none;
+    color: inherit;
+    transition: box-shadow var(--dur-fast), transform var(--dur-fast), border-color var(--dur-fast);
+  }
+  .calc-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-3px);
+    border-color: var(--brand-200);
+  }
+  .calc-card__featured {
+    position: absolute;
+    top: var(--space-3);
+    right: var(--space-3);
+    background: var(--brand-50);
+    color: var(--brand-700);
+    font-size: var(--fs-2xs);
+    font-weight: 700;
+    padding: 2px var(--space-2);
+    border-radius: var(--radius-pill);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+  }
+  .calc-card__icon {
+    width: 48px; height: 48px;
+    border-radius: var(--radius-md);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .calc-card__body { flex: 1; min-width: 0; }
+  .calc-card__body h3 {
+    font-size: var(--fs-base);
+    font-weight: 700;
+    margin: 0 0 var(--space-1);
+  }
+  .calc-card__body p {
+    font-size: var(--fs-sm);
+    color: var(--muted);
+    margin: 0;
+    line-height: 1.5;
+  }
+  .calc-card__arrow {
+    color: var(--muted-2);
+    flex-shrink: 0;
+    margin-top: 4px;
+    transition: color var(--dur-fast), transform var(--dur-fast);
+  }
+  .calc-card:hover .calc-card__arrow {
+    color: var(--brand-500);
+    transform: translateX(3px);
+  }
+
+  /* ── No results ────────────────────────────────────────────────── */
+  .calc-no-results {
+    text-align: center;
+    padding: var(--space-9) 0;
+    color: var(--muted);
+  }
+</style>
