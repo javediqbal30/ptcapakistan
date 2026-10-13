@@ -427,7 +427,7 @@ const careerPaths = courses.flatMap((c) => c.data.careerPaths).slice(0, 12);
     </section>
   )}
 
-  <section class="section section--soft corporate-train-bg" id="corporate-training">
+  <section class="section corporate-hero">
     <div class="container">
       <SectionHead
         eyebrow="For organizations"
@@ -504,7 +504,7 @@ const careerPaths = courses.flatMap((c) => c.data.careerPaths).slice(0, 12);
         ))}
       </div>
       <p style="text-align:center; margin-top: var(--space-6);">
-        <a href="/corporate-training/" style="font-weight: var(--weight-semibold);">
+        <a href="/corporate-training/" class="view-all-link">
           View all five corporate training programmes
           <Icon name="arrow-right" size="14" />
         </a>
@@ -532,7 +532,97 @@ const careerPaths = courses.flatMap((c) => c.data.careerPaths).slice(0, 12);
     primaryLabel="Enroll now"
     primaryHref="/enroll/"
   />
-</BaseLayout>
+<style>
+  /* --- Corporate hero (dark gradient background) --- */
+  .corporate-hero {
+    background: linear-gradient(135deg, var(--brand-900) 0%, var(--brand-700) 60%, var(--brand-800) 100%);
+    color: #eaf7ef;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .corporate-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(255,255,255,0.06), transparent);
+    pointer-events: none;
+  }
+
+  .corporate-hero .section-head h2,
+  .corporate-hero .section-head p {
+    color: #fff;
+  }
+
+  .corporate-hero .section-head p {
+    opacity: 0.88;
+  }
+
+  .corporate-hero .eyebrow {
+    color: var(--brand-300);
+  }
+
+  .corporate-hero .eyebrow::before {
+    background: var(--brand-400);
+  }
+
+  /* Programme cards on dark background */
+  .corporate-program-card {
+    background: rgba(255,255,255,0.08) !important;
+    border: 1px solid rgba(255,255,255,0.15) !important;
+    border-radius: var(--radius-lg) !important;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important;
+    backdrop-filter: blur(8px);
+    transition: background var(--dur) var(--ease), transform var(--dur) var(--ease), border-color var(--dur) var(--ease) !important;
+  }
+
+  .corporate-program-card:hover {
+    background: rgba(255,255,255,0.14) !important;
+    transform: translateY(-3px) !important;
+    border-color: rgba(255,255,255,0.3) !important;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.2) !important;
+  }
+
+  .corporate-program-icon {
+    background: rgba(255,255,255,0.12) !important;
+  }
+
+  .corporate-program-icon svg {
+    color: var(--brand-300) !important;
+  }
+
+  .corporate-program-card h3 {
+    color: #fff;
+  }
+
+  .corporate-program-card p {
+    color: rgba(234,247,239,0.85);
+  }
+
+  .corporate-program-card .btn--ghost {
+    color: var(--brand-300);
+    border-color: rgba(255,255,255,0.3);
+  }
+
+  .corporate-program-card:hover .btn--ghost {
+    color: #fff;
+    border-color: rgba(255,255,255,0.5);
+  }
+
+  /* View all link */
+  .view-all-link {
+    font-weight: var(--weight-semibold);
+    color: var(--brand-300);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: color var(--dur-fast);
+  }
+
+  .view-all-link:hover {
+    color: #fff;
+  }
+</style></BaseLayout>
 
 <script>
   // Hero parallax: the decorative background layers drift with the cursor.
