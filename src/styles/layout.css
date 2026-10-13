@@ -161,6 +161,7 @@
   background: transparent;
   border: 0;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .nav__link:hover,

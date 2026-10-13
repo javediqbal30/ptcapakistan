@@ -1,0 +1,823 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Breadcrumbs from '@components/ui/Breadcrumbs.astro';
+import SectionHead from '@components/ui/SectionHead.astro';
+import CtaBanner from '@components/ui/CtaBanner.astro';
+import Accordion from '@components/ui/Accordion.astro';
+import Icon from '@components/ui/Icon.astro';
+import CorporateInquiryForm from '@components/forms/CorporateInquiryForm.astro';
+import { whatsappLink } from '@data/site';
+import {
+  CORPORATE_PROGRAMS,
+  CORPORATE_TRAINING_FORMATS,
+} from '@data/corporateTraining';
+import { breadcrumbSchema, faqSchema } from '@lib/schema';
+import type { ProgramIcon } from '@data/corporateTraining';
+
+const programs = CORPORATE_PROGRAMS;
+
+const deliverables = [
+  {
+    icon: 'check-circle' as const,
+    title: 'Customized to your organization',
+    text: 'Every session is tailored to your industry, team size and compliance needs.',
+  },
+  {
+    icon: 'globe' as const,
+    title: 'On-site, online or hybrid',
+    text: 'Delivered at your office, over a live webinar, or a hybrid workshop.',
+  },
+  {
+    icon: 'users' as const,
+    title: 'Practising faculty',
+    text: 'Sessions are led by PTCA mentors with real practice in the relevant field.',
+  },
+  {
+    icon: 'star' as const,
+    title: 'Certificate & materials',
+    text: 'Participants receive practical handouts and a certificate of completion.',
+  },
+];
+
+const faqs = [
+  {
+    q: 'What kinds of organizations does PTCA serve?',
+    a: 'PTCA serves private companies, SMEs, finance departments, HR teams, educational institutions, professional bodies and anyone who needs structured professional sessions for their team.',
+  },
+  {
+    q: 'How long is a typical session or workshop?',
+    a: 'Half-day (3–4 hours), full-day (6–7 hours) and multi-day workshop formats are all available. The right length is agreed during the free planning call with our team.',
+  },
+  {
+    q: 'Can PTCA come to our office?',
+    a: 'Yes. On-site sessions are delivered at your premises anywhere in Pakistan, with all necessary materials and setup. Online webinars and hybrid workshops are also available.',
+  },
+  {
+    q: 'How does pricing work for corporate sessions?',
+    a: 'Pricing is based on programme type, participant count, duration and delivery mode. Contact our team with your requirements and we will share a custom quote within one working day.',
+  },
+  {
+    q: 'Do participants receive a certificate?',
+    a: 'Yes. Every PTCA corporate session includes a certificate of completion and printed or digital session materials.',
+  },
+  {
+    q: 'Kya PTCA corporate training ki fee quote kar sakti hai?',
+    a: 'Ji haan. Apni team size, preferred dates aur session type share karein — admissions ek custom quote share kar denge.',
+  },
+];
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Corporate Training', path: '/corporate-training/' },
+];
+---
+
+<BaseLayout
+  seo={{
+    title: 'Corporate Sessions, Workshops & Webinars for Organizations',
+    description:
+      'PTCA delivers professional sessions and workshops for organizations in taxation, corporate law, IP, HR and teacher training. On-site, online or customized.',
+    canonical: '/corporate-training/',
+  }}
+  schemaNodes={[
+    breadcrumbSchema(crumbs),
+    faqSchema(faqs),
+    {
+      '@type': 'Service',
+      name: 'Corporate Training & Workshops',
+      description:
+        'Customized professional sessions, workshops and webinars for organizations across taxation, corporate law, intellectual property, human resources and teacher training.',
+      url: 'https://ptcapakistan.pk/corporate-training/',
+      serviceType: 'Corporate Training',
+      areaServed: [
+        { '@type': 'Country', name: 'Pakistan' },
+        { '@type': 'City', name: 'Karachi' },
+      ],
+      provider: {
+        '@type': 'EducationalOrganization',
+        name: 'Prime Tax & Corporate Academy',
+        url: 'https://ptcapakistan.pk',
+      },
+      hasOfferCatalog: {
+        '@type': 'OfferCatalog',
+        name: 'Corporate Session Programmes',
+        itemListElement: programs.map((p) => ({
+          '@type': 'Offer',
+          itemOffered: { '@type': 'Service', name: p.title },
+        })),
+      },
+    },
+  ]}
+>
+  <!-- Hero -->
+  <section class="page-hero page-hero--split">
+    <div class="container">
+      <Breadcrumbs items={crumbs} />
+      <div class="hero-split">
+        <div class="hero-split__text">
+          <span class="hero-tag"><span class="hero-tag__dot"></span>For Organizations</span>
+          <h1>Sessions &amp; Workshops for Organizations</h1>
+          <p class="page-hero__lead">
+            Prime Tax &amp; Corporate Academy delivers professional sessions,
+            workshops and webinars to help your team sharpen practical skills,
+            stay compliant and understand the laws that matter to your business.
+          </p>
+          <div class="hero__actions">
+            <a class="btn btn--primary btn--lg" href="#inquiry">
+              Request a session
+              <Icon name="arrow-right" size="16" />
+            </a>
+            <a
+              class="btn btn--whatsapp btn--lg"
+              href={whatsappLink(
+                'Hi PTCA, we would like to arrange a corporate session for our organization. Please share the next available dates.'
+              )}
+              target="_blank"
+              rel="noopener"
+            >
+              <Icon name="whatsapp" size="18" />
+              Discuss on WhatsApp
+            </a>
+          </div>
+          <ul class="hero-stats" aria-label="Why organizations choose PTCA">
+            <li>
+              <Icon name="graduation" size="18" />
+              <span>
+                <strong>5</strong> programme areas
+              </span>
+            </li>
+            <li>
+              <Icon name="globe" size="18" />
+              <span>
+                <strong>4</strong> delivery formats
+              </span>
+            </li>
+            <li>
+              <Icon name="users" size="18" />
+              <span>
+                <strong>Any</strong> team size
+              </span>
+            </li>
+          </ul>
+        </div>
+        <aside class="hero-split__aside" aria-label="Delivery formats">
+          <div class="hero-split__aside-head">
+            <div class="hero-split__aside-head-left">
+              <div class="hero-split__aside-icon">
+                <Icon name="calendar" size="20" />
+              </div>
+              <div>
+                <h2>Available formats</h2>
+                <p>Choose how your team learns best.</p>
+              </div>
+            </div>
+          </div>
+          <ul class="format-list">
+            {CORPORATE_TRAINING_FORMATS.map((format, i) => (
+              <li>
+                <span class="format-list__num">{String(i + 1).padStart(2, '0')}</span>
+                <span class="format-list__label">{format}</span>
+              </li>
+            ))}
+          </ul>
+          <div class="hero-split__note">
+            <Icon name="shield" size="14" />
+            <span>
+              Every programme is customized to your organization's industry, team
+              size and compliance needs.
+            </span>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- Programmes grid -->
+  <section class="section">
+    <div class="container">
+      <SectionHead
+        eyebrow="Programmes"
+        title="Five areas of professional training"
+        lead="Choose a domain and our team will build a session around the topics your team actually needs — from FBR compliance to HR policy, and beyond."
+        align="center"
+      />
+
+      <div class="grid grid--3 corporate-grid">
+        {programs.map((program, index) => (
+          <article class="card corporate-card corporate-card--image">
+            <figure class="corporate-card__media">
+              <img
+                src={program.image.src}
+                alt={program.image.alt}
+                loading="lazy"
+                decoding="async"
+                width="640"
+                height="400"
+                fetchpriority={index === 0 ? 'high' : 'auto'}
+              />
+              <figcaption class="corporate-card__badge">
+                <Icon name={program.icon} size="20" />
+                <span>{String(index + 1).padStart(2, '0')}</span>
+              </figcaption>
+            </figure>
+            <div class="corporate-card__body">
+              <h3>{program.title}</h3>
+              <p class="corporate-card__audience">{program.audience}</p>
+              <ul class="corporate-card__topics">
+                {program.topics.map((topic) => (
+                  <li>
+                    <Icon name="check" size="14" />
+                    <span>{topic}</span>
+                  </li>
+                ))}
+              </ul>
+              <div class="corporate-card__actions">
+                <a
+                  class="btn btn--primary btn--sm"
+                  href="#inquiry"
+                  data-program={program.id}
+                  aria-label={`${program.cta} - ${program.title}`}
+                >
+                  {program.cta}
+                  <Icon name="arrow-right" size="14" />
+                </a>
+                <a
+                  class="btn btn--whatsapp btn--sm"
+                  href={whatsappLink(program.whatsappMessage)}
+                  target="_blank"
+                  rel="noopener"
+                  aria-label={`WhatsApp PTCA about ${program.title}`}
+                >
+                  <Icon name="whatsapp" size="16" />
+                  WhatsApp
+                </a>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Delivery / value props -->
+  <section class="section section--soft">
+    <div class="container">
+      <SectionHead
+        eyebrow="Why PTCA"
+        title="Practical training, tailored to your team"
+        align="center"
+      />
+      <div class="grid grid--4">
+        {deliverables.map((item) => (
+          <div class="card card--hover">
+            <div class="card__icon">
+              <Icon name={item.icon} size="24" />
+            </div>
+            <h3>{item.title}</h3>
+            <p>{item.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="section">
+    <div class="container container--narrow">
+      <SectionHead
+        eyebrow="Process"
+        title="How corporate training works"
+        align="center"
+      />
+      <div class="steps">
+        <div class="step">
+          <h3>Share your requirements</h3>
+          <p>
+            Use the inquiry form or WhatsApp. Tell us your team, the topic and
+            the format you prefer — on-site, online or hybrid.
+          </p>
+        </div>
+        <div class="step">
+          <h3>Get a customized proposal</h3>
+          <p>
+            Our team proposes a session agenda, duration and pricing within one
+            working day.
+          </p>
+        </div>
+        <div class="step">
+          <h3>Schedule the session</h3>
+          <p>
+            Confirm the date, participants and any materials or setup your
+            organization needs.
+          </p>
+        </div>
+        <div class="step">
+          <h3>Attend and receive certificate</h3>
+          <p>
+            PTCA faculty delivers the session. Participants receive practical
+            materials and a certificate of completion.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Inquiry form -->
+  <section id="inquiry" class="section section--soft">
+    <div class="container container--narrow">
+      <SectionHead
+        eyebrow="Arrange a session"
+        title="Request a session for your organization"
+        lead="Share your requirements and our team will reply with a customized proposal and pricing within one working day."
+        align="center"
+      />
+      <CorporateInquiryForm />
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section">
+    <div class="container container--narrow">
+      <SectionHead
+        eyebrow="FAQ"
+        title="Corporate training questions"
+        align="center"
+      />
+      <Accordion
+        items={faqs.map((f) => ({ title: f.q, html: `<p>${f.a}</p>` }))}
+        firstOpen
+      />
+    </div>
+  </section>
+
+  <CtaBanner
+    title="Looking for an individual programme instead?"
+    text="Explore PTCA's public courses for students, graduates and working professionals — self-enrol and start your next career move."
+    primaryLabel="View courses"
+    primaryHref="/courses/"
+    whatsappMessage="Hi PTCA, I would like guidance on which course fits me best."
+  />
+
+<script>
+  // When a user clicks a programme card's CTA, pre-select the matching
+  // programme in the inquiry form before scrolling. Small, dependency-free.
+  const programSelect = document.querySelector<HTMLSelectElement>('#ct-program');
+  const programButtons = document.querySelectorAll<HTMLAnchorElement>('[data-program]');
+
+  programButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      if (!programSelect) return;
+      const title = button
+        .closest('article')
+        ?.querySelector('h3')
+        ?.textContent?.trim();
+      if (!title) return;
+      for (const opt of programSelect.options) {
+        if (opt.text === title) {
+          programSelect.value = opt.value;
+          break;
+        }
+      }
+    });
+  });
+</script>
+
+<style>
+  /* Page-specific layout additions. Everything references design tokens so
+     this stays consistent with the rest of the site. */
+
+  /* Top-left hero layout: override the default centered page-hero so the
+     split sits flush in the left column and reads top-down. */
+  .page-hero.page-hero--split {
+    padding-block: clamp(3.5rem, 7vw, 5.5rem) clamp(3rem, 6vw, 5rem);
+    text-align: left !important;
+  }
+
+  .page-hero.page-hero--split .container {
+    align-items: flex-start !important;
+    gap: var(--space-5);
+  }
+
+  .page-hero.page-hero--split .breadcrumbs {
+    align-self: flex-start !important;
+    text-align: left !important;
+  }
+
+  .hero-split {
+    display: grid;
+    grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+    gap: var(--space-10, 4rem);
+    align-items: start;
+    width: 100%;
+  }
+
+  .hero-split__text {
+    max-width: 620px;
+    text-align: left !important;
+    align-self: start;
+  }
+
+  .hero-split__text h1 {
+    max-width: 20ch;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+
+  .hero-split__text .page-hero__lead {
+    max-width: 56ch;
+    font-size: var(--fs-md);
+    line-height: 1.6;
+    color: #cfe0d6;
+  }
+
+  /* For-Organizations tag replaces the generic eyebrow with a pill-style
+     label that gives the hero more visual weight. */
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 1rem 0.5rem 0.75rem;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(143, 224, 173, 0.35);
+    border-radius: 999px;
+    color: #c9ecdb;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .hero-tag__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--brand-400, #22a74a);
+    box-shadow: 0 0 0 3px rgba(34, 167, 74, 0.25);
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-6);
+  }
+
+  .hero-stats {
+    list-style: none;
+    margin: var(--space-8) 0 0;
+    padding: var(--space-5) 0 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    gap: var(--space-6);
+    justify-content: start;
+    color: #d7e6df;
+  }
+
+  .hero-stats li {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: var(--fs-sm);
+  }
+
+  .hero-stats li svg {
+    color: var(--brand-400, #22a74a);
+    flex: none;
+  }
+
+  .hero-stats li strong {
+    color: #ffffff;
+    font-weight: 700;
+    margin-right: 2px;
+  }
+
+  .hero-split__aside {
+    position: relative;
+    background: linear-gradient(180deg, #ffffff 0%, #f4f9f5 100%);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    box-shadow:
+      0 24px 60px -30px rgba(6, 32, 20, 0.55),
+      0 8px 24px -12px rgba(6, 32, 20, 0.25);
+    overflow: hidden;
+  }
+
+  .hero-split__aside::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--brand-500) 0%, var(--brand-300) 100%);
+  }
+
+  .hero-split__aside-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding-bottom: var(--space-4);
+    margin-bottom: var(--space-4);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .hero-split__aside-head-left {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .hero-split__aside-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: var(--brand-50);
+    color: var(--brand-700);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+  }
+
+  .hero-split__aside h2 {
+    font-size: var(--fs-md);
+    color: var(--ink);
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  .hero-split__aside-head p {
+    margin: 0.2rem 0 0;
+    font-size: var(--fs-xs);
+    color: var(--muted);
+  }
+
+  .format-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .format-list li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: 0.75rem 0.9rem;
+    background: #ffffff;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    color: var(--ink);
+    font-weight: var(--weight-medium);
+    font-size: var(--fs-sm);
+    transition:
+      border-color var(--dur-fast) var(--ease),
+      background-color var(--dur-fast) var(--ease),
+      box-shadow var(--dur-fast) var(--ease);
+  }
+
+  .format-list li:hover {
+    border-color: var(--brand-300);
+    background: #f9fdfb;
+    box-shadow: 0 4px 10px -6px rgba(6, 32, 20, 0.15);
+  }
+
+  .format-list__num {
+    width: 28px;
+    height: 28px;
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: var(--brand-50);
+    color: var(--brand-700);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .format-list__label {
+    color: var(--ink);
+  }
+
+  .hero-split__note {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    margin-top: var(--space-4);
+    padding: 0.85rem 0.9rem;
+    background: var(--brand-50);
+    border-left: 3px solid var(--brand-500);
+    border-radius: var(--radius-sm);
+    font-size: var(--fs-xs);
+    color: var(--ink-soft);
+    line-height: 1.5;
+  }
+
+  .hero-split__note svg {
+    flex: none;
+    color: var(--brand-600);
+    margin-top: 2px;
+  }
+
+  /* Programme cards — image-led design matching the corporate mockup. */
+  .corporate-grid {
+    align-items: stretch;
+    margin-top: var(--space-8);
+  }
+
+  .corporate-card {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: box-shadow var(--dur) var(--ease),
+      transform var(--dur-fast) var(--ease),
+      border-color var(--dur-fast) var(--ease);
+  }
+
+  .corporate-card:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--brand-200);
+    transform: translateY(-3px);
+  }
+
+  /* Image frame: fixed aspect ratio so cards stay visually even
+     regardless of source dimensions. */
+  .corporate-card__media {
+    position: relative;
+    display: block;
+    margin: 0;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--brand-900, #0a4623);
+  }
+
+  .corporate-card__media img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: transform var(--dur) var(--ease);
+  }
+
+  .corporate-card:hover .corporate-card__media img {
+    transform: scale(1.04);
+  }
+
+  /* Subtle bottom gradient so the badge has a consistent backdrop. */
+  .corporate-card__media::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 45%;
+    background: linear-gradient(
+      180deg,
+      transparent 0%,
+      rgba(6, 32, 20, 0.35) 65%,
+      rgba(6, 32, 20, 0.55) 100%
+    );
+    pointer-events: none;
+  }
+
+  /* Floating icon + ordinal badge anchored to the image. */
+  .corporate-card__badge {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.5rem 0.75rem 0.5rem 0.6rem;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 999px;
+    box-shadow: 0 6px 16px -8px rgba(6, 32, 20, 0.5);
+    color: var(--brand-700);
+    backdrop-filter: blur(6px);
+  }
+
+  .corporate-card__badge svg {
+    color: var(--brand-600);
+  }
+
+  .corporate-card__badge span {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--ink);
+  }
+
+  /* Text body */
+  .corporate-card__body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: var(--space-5);
+  }
+
+  .corporate-card__body h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+
+  .corporate-card__audience {
+    color: var(--muted);
+    font-size: var(--fs-sm);
+    line-height: var(--lh-base);
+    margin-top: var(--space-2);
+  }
+
+  .corporate-card__topics {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-4) 0 var(--space-5);
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .corporate-card__topics li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-2);
+    color: var(--ink-soft);
+    font-size: var(--fs-sm);
+    line-height: 1.35;
+  }
+
+  .corporate-card__topics svg {
+    flex: none;
+    margin-top: 3px;
+    color: var(--brand-600);
+  }
+
+  .corporate-card__actions {
+    margin-top: auto;
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--line);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  /* Mobile */
+  @media (max-width: 900px) {
+    .page-hero.page-hero--split .container {
+      align-items: stretch;
+    }
+
+    .hero-split {
+      grid-template-columns: 1fr;
+      gap: var(--space-6);
+    }
+
+    .hero-split__text {
+      max-width: none;
+    }
+
+    .hero-stats {
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-3);
+    }
+
+    .hero-split__aside {
+      padding: var(--space-5);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .hero-stats {
+      grid-template-columns: 1fr;
+      gap: var(--space-3);
+    }
+
+    .corporate-card__body {
+      padding: var(--space-4);
+    }
+
+    .corporate-card__actions {
+      flex-direction: column;
+    }
+
+    .corporate-card__actions .btn {
+      width: 100%;
+    }
+  }
+
+</style>
+
+    primaryHref="/courses/"
+    whatsappMessage="Hi PTCA, I would like guidance on which course fits me best."
+  />
+</BaseLayout>

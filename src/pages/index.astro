@@ -13,6 +13,7 @@ import CtaBanner from '@components/ui/CtaBanner.astro';
 import Icon from '@components/ui/Icon.astro';
 import { Image } from 'astro:assets';
 import aboutImage from '@assets/about/About_PTCA.webp';
+import { CORPORATE_PROGRAMS } from '@data/corporateTraining';
 
 const courses = await getPublishedCourses();
 const mentors = await getPublishedMentors();
@@ -229,14 +230,14 @@ const careerPaths = courses.flatMap((c) => c.data.careerPaths).slice(0, 12);
               </div>
             ))}
           </div>
-          <div class="split__media">
-            <img
-              src="/Training_approachs.webp"
-              alt="PTCA training approach - understand, practise, apply"
-              loading="lazy"
-              decoding="async"
-            />
-          </div>
+        </div>
+        <div class="split__media">
+          <img
+            src="/Training_approachs.webp"
+            alt="PTCA training approach - understand, practise, apply"
+            loading="lazy"
+            decoding="async"
+          />
         </div>
       </div>
     </div>
@@ -426,6 +427,49 @@ const careerPaths = courses.flatMap((c) => c.data.careerPaths).slice(0, 12);
     </section>
   )}
 
+  <section class="section section--soft" id="corporate-training">
+    <div class="container">
+      <SectionHead
+        eyebrow="For organizations"
+        title="Corporate sessions, workshops & webinars"
+        lead="Professional training delivered to your team — on-site, online or customized. Perfect for companies, institutions and finance, HR and academic teams."
+        align="center"
+      />
+      <div class="grid grid--3" style="margin-top: var(--space-8);">
+        {CORPORATE_PROGRAMS.slice(0, 3).map((program) => (
+          <a
+            class="card card--hover"
+            href="/corporate-training/#inquiry"
+            style="
+              padding: var(--space-6);
+              display: flex;
+              flex-direction: column;
+              gap: var(--space-3);
+              text-decoration: none;
+              color: inherit;
+            "
+          >
+            <div class="card__icon">
+              <Icon name={program.icon} size="24" />
+            </div>
+            <h3>{program.title}</h3>
+            <p style="color: var(--muted); font-size: var(--fs-sm);">{program.audience}</p>
+            <span class="btn btn--primary btn--sm" style="margin-top: auto; align-self: flex-start;">
+              Learn more
+              <Icon name="arrow-right" size="14" />
+            </span>
+          </a>
+        ))}
+      </div>
+      <p style="text-align:center; margin-top: var(--space-6);">
+        <a href="/corporate-training/" style="font-weight: var(--weight-semibold);">
+          View all five corporate training programmes
+          <Icon name="arrow-right" size="14" />
+        </a>
+      </p>
+    </div>
+  </section>
+
   <section class="section">
     <div class="container container--narrow">
       <SectionHead
@@ -443,7 +487,7 @@ const careerPaths = courses.flatMap((c) => c.data.careerPaths).slice(0, 12);
   <CtaBanner
     title="Ready to start?"
     text="Tell us which course interests you and our admissions team will guide you through mode, batch dates and registration."
-    primaryLabel="Enrol now"
+    primaryLabel="Enroll now"
     primaryHref="/enroll/"
   />
 </BaseLayout>

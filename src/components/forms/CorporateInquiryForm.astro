@@ -1,0 +1,240 @@
+---
+import Icon from '@components/ui/Icon.astro';
+import { telHref } from '@data/site';
+import {
+  CORPORATE_PROGRAMS,
+  CORPORATE_TRAINING_FORMATS,
+} from '@data/corporateTraining';
+
+/**
+ * Inquiry form used by the /corporate-training/ page. Reuses the existing
+ * `/api/contact` lead endpoint so admissions can review B2B enquiries in the
+ * same flow as public ones, but with fields tuned for organizations.
+ *
+ * A hidden `source=corporate-training` field lets admissions filter these
+ * enquiries out of the general contact pile.
+ */
+---
+
+<form
+  id="corporate-form"
+  class="form"
+  method="post"
+  action="/api/contact/"
+  data-endpoint="/api/contact/"
+  novalidate
+>
+  <input type="hidden" name="source" value="corporate-training" aria-hidden="true" />
+
+  <div class="form-grid">
+    <div class="field">
+      <label for="ct-organization">Organization <span class="req">*</span></label>
+      <input class="input" id="ct-organization" name="organization" type="text" autocomplete="organization" placeholder="Company or institution name" required data-rule="text" />
+      <span class="field__error" data-error-for="ct-organization" aria-live="polite"></span>
+    </div>
+
+    <div class="field">
+      <label for="ct-name">Contact person <span class="req">*</span></label>
+      <input class="input" id="ct-name" name="name" type="text" autocomplete="name" required data-rule="name" />
+      <span class="field__error" data-error-for="ct-name" aria-live="polite"></span>
+    </div>
+
+    <div class="field">
+      <label for="ct-phone">Mobile / WhatsApp <span class="req">*</span></label>
+      <input class="input" id="ct-phone" name="phone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="03XX XXXXXXX" required data-rule="phone" />
+      <span class="field__error" data-error-for="ct-phone" aria-live="polite"></span>
+    </div>
+
+    <div class="field">
+      <label for="ct-email">Email <span class="req">*</span></label>
+      <input class="input" id="ct-email" name="email" type="email" autocomplete="email" required data-rule="email" />
+      <span class="field__error" data-error-for="ct-email" aria-live="polite"></span>
+    </div>
+
+    <div class="field">
+      <label for="ct-program">Programme of interest <span class="req">*</span></label>
+      <select class="select" id="ct-program" name="course" required data-rule="text">
+        <option value="">Select a programme</option>
+        {CORPORATE_PROGRAMS.map((program) => (
+          <option value={program.title}>{program.title}</option>
+        ))}
+        <option value="Other / multiple topics">Other / multiple topics</option>
+      </select>
+      <span class="field__error" data-error-for="ct-program" aria-live="polite"></span>
+    </div>
+
+    <div class="field">
+      <label for="ct-format">Preferred format <span class="req">*</span></label>
+      <select class="select" id="ct-format" name="mode" required data-rule="text">
+        <option value="">Select format</option>
+        {CORPORATE_TRAINING_FORMATS.map((format) => (
+          <option value={format}>{format}</option>
+        ))}
+      </select>
+      <span class="field__error" data-error-for="ct-format" aria-live="polite"></span>
+    </div>
+
+    <div class="field">
+      <label for="ct-size">Approx. participants <span class="req">*</span></label>
+      <select class="select" id="ct-size" name="participants" required data-rule="text">
+        <option value="">Select a range</option>
+        <option value="1-10">1–10</option>
+        <option value="11-25">11–25</option>
+        <option value="26-50">26–50</option>
+        <option value="51-100">51–100</option>
+        <option value="100+">100+</option>
+      </select>
+      <span class="field__error" data-error-for="ct-size" aria-live="polite"></span>
+    </div>
+
+    <div class="field">
+      <label for="ct-timing">Preferred timing</label>
+      <select class="select" id="ct-timing" name="timing">
+        <option value="">No preference</option>
+        <option value="Weekday daytime">Weekday daytime</option>
+        <option value="Weekday evening">Weekday evening</option>
+        <option value="Weekend">Weekend</option>
+        <option value="Half day (3-4 hours)">Half day (3–4 hours)</option>
+        <option value="Full day (6-7 hours)">Full day (6–7 hours)</option>
+      </select>
+    </div>
+
+    <div class="field field--full">
+      <label for="ct-message">Your requirements <span class="req">*</span></label>
+      <textarea class="textarea" id="ct-message" name="message" rows="5" required data-rule="text" placeholder="Tell us about your team, the topics you need covered, and any deadlines or dates in mind."></textarea>
+      <span class="field__error" data-error-for="ct-message" aria-live="polite"></span>
+    </div>
+  </div>
+
+  <label class="consent">
+    <input type="checkbox" name="consent" value="yes" required data-rule="consent" />
+    <span>
+      I agree to be contacted by PTCA and accept the
+      <a href="/privacy-policy/">privacy policy</a>.
+    </span>
+  </label>
+  <span class="field__error" data-error-for="consent" aria-live="polite"></span>
+
+  <div class="hp-field" aria-hidden="true">
+    <label for="ct-website">Website</label>
+    <input id="ct-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+  </div>
+
+  <div style="display:flex; flex-wrap:wrap; gap:0.75rem; align-items:center">
+    <button class="btn btn--primary btn--lg" type="submit">
+      Send inquiry
+      <Icon name="arrow-right" size="16" />
+    </button>
+    <a class="btn btn--outline" href={telHref} aria-label="Call PTCA corporate training team">
+      <Icon name="phone" size="16" />
+      Or call us
+    </a>
+  </div>
+</form>
+<script>
+  // Client-side validation and POST handling. Mirrors ContactForm but with
+  // the corporate-specific required fields. Kept dependency-free.
+  const form = document.getElementById('corporate-form') as HTMLFormElement | null;
+
+  if (form) {
+    const labels: Record<string, string> = {
+      'ct-organization': 'Please enter your organization name.',
+      'ct-name': 'Please enter your full name.',
+      'ct-phone': 'Enter a valid mobile number, e.g. 0300 1234567.',
+      'ct-email': 'Enter a valid email address.',
+      'ct-program': 'Please select a programme.',
+      'ct-format': 'Please select a preferred format.',
+      'ct-size': 'Please select a participant range.',
+      'ct-message': 'Please write a short message about your requirements.',
+    };
+
+    const valid: Record<string, (v: string) => boolean> = {
+      name: (v) => /^[A-Za-z][A-Za-z\s.'-]{2,}$/.test(v),
+      phone: (v) => /^(03\d{9}|\+923\d{9})$/.test(v.replace(/[\s-]/g, '')),
+      email: (v) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v),
+      text: (v) => v.trim().length >= 3,
+    };
+
+    const setError = (id: string, message: string) => {
+      const slot = form.querySelector<HTMLElement>(`[data-error-for="${id}"]`);
+      if (slot) slot.textContent = message;
+      const input = form.querySelector<HTMLElement>(`#${id}`);
+      if (input) input.setAttribute('aria-invalid', message ? 'true' : 'false');
+    };
+
+    form.addEventListener('submit', (event) => {
+      let ok = true;
+      form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>('[data-rule]').forEach(
+        (field) => {
+          const rule = field.dataset.rule ?? 'text';
+          const id = field.id;
+
+          if (rule === 'consent') {
+            if (!(field as HTMLInputElement).checked) {
+              ok = false;
+              setError('consent', 'Please accept the privacy policy.');
+            } else setError('consent', '');
+            return;
+          }
+
+          const check = valid[rule];
+          if (check && check(field.value)) {
+            setError(id, '');
+          } else {
+            ok = false;
+            setError(id, labels[id] ?? 'Please check this field.');
+          }
+        }
+      );
+
+      if (!ok) {
+        event.preventDefault();
+        const firstInvalid = form.querySelector<HTMLElement>('[aria-invalid="true"]');
+        firstInvalid?.focus();
+        firstInvalid?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+
+      if (String(new FormData(form).get('website') ?? '') !== '') {
+        event.preventDefault();
+        return;
+      }
+
+      const endpoint = form.dataset.endpoint;
+      if (!endpoint) {
+        event.preventDefault();
+        window.alert('Thank you. Please also reach us on WhatsApp for a faster reply.');
+        location.assign('/thank-you/');
+        return;
+      }
+
+      event.preventDefault();
+      const button = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+      if (button) button.disabled = true;
+
+      fetch(endpoint, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { Accept: 'application/json' },
+      })
+        .then(async (response) => {
+          if (response.ok) {
+            location.assign('/thank-you/');
+            return;
+          }
+          const message = (await response.text()).trim();
+          throw new Error(message || 'Request failed');
+        })
+        .catch((error: unknown) => {
+          if (button) button.disabled = false;
+          const detail = error instanceof Error && error.message ? error.message : '';
+          window.alert(
+            detail
+              ? `${detail}\n\nIf the problem continues, please reach us on WhatsApp.`
+              : 'Sorry, we could not send your message. Please try again, or contact us on WhatsApp.'
+          );
+        });
+    });
+  }
+</script>
+

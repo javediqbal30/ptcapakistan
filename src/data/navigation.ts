@@ -21,8 +21,8 @@ export const PRIMARY_NAV: NavLink[] = [
   { label: 'Home', href: '/' },
   { label: 'About', href: '/about/' },
   { label: 'Courses', href: '/courses/' },
+  { label: 'Corporate', href: '/corporate-training/' },
   { label: 'Mentors', href: '/mentors/' },
-  { label: 'Resources', href: '/resources/' },
   { label: 'Blog', href: '/blog/' },
   { label: 'Contact', href: '/contact/' },
 ];
@@ -54,9 +54,9 @@ export const FOOTER_QUICK_LINKS: NavLink[] = [
   { label: 'Home', href: '/' },
   { label: 'About PTCA', href: '/about/' },
   { label: 'Our Courses', href: '/courses/' },
+  { label: 'Corporate Training', href: '/corporate-training/' },
   { label: 'Our Mentors', href: '/mentors/' },
   { label: 'Admissions', href: '/admissions/' },
-  { label: 'Resources', href: '/resources/' },
   { label: 'Blog', href: '/blog/' },
   { label: 'Contact Us', href: '/contact/' },
 ];

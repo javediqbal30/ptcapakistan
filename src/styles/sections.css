@@ -478,6 +478,34 @@
   border: 1px solid rgba(34, 167, 74, 0.35);
 }
 
+/* `.page-hero--split` variant: hero used on /corporate-training/.
+   The default page-hero is centred; the split variant anchors everything
+   top-left so it reads like a magazine spread. Kept here (not in a scoped
+   Astro <style> block) so it lives in the same cascade as the defaults
+   and wins by source order — no !important needed. */
+.page-hero.page-hero--split {
+  text-align: left;
+}
+
+.page-hero.page-hero--split .container {
+  align-items: flex-start;
+  gap: var(--space-5);
+}
+
+.page-hero.page-hero--split .breadcrumbs {
+  align-self: flex-start;
+  text-align: left;
+}
+
+.page-hero.page-hero--split h1 {
+  text-align: left;
+  margin-left: 0;
+}
+
+.page-hero.page-hero--split .page-hero__lead {
+  text-align: left;
+}
+
 /* Article hero content (blog post / course pages) keeps its wider text column. */
 .page-hero .article-head {
   max-width: 56rem;
