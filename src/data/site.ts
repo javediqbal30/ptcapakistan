@@ -61,10 +61,10 @@ export const SITE = {
 
   /** Social profiles - TODO: CONFIRM. Only real URLs belong here. */
   social: {
-    facebook: '',
+    facebook: 'https://www.facebook.com/share/19Uh1xiLN4/',
     linkedin: '',
-    instagram: '',
-    youtube: '',
+    instagram: 'https://www.instagram.com/primetaxcorporateacademy?dlrf=b3BzZncwdHgwYXo1',
+    youtube: 'https://www.youtube.com/@PrimeTaxCorporateAcademy',
   },
 
   /** Google Maps deep link for "Get directions". */
