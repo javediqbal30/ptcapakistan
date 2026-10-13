@@ -427,7 +427,7 @@ const careerPaths = courses.flatMap((c) => c.data.careerPaths).slice(0, 12);
     </section>
   )}
 
-  <section class="section section--soft" id="corporate-training">
+  <section class="section section--soft corporate-train-bg" id="corporate-training">
     <div class="container">
       <SectionHead
         eyebrow="For organizations"
@@ -436,29 +436,71 @@ const careerPaths = courses.flatMap((c) => c.data.careerPaths).slice(0, 12);
         align="center"
       />
       <div class="grid grid--3" style="margin-top: var(--space-8);">
-        {CORPORATE_PROGRAMS.slice(0, 3).map((program) => (
-          <a
-            class="card card--hover"
-            href="/corporate-training/#inquiry"
+        {CORPORATE_PROGRAMS.slice(0, 5).map((program) => (
+          <article
+            class="card card--hover corporate-program-card"
             style="
+              border: none;
+              border-radius: var(--radius-lg);
+              background: var(--surface-white);
+              box-shadow: var(--shadow-sm);
               padding: var(--space-6);
               display: flex;
               flex-direction: column;
               gap: var(--space-3);
               text-decoration: none;
               color: inherit;
+              transition: transform var(--transition-fast);
             "
+            href="/corporate-training/#inquiry"
+            aria-label={program.title}
           >
-            <div class="card__icon">
-              <Icon name={program.icon} size="24" />
+            <div
+              class="corporate-program-icon"
+              style="
+                width: 48px;
+                height: 48px;
+                border-radius: var(--radius-md);
+                background: var(--surface-muted);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-bottom: var(--space-3);
+                flex-shrink: 0;
+              "
+            >
+              <Icon name={program.icon} size="24" style="color: var(--brand-900);" />
             </div>
-            <h3>{program.title}</h3>
-            <p style="color: var(--muted); font-size: var(--fs-sm);">{program.audience}</p>
-            <span class="btn btn--primary btn--sm" style="margin-top: auto; align-self: flex-start;">
-              Learn more
-              <Icon name="arrow-right" size="14" />
-            </span>
-          </a>
+
+            <h3 style="font-weight: 600; margin-bottom: var(--space-1);">
+              {program.title}
+            </h3>
+
+            <p
+              style="
+                font-size: var(--fs-sm);
+                color: var(--muted);
+                margin: 0;
+                line-height: 1.4;
+              "
+            >
+              {program.audience}
+            </p>
+
+            <div
+              style="
+                margin-top: var(--space-2);
+                display: flex;
+                align-items: center;
+                gap: var(--space-2);
+              "
+            >
+              <span class="btn btn--ghost btn--sm" style="padding-left:0; padding-right:0;">
+                Learn more
+                <Icon name="arrow-right" size="14" />
+              </span>
+            </div>
+          </article>
         ))}
       </div>
       <p style="text-align:center; margin-top: var(--space-6);">
