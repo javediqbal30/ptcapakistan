@@ -1,0 +1,1034 @@
+/* ==========================================================================
+   Page sections - hero, banners, course detail, contact, article
+   ========================================================================== */
+
+/* --- Hero course rotator --------------------------------------------------- */
+/* Built from real course posters: each slide links to its course page and the
+   caption carries a direct enrolment link, so the hero doubles as the primary
+   course advertisement on the home page. */
+
+.hero-rotator {
+  position: relative;
+}
+
+.hero-rotator__viewport {
+  position: relative;
+  /* Grid so every slide can occupy the same cell - required for the crossfade. */
+  display: grid;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  background: linear-gradient(160deg, var(--brand-800), var(--brand-500));
+  box-shadow: var(--shadow-lg);
+}
+
+/* The outgoing slide fades out in place; only the active one paints on top. */
+.hero-slide[data-active='false'] {
+  opacity: 0;
+}
+
+/* Crossfade: every slide is stacked in the same grid cell and fades between
+   states, so the poster never snaps. `inert`-like behaviour for a11y is handled
+   by aria-hidden in the markup. */
+.hero-slide {
+  grid-area: 1 / 1;
+  opacity: 0;
+  transform: scale(1.015);
+  transition:
+    opacity 700ms cubic-bezier(0.4, 0, 0.2, 1),
+    transform 900ms cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+
+.hero-slide[data-active='true'] {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+  /* Bring the active slide above the outgoing one during the crossfade. */
+  z-index: 1;
+}
+
+/* No motion for readers who asked for none: the fade is replaced by an instant
+   swap so the rotator still works. */
+@media (prefers-reduced-motion: reduce) {
+  .hero-slide {
+    transition: none;
+    transform: none;
+  }
+}
+
+.hero-slide__media {
+  display: block;
+  background: #fff;
+}
+
+.hero-slide__media img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1120 / 944;
+  object-fit: cover;
+}
+
+.hero-slide__caption {
+  padding: var(--space-5) var(--space-6) var(--space-6);
+  background: var(--surface);
+  border-top: 1px solid var(--line);
+}
+
+.hero-slide__eyebrow {
+  display: block;
+  font-size: var(--fs-2xs);
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--brand-600);
+}
+
+.hero-slide__title {
+  margin-top: 0.35rem;
+  font-size: var(--fs-lg);
+  line-height: 1.25;
+}
+
+.hero-slide__title a {
+  color: var(--heading);
+}
+
+.hero-slide__title a:hover {
+  color: var(--brand-700);
+}
+
+.hero-slide__text {
+  margin-top: 0.5rem;
+  font-size: var(--fs-sm);
+  color: var(--muted);
+}
+
+.hero-slide__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+/* --- Dots / progress ------------------------------------------------------ */
+
+.hero-rotator__dots {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: var(--space-4);
+}
+
+.hero-rotator__dot {
+  flex: 1;
+  height: 5px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--line);
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.hero-rotator__dot:hover {
+  background: var(--brand-100);
+}
+
+.hero-rotator__dot-fill {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: var(--brand-600);
+}
+
+.hero-rotator__dot[aria-selected='true'] .hero-rotator__dot-fill {
+  animation: hero-rotator-progress 3s linear forwards;
+}
+
+@keyframes hero-rotator-progress {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-rotator__dot[aria-selected='true'] .hero-rotator__dot-fill {
+    animation: none;
+    width: 100%;
+  }
+}
+
+@media (max-width: 560px) {
+  .hero-slide__caption {
+    padding: var(--space-4) var(--space-5) var(--space-5);
+  }
+}
+
+/* --- Home hero ----------------------------------------------------------- */
+
+.hero {
+  position: relative;
+  /* Tight: the sticky header already provides breathing room, so the hero only
+     needs a small nudge before the eyebrow and the copy is pulled up slightly
+     by .hero__copy. */
+  padding-block: clamp(1.75rem, 3vw, 2.75rem) clamp(1.75rem, 3vw, 2.75rem);
+  background:
+    radial-gradient(60% 80% at 88% -10%, var(--brand-50), transparent 60%),
+    var(--surface);
+  overflow: hidden;
+}
+
+.hero__grid {
+  display: grid;
+  /* Copy gets a slightly wider share and the gap is tightened, so the headline
+     and the rotator sit close together instead of drifting apart. */
+  grid-template-columns: 1.08fr 0.92fr;
+  gap: clamp(1.5rem, 3vw, 2.5rem);
+  /* Top-aligned: the copy starts on the same line as the top of the image box,
+     so both columns read as one header band rather than two floating blocks. */
+  align-items: start;
+}
+
+/* Minimal lift so the copy sits level with the top of the course rotator while
+   still clearing the section padding. */
+.hero__copy {
+  margin-top: 0;
+}
+
+.hero h1,
+.hero__title {
+  /* Three deliberate lines: "Develop Global" / "Business & Taxation" /
+     "Skills With PTCA". Tight against the eyebrow above it. */
+  font-size: clamp(1.95rem, 3.4vw, 3.15rem);
+  line-height: var(--lh-tight);
+  margin-top: 0.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--heading);
+}
+
+/* Each line is its own block so the break is guaranteed, not left to the
+   natural wrap of the container width. */
+.hero__title-line {
+  display: block;
+}
+
+/* Hero headline accents: gradient key phrase + solid brand lockup line.
+   The gradient is clipped on the block itself (not an inline span) so the
+   background covers the whole line box without a descender gap. */
+.hero__title-accent,
+.hero__title-line--accent {
+  display: block;
+  font-weight: 800;
+  background: linear-gradient(100deg, var(--brand-700), var(--brand-500) 45%, var(--brand-800));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  /* Descenders (none here, but future copy) must not clip with the box. */
+  padding-bottom: 0.06em;
+}
+
+.hero__title-kicker {
+  display: block;
+  /* Sits above the main phrase as a bold brand-coloured lead-in, so the
+     strongest emphasis still lands on "Business & Taxation". */
+  font-size: 0.44em;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--brand-700);
+}
+
+/* Solid, fully bold closing line - deliberately the same size as the accent
+   line so the three lines read as one locked-up headline block. */
+.hero__title-line--bold {
+  display: block;
+  font-weight: 800;
+  color: var(--heading);
+}
+
+/* Kept for other page heroes that still use the standalone brand lockup. */
+.hero__title-brand {
+  display: block;
+  margin-top: 0.15em;
+  font-size: 0.52em;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: var(--brand-700);
+}
+
+.hero__lead {
+  /* Tight against the headline - the hero reads as one compact block. */
+  margin-top: var(--space-3);
+  font-size: var(--fs-md);
+  color: var(--muted);
+  max-width: 52ch;
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+}
+
+.hero__features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-5);
+  margin-top: var(--space-5);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--line);
+  list-style: none;
+  padding-left: 0;
+}
+
+.hero__features li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: var(--fs-sm);
+  font-weight: var(--weight-medium);
+  color: var(--ink-soft);
+}
+
+.hero__features svg {
+  width: 18px;
+  height: 18px;
+  color: var(--brand-600);
+  flex: none;
+}
+
+/* The hero media slot is now the course rotator (HeroRotator.astro). */
+
+/* --- Interactive background ----------------------------------------------- */
+/* Three decorative layers behind the hero content that drift with the cursor:
+   soft brand "orbs", a faint blueprint grid and a subtle spotlight. The layers
+   are pure CSS animations; a tiny pointer handler (in index.astro) only writes
+   two custom properties, so the whole effect costs a few hundred bytes of JS.
+
+   Everything is disabled for `prefers-reduced-motion` and for coarse pointers
+   (touch devices), where there is no cursor to follow. */
+.hero__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.hero__grid-lines {
+  position: absolute;
+  inset: -20%;
+  background-image:
+    linear-gradient(to right, var(--brand-100) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--brand-100) 1px, transparent 1px);
+  background-size: 56px 56px;
+  opacity: 0.55;
+  /* Fade the grid out towards the edges so it never competes with the text. */
+  mask-image: radial-gradient(70% 70% at 50% 40%, #000 30%, transparent 100%);
+  -webkit-mask-image: radial-gradient(70% 70% at 50% 40%, #000 30%, transparent 100%);
+  transform: translate3d(
+    calc(var(--mx, 0) * -18px),
+    calc(var(--my, 0) * -18px),
+    0
+  );
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hero__orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  will-change: transform;
+  transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hero__orb--1 {
+  top: -18%;
+  right: -8%;
+  width: 46vw;
+  height: 46vw;
+  max-width: 560px;
+  max-height: 560px;
+  background: radial-gradient(circle, rgba(34, 167, 74, 0.34), transparent 68%);
+  transform: translate3d(calc(var(--mx, 0) * 26px), calc(var(--my, 0) * 26px), 0);
+}
+
+.hero__orb--2 {
+  bottom: -26%;
+  left: -14%;
+  width: 40vw;
+  height: 40vw;
+  max-width: 480px;
+  max-height: 480px;
+  background: radial-gradient(circle, rgba(15, 107, 69, 0.22), transparent 68%);
+  transform: translate3d(calc(var(--mx, 0) * -34px), calc(var(--my, 0) * -34px), 0);
+}
+
+.hero__orb--3 {
+  top: 32%;
+  left: 42%;
+  width: 26vw;
+  height: 26vw;
+  max-width: 320px;
+  max-height: 320px;
+  background: radial-gradient(circle, rgba(120, 220, 165, 0.28), transparent 70%);
+  transform: translate3d(calc(var(--mx, 0) * 44px), calc(var(--my, 0) * -20px), 0);
+}
+
+/* Spotlight that follows the pointer across the whole hero. */
+.hero__spotlight {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    340px circle at var(--px, 50%) var(--py, 40%),
+    rgba(34, 167, 74, 0.13),
+    transparent 70%
+  );
+  transition: background 0.25s ease-out;
+}
+
+/* Keep the hero content above the decorative layers. */
+.hero > .container {
+  position: relative;
+  z-index: 1;
+}
+
+@media (hover: none), (prefers-reduced-motion: reduce) {
+  .hero__grid-lines,
+  .hero__orb,
+  .hero__spotlight {
+    /* No cursor to follow: park the layers and drop the movement. */
+    --mx: 0;
+    --my: 0;
+    --px: 50%;
+    --py: 40%;
+    transition: none;
+  }
+
+  .hero__grid-lines {
+    opacity: 0.4;
+  }
+}
+
+@media (max-width: 900px) {
+  .hero__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-rotator {
+    order: -1;
+  }
+
+  .hero__copy {
+    margin-top: 0;
+  }
+}
+
+/* --- Page banner (inner pages) ------------------------------------------- */
+
+.page-hero {
+  padding-block: clamp(3rem, 6vw, 5rem) clamp(2.5rem, 5vw, 4rem);
+  background:
+    radial-gradient(900px 320px at 50% -120px, rgba(34, 167, 74, 0.22), transparent 70%),
+    linear-gradient(135deg, var(--surface-ink) 0%, #0f2b1d 55%, var(--brand-900, #0a4623) 100%);
+  border-bottom: 1px solid var(--line);
+  text-align: center;
+  color: #e8f3ec;
+}
+
+.page-hero .container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.page-hero h1 {
+  font-size: clamp(var(--fs-2xl), 4.5vw, var(--fs-4xl));
+  margin-top: var(--space-4);
+  color: #ffffff;
+  max-width: 22ch;
+}
+
+.page-hero__lead {
+  margin-top: var(--space-4);
+  max-width: 62ch;
+  color: #b9cdc4;
+  font-size: var(--fs-md);
+}
+
+.page-hero .breadcrumbs {
+  margin-bottom: var(--space-2);
+  color: #9fb8ad;
+}
+
+.page-hero .breadcrumbs a {
+  color: #d6e8df;
+}
+
+.page-hero .breadcrumbs a:hover {
+  color: #ffffff;
+}
+
+.page-hero .badge--brand {
+  background: rgba(34, 167, 74, 0.18);
+  color: #8fe0ad;
+  border: 1px solid rgba(34, 167, 74, 0.35);
+}
+
+/* `.page-hero--split` variant: hero used on /corporate-training/.
+   The default page-hero is centred; the split variant anchors everything
+   top-left so it reads like a magazine spread. Kept here (not in a scoped
+   Astro <style> block) so it lives in the same cascade as the defaults
+   and wins by source order — no !important needed. */
+.page-hero.page-hero--split {
+  text-align: left;
+}
+
+.page-hero.page-hero--split .container {
+  align-items: flex-start;
+  gap: var(--space-5);
+}
+
+.page-hero.page-hero--split .breadcrumbs {
+  align-self: flex-start;
+  text-align: left;
+}
+
+.page-hero.page-hero--split h1 {
+  text-align: left;
+  margin-left: 0;
+}
+
+.page-hero.page-hero--split .page-hero__lead {
+  text-align: left;
+}
+
+/* Article hero content (blog post / course pages) keeps its wider text column. */
+.page-hero .article-head {
+  max-width: 56rem;
+}
+.page-hero .article-meta {
+  justify-content: center;
+  color: #b9cdc4;
+}
+.page-hero .article-meta a { color: #8fe0ad; }
+
+/* --- Trust strip --------------------------------------------------------- */
+
+.trust-strip {
+  position: relative;
+  overflow: hidden;
+  background: #ffffff;
+  border-block: 1px solid var(--line);
+}
+
+.trust-strip__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  gap: var(--space-5);
+  padding-block: var(--space-8);
+}
+
+/* Each figure sits on its own card with a gold accent rule, so the strip
+   reads as a set of credentials rather than loose numbers. */
+.trust-strip .stat {
+  position: relative;
+  padding: var(--space-6) var(--space-4) var(--space-5);
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition:
+    transform var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease),
+    border-color var(--dur) var(--ease);
+}
+
+.trust-strip .stat::before {
+  content: '';
+  display: block;
+  width: 2.5rem;
+  height: 3px;
+  margin: 0 auto var(--space-4);
+  border-radius: var(--radius-pill);
+  background: linear-gradient(90deg, var(--brand-500), var(--brand-300));
+}
+
+.trust-strip .stat:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--brand-300);
+}
+
+.trust-strip .stat__value {
+  color: var(--brand-600);
+  font-weight: var(--weight-extrabold);
+  font-size: clamp(var(--fs-3xl), 3.4vw, 2.6rem);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.trust-strip .stat__label {
+  margin-top: var(--space-3);
+  color: var(--ink-soft);
+  font-size: var(--fs-xs);
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* --- CTA banner ---------------------------------------------------------- */
+
+.cta-banner {
+  background: linear-gradient(140deg, var(--brand-800), var(--brand-600));
+  border-radius: var(--radius-xl);
+  padding: clamp(2rem, 5vw, 3.5rem);
+  color: #eaf7ef;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: var(--space-7);
+  align-items: center;
+}
+
+.cta-banner h2 {
+  color: #fff;
+  font-size: clamp(var(--fs-2xl), 3.2vw, var(--fs-3xl));
+}
+
+.cta-banner p {
+  margin-top: var(--space-4);
+  color: #d6efe0;
+  max-width: 46ch;
+}
+
+.cta-banner__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  justify-content: flex-end;
+}
+
+@media (max-width: 820px) {
+  .cta-banner {
+    grid-template-columns: 1fr;
+  }
+
+  .cta-banner__actions {
+    justify-content: flex-start;
+  }
+}
+
+/* --- Split (media + text) ------------------------------------------------ */
+
+.split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: center;
+}
+
+.split__media {
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  aspect-ratio: 5 / 4;
+  background: var(--surface-muted);
+}
+
+.split__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* The About photo should not be cropped as hard as the generic placeholder
+   did - a wider ratio preserves more of the classroom scene. */
+.split__media--about {
+  aspect-ratio: 4 / 3;
+  background: var(--surface-muted);
+}
+
+@media (max-width: 820px) {
+  .split {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- Course detail layout ------------------------------------------------ */
+
+.course-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: clamp(2rem, 4vw, 3.5rem);
+  align-items: start;
+}
+
+.course-layout__body > section + section {
+  margin-top: var(--space-9);
+}
+
+.course-sidebar {
+  position: sticky;
+  top: calc(var(--header-h) + 1.25rem);
+  display: grid;
+  gap: var(--space-4);
+}
+
+.facts-card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.facts-card__head {
+  padding: var(--space-5) var(--space-6);
+  background: var(--surface-ink);
+  color: #fff;
+}
+
+.facts-card__head h2 {
+  color: #fff;
+  font-size: var(--fs-lg);
+}
+
+.facts-card__head p {
+  margin-top: 0.35rem;
+  font-size: var(--fs-xs);
+  color: #a7b6c1;
+}
+
+.facts-list {
+  list-style: none;
+  padding: var(--space-4) var(--space-6);
+  margin: 0;
+  display: grid;
+  gap: 0;
+}
+
+.facts-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-block: var(--space-4);
+  border-bottom: 1px solid var(--line);
+  font-size: var(--fs-sm);
+}
+
+.facts-list li:last-child {
+  border-bottom: 0;
+}
+
+.facts-list dt,
+.facts-list .k {
+  color: var(--muted);
+}
+
+.facts-list .v {
+  font-weight: var(--weight-semibold);
+  color: var(--ink);
+  text-align: right;
+}
+
+.facts-card__actions {
+  padding: var(--space-5) var(--space-6) var(--space-6);
+  display: grid;
+  gap: var(--space-3);
+  border-top: 1px solid var(--line);
+}
+
+.facts-card__note {
+  font-size: var(--fs-2xs);
+  color: var(--muted-2);
+  text-align: center;
+}
+
+@media (max-width: 960px) {
+  .course-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .course-sidebar {
+    position: static;
+    order: -1;
+  }
+}
+
+/* --- Definition cards (eligibility / outcomes) --------------------------- */
+
+.check-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.check-list li {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  font-size: var(--fs-sm);
+  color: var(--ink-soft);
+}
+
+.check-list svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  margin-top: 0.2rem;
+  color: var(--brand-500);
+}
+
+/* --- Enrol CTA band on course pages -------------------------------------- */
+
+.enrol-band {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-5);
+  padding: var(--space-6) var(--space-7);
+  border-radius: var(--radius-lg);
+  background: var(--brand-50);
+  border: 1px solid var(--brand-200);
+}
+
+.enrol-band h3 {
+  font-size: var(--fs-xl);
+}
+
+.enrol-band p {
+  margin-top: 0.3rem;
+  color: var(--brand-800);
+  font-size: var(--fs-sm);
+}
+
+/* --- Contact info grid --------------------------------------------------- */
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.25fr;
+  gap: clamp(2rem, 4vw, 3.5rem);
+  align-items: start;
+}
+
+.info-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: var(--space-5);
+}
+
+.info-list li {
+  display: flex;
+  gap: var(--space-4);
+}
+
+.info-list__icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: var(--brand-50);
+  color: var(--brand-700);
+  flex: none;
+}
+
+.info-list__icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.info-list h3 {
+  font-size: var(--fs-base);
+}
+
+.info-list p,
+.info-list a {
+  font-size: var(--fs-sm);
+  color: var(--muted);
+}
+
+.map-embed {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  height: 320px;
+  background: var(--surface-muted);
+}
+
+.map-embed iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+@media (max-width: 860px) {
+  .contact-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- Article layout ------------------------------------------------------ */
+
+.article-head {
+  max-width: 46rem;
+}
+
+.article-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-top: var(--space-5);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--line);
+  font-size: var(--fs-xs);
+  color: var(--muted-2);
+}
+
+.takeaways {
+  border: 1px solid var(--brand-200);
+  background: var(--brand-50);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+}
+
+.takeaways h2 {
+  font-size: var(--fs-base);
+  margin-bottom: var(--space-3);
+}
+
+.takeaways ul {
+  margin: 0;
+  display: grid;
+  gap: var(--space-2);
+  font-size: var(--fs-sm);
+  color: var(--brand-900);
+}
+
+/* --- Prose code / tables ------------------------------------------------- */
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-sm);
+}
+
+.prose th,
+.prose td {
+  text-align: left;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--line);
+}
+
+.prose th {
+  background: var(--surface-soft);
+  font-family: var(--font-heading);
+}
+
+.prose code {
+  background: var(--surface-muted);
+  padding: 0.1rem 0.35rem;
+  border-radius: 5px;
+  font-size: 0.9em;
+}
+
+/* --- Filter bar (course listing) ----------------------------------------- */
+
+.filter-bar {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-5) var(--space-6);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  margin-bottom: var(--space-7);
+}
+
+.filter-bar__label {
+  font-size: var(--fs-2xs);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted-2);
+  font-weight: var(--weight-semibold);
+  align-self: center;
+  margin-right: 0.25rem;
+}
+
+.filter-bar__empty {
+  margin-top: var(--space-6);
+  text-align: center;
+  color: var(--muted);
+}
+
+/* Buttons used as filters sit inside .choice-row, so mirror the pressed state. */
+.choice.is-active,
+.choice[aria-pressed='true'] {
+  border-color: var(--brand-500);
+  background: var(--brand-50);
+  color: var(--brand-800);
+  font-weight: var(--weight-semibold);
+}
+
+/* --- Comparison table ---------------------------------------------------- */
+
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-sm);
+  min-width: 46rem;
+}
+
+.compare-table th,
+.compare-table td {
+  text-align: left;
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+
+.compare-table thead th {
+  background: var(--surface-soft);
+  font-family: var(--font-heading);
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.compare-table tbody th {
+  font-family: var(--font-heading);
+  font-weight: var(--weight-semibold);
+  color: var(--heading);
+  min-width: 14rem;
+}
+
+.compare-table tbody tr:last-child th,
+.compare-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.compare-table tbody tr:hover {
+  background: var(--surface-soft);
+}
+
+/* --- Course hero meta row ------------------------------------------------ */
+
+.course-layout__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: var(--space-4);
+}

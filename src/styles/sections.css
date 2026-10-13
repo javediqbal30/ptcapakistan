@@ -975,6 +975,24 @@
 }
 
 /* --- Comparison table ---------------------------------------------------- */
+/* Corporate training section - white background with white text */
+.corporate-hero {
+  background: white;
+  padding: clamp(2rem, 5vw, 4rem) clamp(1.5rem, 4vw, 3rem);
+}
+
+.corporate-hero .section-head h2,
+.corporate-hero .section-head p,
+.corporate-hero .section-head .eyebrow {
+  color: white !important;
+}
+
+.corporate-hero .card,
+.corporate-hero .card--hover {
+  background: white;
+  border: none;
+  box-shadow: none;
+}
 
 .table-wrap {
   overflow-x: auto;
