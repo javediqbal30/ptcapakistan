@@ -60,10 +60,38 @@ Other occurrences of "enrol" elsewhere on the page (FAQ question at line 36, pag
 - `http://localhost:4321/` — Training Approach section renders 2-column; bottom CTA reads "Enroll now".
 - `http://localhost:4321/corporate-training/` — All 5 programme cards render their new dedicated images; card #1 title remains "Taxation & Tax Compliance".
 
+### 5. Deploy fix — exclude `_worker.js` from public assets
+Cloudflare Pages deploy failed after the initial push with:
+
+```
+✘ [ERROR] Uploading a Pages _worker.js directory as an asset.
+This could expose your private server-side code to the public Internet.
+```
+
+The `assets.directory` in `wrangler.jsonc` is `./dist`, and Astro outputs both public assets **and** the server bundle (`_worker.js/`) to that directory. Wrangler needed a `.assetsignore` at the root of `dist/` to skip `_worker.js/`.
+
+**Solution** — new script `scripts/add-assetsignore.mjs` writes `dist/.assetsignore` containing `_worker.js` right after `astro build`. Hooked into `package.json`:
+
+```diff
+-    "build": "astro build",
++    "build": "astro build && node scripts/add-assetsignore.mjs",
+```
+
+Verified locally: `dist/.assetsignore` is created with content `_worker.js` after each build.
+
+## Deploy commits on GitHub (`origin/main`)
+- `86b50ba` — `feat: add corporate-training page and fix homepage Training Approach layout` (13 files, +1381 / -11)
+- `612e8a7` — `fix: exclude _worker.js from public assets on Cloudflare deploy` (2 files, +25 / -1)
+
+Cloudflare Pages will rebuild automatically on the push of `612e8a7`; the deploy error should be gone.
+
 ## Files Touched
 - `C:\ptcapakistan\src\pages\corporate-training.astro` — Training Approach section + CSS removed (~225 lines)
 - `C:\ptcapakistan\src\pages\index.astro` — markup restructure (2-column) + CTA label typo fix
 - `C:\ptcapakistan\src\data\corporateTraining.ts` — 5 × `image.src` paths updated
+- `C:\ptcapakistan\scripts\add-assetsignore.mjs` — new script (25 lines)
+- `C:\ptcapakistan\package.json` — `build` script chained with `add-assetsignore.mjs`
+
 
 ## Notes
 - The old asset files (`Advanced_Taxation_&_Litigation.webp`, `corporate_law_and_secretarial_practices_Course.webp`, `Intellectual_Property_Course.webp`, `Human Resource Professional Course.webp`) still exist in `public/` — safe to delete later if truly unused.
