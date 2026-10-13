@@ -29,29 +29,131 @@ const crumbs = [
     </div>
   </section>
 
-  <section class="section">
+  <section class="section" style="padding-top:0;">
     <div class="container">
       {posts.length === 0 ? (
-        <p>No articles published yet. Check back soon.</p>
+        <p style="color:var(--muted); text-align:center; padding:3rem;">
+          No articles published yet. Check back soon.
+        </p>
       ) : (
-        <div class="grid grid--3">
+        <div class="grid grid--3" style="gap:clamp(1rem, 4vw, 2rem);">
           {posts.map((post) => (
-            <article class="card card--hover blog-card">
+            <article
+              key={post.slug}
+              class="card card--hover blog-card"
+              style="
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+                border: none;
+                border-radius: var(--radius-lg);
+                overflow: hidden;
+                background: var(--surface-white);
+                box-shadow: var(--shadow-sm);
+              "
+            >
               {post.imageUrl && (
-                <a href={`/blog/${post.slug}/`} class="blog-card__media" aria-hidden="true" tabindex="-1">
-                  <img src={`${post.imageUrl}?w=800&auto=format`} alt="" loading="lazy" decoding="async" />
+                <a
+                  href={`/blog/${post.slug}/`}
+                  class="blog-card__media"
+                  style="
+                    width: 100%;
+                    aspect-ratio: 16 / 11;
+                    overflow: hidden;
+                    background: var(--surface-muted);
+                  "
+                  aria-hidden="true"
+                  tabindex="-1"
+                >
+                  <img
+                    src={`${post.imageUrl}?w=800&auto=format`}
+                    alt={post.title}
+                    loading="lazy"
+                    decoding="async"
+                    style="
+                      width: 100%;
+                      height: 100%;
+                      object-fit: cover;
+                    "
+                  />
                 </a>
               )}
-              <div class="blog-card__body">
-                {post.category && <span class="badge badge--brand">{post.category}</span>}
-                <h2 class="blog-card__title">
-                  <a href={`/blog/${post.slug}/`}>{post.title}</a>
+
+              <div
+                class="blog-card__body"
+                style="
+                  padding: var(--space-4);
+                  flex: 1;
+                  display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+              "
+              >
+                {post.category && (
+                  <span
+                    class="badge badge--brand"
+                    style="
+                      margin-bottom: var(--space-2);
+                      font-size: var(--fs-xs);
+                    "
+                  >
+                    {post.category}
+                  </span>
+                )}
+
+                <h2
+                  class="blog-card__title"
+                  style="
+                    font-size: var(--fs-lg);
+                    margin-top: var(--space-2);
+                    margin-bottom: var(--space-3);
+                    line-height: 1.4;
+                    min-height: 3.2rem;
+                  "
+                >
+                  <a
+                    href={`/blog/${post.slug}/`}
+                    style="
+                      color: var(--brand-900);
+                      text-decoration: none;
+                      transition: color var(--transition-fast);
+                    "
+                  >
+                    {post.title}
+                  </a>
                 </h2>
-                <p>{post.excerpt}</p>
-                <p class="blog-card__meta">
-                  <span>{formatDate(new Date(post.publishedAt))}</span>
-                  {post.authorName && <span> &middot; {post.authorName}</span>}
+
+                <p
+                  style="
+                    font-size: var(--fs-sm);
+                    color: var(--muted);
+                    line-height: 1.5;
+                    margin-bottom: var(--space-3);
+                    flex: 1;
+                  "
+                >
+                  {post.excerpt || post.description || ''}
                 </p>
+
+                <div
+                  class="blog-card__meta"
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: var(--space-2);
+                    padding-top: var(--space-2);
+                    border-top: 1px solid var(--line);
+                  "
+                >
+                  <span style="font-size: var(--fs-xs); color: var(--muted-2);">
+                    {formatDate(new Date(post.publishedAt))}
+                  </span>
+                  {post.authorName && (
+                    <span style="font-size: var(--fs-xs); color: var(--muted-2);">
+                      &middot; {post.authorName}
+                    </span>
+                  )}
+                </div>
               </div>
             </article>
           ))}
