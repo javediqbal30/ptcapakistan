@@ -29,7 +29,7 @@ const mentors = await resolveMentors(course);
 const allCourses = await getPublishedCourses();
 const related = allCourses.filter((c) => c.id !== course.id && c.data.category === category).slice(0, 3);
 
-const enrolHref = `/enroll/?course=${course.id}`;
+const enrollHref = `/enroll/?course=${course.id}`;
 const crumbs = [
   { name: 'Home', path: '/' },
   { name: 'Courses', path: '/courses/' },
@@ -68,7 +68,7 @@ const crumbs = [
       <h1>{title}</h1>
       <p class="page-hero__lead">{summary}</p>
       <div class="hero__actions">
-        <a class="btn btn--primary btn--lg" href={enrolHref}>
+        <a class="btn btn--primary btn--lg" href={enrollHref}>
           Enrol now
           <Icon name="arrow-right" size={16} />
         </a>
@@ -174,11 +174,11 @@ const crumbs = [
             <div>
               <h3>Ready to join this programme?</h3>
               <p>
-                Submit your enrolment request and admissions will confirm fees,
+                Submit your enrollment request and admissions will confirm fees,
                 batch dates and registration within one working day.
               </p>
             </div>
-            <a class="btn btn--primary btn--lg" href={enrolHref}>
+            <a class="btn btn--primary btn--lg" href={enrollHref}>
               Enrol now
               <Icon name="arrow-right" size={16} />
             </a>
@@ -214,8 +214,8 @@ const crumbs = [
             <li><span class="k">Next batch</span><span class="v">Enquire today</span></li>
           </ul>
           <div class="facts-card__actions">
-            <a class="btn btn--primary btn--block btn--lg" href={enrolHref}>
-              Enrol now
+            <a class="btn btn--primary btn--block btn--lg" href={enrollHref}>
+              Enroll now
               <Icon name="arrow-right" size={16} />
             </a>
             <a
