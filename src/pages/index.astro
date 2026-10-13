@@ -566,25 +566,24 @@ const careerPaths = courses.flatMap((c) => c.data.careerPaths).slice(0, 12);
     background: var(--brand-400);
   }
 
-  /* Programme cards on dark background */
+  /* Corporate program cards - white background */
   .corporate-program-card {
-    background: rgba(255,255,255,0.08) !important;
-    border: 1px solid rgba(255,255,255,0.15) !important;
+    background: white !important;
+    border: none !important;
     border-radius: var(--radius-lg) !important;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important;
-    backdrop-filter: blur(8px);
-    transition: background var(--dur) var(--ease), transform var(--dur) var(--ease), border-color var(--dur) var(--ease) !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+    transition: transform var(--dur) var(--ease) !important;
   }
 
   .corporate-program-card:hover {
-    background: rgba(255,255,255,0.14) !important;
-    transform: translateY(-3px) !important;
-    border-color: rgba(255,255,255,0.3) !important;
-    box-shadow: 0 12px 32px rgba(0,0,0,0.2) !important;
+    background: white !important;
+    transform: translateY(-4px) !important;
+    border-color: transparent !important;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15) !important;
   }
 
   .corporate-program-icon {
-    background: rgba(255,255,255,0.12) !important;
+    background: white !important;
   }
 
   .corporate-program-icon svg {
@@ -592,21 +591,21 @@ const careerPaths = courses.flatMap((c) => c.data.careerPaths).slice(0, 12);
   }
 
   .corporate-program-card h3 {
-    color: #fff;
+    color: var(--heading);
   }
 
   .corporate-program-card p {
-    color: rgba(234,247,239,0.85);
+    color: var(--muted);
   }
 
   .corporate-program-card .btn--ghost {
-    color: var(--brand-300);
-    border-color: rgba(255,255,255,0.3);
+    color: var(--brand-600);
+    border-color: var(--line);
   }
 
   .corporate-program-card:hover .btn--ghost {
-    color: #fff;
-    border-color: rgba(255,255,255,0.5);
+    color: var(--brand-500);
+    border-color: var(--brand-600);
   }
 
   /* View all link */
