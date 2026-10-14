@@ -27,25 +27,27 @@ const categoryColors: Record<string, string> = {
   <!-- Hero -->
   <section class="calc-hub-hero">
     <div class="container">
-      <div class="calc-hub-hero__badge">
-        <Icon name="calculator" size={18} />
-        25 Free Calculators
-      </div>
-      <h1>Pakistan Tax, HR & Corporate Calculators</h1>
-      <p>
-        Free online calculators for Pakistani taxation, payroll, corporate compliance and finance.
-        Updated for tax year 2026-27 with official FBR data.
-      </p>
-      <!-- Search -->
-      <div class="calc-search-wrap">
-        <Icon name="search" size={18} class="calc-search-icon" />
-        <input
-          type="text"
-          id="calc-search"
-          class="calc-search"
-          placeholder="Search calculators..."
-          aria-label="Search calculators"
-        />
+      <div class="calc-hub-hero__inner">
+        <div class="calc-hub-hero__badge">
+          <Icon name="calculator" size={18} />
+          25 Free Calculators
+        </div>
+        <h1>Pakistan Tax, HR & Corporate Calculators</h1>
+        <p>
+          Free online calculators for Pakistani taxation, payroll, corporate compliance and finance.
+          Updated for tax year 2026-27 with official FBR data.
+        </p>
+        <!-- Search -->
+        <div class="calc-search-wrap">
+          <Icon name="search" size={18} class="calc-search-icon" />
+          <input
+            type="text"
+            id="calc-search"
+            class="calc-search"
+            placeholder="Search calculators..."
+            aria-label="Search calculators"
+          />
+        </div>
       </div>
     </div>
   </section>
@@ -179,8 +181,15 @@ const categoryColors: Record<string, string> = {
     background: linear-gradient(135deg, var(--brand-900) 0%, var(--brand-700) 100%);
     color: #fff;
     padding: var(--space-9) 0 var(--space-8);
-    text-align: center;
     position: relative;
+    overflow: hidden;
+  }
+  .calc-hub-hero__inner {
+    max-width: 720px;
+    text-align: left;
+    margin: 0;
+    position: relative;
+    z-index: 10;
   }
   .calc-hub-hero__badge {
     display: inline-flex;
@@ -193,19 +202,6 @@ const categoryColors: Record<string, string> = {
     font-size: var(--fs-sm);
     font-weight: 600;
     margin-bottom: var(--space-4);
-    position: relative;
-    z-index: 10;
-  }
-  .calc-hub-hero__badge::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    height: 1px;
-    background: rgba(255,255,255,.3);
-    width: 100%;
   }
   .calc-hub-hero h1 {
     font-size: var(--fs-4xl);
@@ -213,17 +209,13 @@ const categoryColors: Record<string, string> = {
     line-height: var(--lh-tight);
     margin: 0 0 var(--space-3);
     color: #fff;
-    position: relative;
-    z-index: 10;
   }
   .calc-hub-hero p {
     font-size: var(--fs-lg);
     opacity: .85;
     max-width: 620px;
-    margin: 0 auto;
+    margin: 0;
     line-height: var(--lh-base);
-    position: relative;
-    z-index: 10;
     padding-top: var(--space-2);
   }
 
@@ -231,7 +223,7 @@ const categoryColors: Record<string, string> = {
   .calc-search-wrap {
     position: relative;
     max-width: 480px;
-    margin: var(--space-6) auto 0;
+    margin: var(--space-6) 0 0;
   }
   .calc-search-icon {
     position: absolute;

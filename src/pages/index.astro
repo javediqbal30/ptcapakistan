@@ -311,7 +311,7 @@ const careerPaths = courses.flatMap((c) => c.data.careerPaths).slice(0, 12);
               style="
                 border: none;
                 border-radius: var(--radius-lg);
-                background: var(--surface-white);
+                background: var(--surface);
                 box-shadow: var(--shadow-sm);
                 display: flex;
                 flex-direction: column;
@@ -427,22 +427,26 @@ const careerPaths = courses.flatMap((c) => c.data.careerPaths).slice(0, 12);
     </section>
   )}
 
-  <section class="section corporate-hero">
-    <div class="container">
-      <SectionHead
-        eyebrow="For organizations"
+  <section class="section corporate-training-section">
+    <div class="corporate-hero-bg">
+      <div class="container">
+        <SectionHead
+          eyebrow="For organizations"
         title="Corporate sessions, workshops & webinars"
         lead="Professional training delivered to your team — on-site, online or customized. Perfect for companies, institutions and finance, HR and academic teams."
         align="center"
       />
-      <div class="grid grid--3" style="margin-top: var(--space-8);">
+      </div>
+    </div>
+    <div class="container">
+      <div class="grid grid--3" style="margin-top: var(--space-4);">
         {CORPORATE_PROGRAMS.slice(0, 5).map((program) => (
           <article
             class="card card--hover corporate-program-card"
             style="
               border: none;
               border-radius: var(--radius-lg);
-              background: var(--surface-white);
+              background: var(--surface);
               box-shadow: var(--shadow-sm);
               padding: var(--space-6);
               display: flex;
@@ -534,66 +538,68 @@ const careerPaths = courses.flatMap((c) => c.data.careerPaths).slice(0, 12);
     primaryHref="/enroll/"
   />
 <style>
-  /* --- Corporate hero (dark gradient background) --- */
-  .corporate-hero {
-    background: linear-gradient(135deg, var(--brand-900) 0%, var(--brand-700) 60%, var(--brand-800) 100%);
+  /* --- Corporate training section: dark header + white cards --- */
+  .corporate-training-section {
+    padding-block: 0;
+  }
+
+  /* Dark gradient band behind the section heading only */
+  .corporate-hero-bg {
+    background: linear-gradient(135deg, var(--brand-900) 0%, var(--brand-700) 58%, var(--brand-800) 100%);
     color: #eaf7ef;
+    padding-block: clamp(3rem, 7vw, 5.5rem);
     position: relative;
     overflow: hidden;
   }
 
-  .corporate-hero::before {
+  /* Soft light glow at the top edge */
+  .corporate-hero-bg::before {
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(255,255,255,0.06), transparent);
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255, 255, 255, 0.1), transparent 70%);
     pointer-events: none;
   }
 
-  .corporate-hero .section-head h2,
-  .corporate-hero .section-head p {
-    color: #fff;
+  /* Keep content above the glow */
+  .corporate-hero-bg > * {
+    position: relative;
+    z-index: 1;
   }
 
-  .corporate-hero .section-head p {
-    opacity: 0.88;
-  }
-
-  .corporate-hero .eyebrow {
+  .corporate-hero-bg .eyebrow {
     color: var(--brand-300);
   }
 
-  .corporate-hero .eyebrow::before {
+  .corporate-hero-bg .eyebrow::before {
     background: var(--brand-400);
   }
 
-  /* Corporate program cards - white background */
+  /* White heading + description text on the dark band */
+  .corporate-hero-bg .section-head h2 {
+    color: #ffffff;
+  }
+
+  .corporate-hero-bg .section-head p {
+    color: #d6efe0;
+  }
+
+  /* White area below: pull the grid up so cards overlap the band's lower edge */
+  .corporate-training-section > .container {
+    padding-block: 0 clamp(3rem, 7vw, 5rem);
+    margin-top: calc(-1 * clamp(2.5rem, 5vw, 3.75rem));
+  }
+
+  /* White programme cards */
   .corporate-program-card {
-    background: white !important;
-    border: none !important;
-    border-radius: var(--radius-lg) !important;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
-    transition: transform var(--dur) var(--ease) !important;
+    background: #ffffff;
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-sm);
   }
 
   .corporate-program-card:hover {
-    background: white !important;
-    transform: translateY(-4px) !important;
-    border-color: transparent !important;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.15) !important;
-  }
-
-  .corporate-program-icon {
-    background: rgba(34, 139, 34, 0.08) !important;
-    border: 1px solid rgba(34, 139, 34, 0.2) !important;
-  }
-  
-  .corporate-program-icon svg {
-    color: green !important;
-  }
-
-  .corporate-program-icon svg {
-    color: green !important;
+    box-shadow: var(--shadow-md);
+    border-color: var(--brand-200);
   }
 
   .corporate-program-card h3 {
@@ -605,19 +611,16 @@ const careerPaths = courses.flatMap((c) => c.data.careerPaths).slice(0, 12);
   }
 
   .corporate-program-card .btn--ghost {
-    color: var(--brand-600);
-    border-color: var(--line);
+    color: var(--brand-700);
   }
 
   .corporate-program-card:hover .btn--ghost {
-    color: var(--brand-500);
-    border-color: var(--brand-600);
+    color: var(--brand-800);
   }
 
-  /* View all link */
   .view-all-link {
     font-weight: var(--weight-semibold);
-    color: var(--brand-300);
+    color: var(--brand-700);
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
@@ -625,9 +628,9 @@ const careerPaths = courses.flatMap((c) => c.data.careerPaths).slice(0, 12);
   }
 
   .view-all-link:hover {
-    color: #fff;
+    color: var(--brand-800);
   }
-</style></BaseLayout>
+</style></style></BaseLayout>
 
 <script>
   // Hero parallax: the decorative background layers drift with the cursor.

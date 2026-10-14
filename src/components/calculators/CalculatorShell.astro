@@ -59,13 +59,15 @@ const courseCta = courseCtaMap[calc.category] ?? courseCtaMap['finance'];
 
 <!-- Hero -->
 <section class="calc-hero">
-  <div class="container calc-hero__inner">
-    <div class="calc-hero__badge">
-      <Icon name={calc.icon as any} size={18} />
-      {categoryLabels[calc.category]}
+  <div class="container">
+    <div class="calc-hero__inner">
+      <div class="calc-hero__badge">
+        <Icon name={calc.icon as any} size={18} />
+        {categoryLabels[calc.category]}
+      </div>
+      <h1 class="calc-hero__title">{calc.label}</h1>
+      <p class="calc-hero__lead">{calc.summary}</p>
     </div>
-    <h1 class="calc-hero__title">{calc.label}</h1>
-    <p class="calc-hero__lead">{calc.summary}</p>
   </div>
 </section>
 
@@ -175,7 +177,13 @@ const courseCta = courseCtaMap[calc.category] ?? courseCtaMap['finance'];
     border-radius: 50%;
     pointer-events: none;
   }
-  .calc-hero__inner { max-width: 760px; text-align: left; position: relative; z-index: 1; }
+  .calc-hero__inner {
+    max-width: 760px;
+    text-align: left;
+    margin: 0;
+    position: relative;
+    z-index: 1;
+  }
   .calc-hero__badge {
     display: inline-flex;
     align-items: center;
