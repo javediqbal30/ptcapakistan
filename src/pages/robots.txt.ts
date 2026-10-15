@@ -28,6 +28,7 @@ Disallow: /thank-you/
 ${AI_CRAWLERS.map((agent) => `User-agent: ${agent}\nAllow: /`).join('\n\n')}
 
 Sitemap: ${SITE.url}/sitemap-index.xml
+Sitemap: ${SITE.url}/sitemap.xml
 `;
 
 export const GET: APIRoute = () =>
