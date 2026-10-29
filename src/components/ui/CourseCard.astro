@@ -10,18 +10,39 @@ interface Props {
 }
 
 const { course, compact = false } = Astro.props;
-const { title, shortTitle, category, summary, duration, modes } = course.data;
+const { title, shortTitle, category, summary, duration, modes, outcomes } = course.data;
 const href = coursePath(course);
+
+const isNew = course.id === 'erpnext-course-pakistan' || course.id === 'ai-ecommerce-course-pakistan';
+
+const categoryIcon: Record<string, 'book' | 'briefcase' | 'users' | 'shield' | 'globe'> = {
+  'Taxation': 'book',
+  'Corporate': 'briefcase',
+  'Human Resources': 'users',
+  'Intellectual Property': 'shield',
+  'Technology & ERP': 'shield',
+  'E-Commerce': 'globe',
+};
+
+const iconName = categoryIcon[category] || 'book';
+const keyOutcomes = outcomes?.slice(0, 2) || [];
 ---
 
-<article class="course-card">
+<article class="course-card" data-category={category}>
+  <div class="course-card__top-bar"></div>
   <div class="course-card__body">
-    <div class="course-card__meta">
-      <span class="badge badge--brand">{category}</span>
-      <span class="badge">
-        <Icon name="clock" size={12} />
-        {duration}
-      </span>
+    <div class="course-card__header">
+      <div class="course-card__icon-box">
+        <Icon name={iconName} size={18} />
+      </div>
+      <div class="course-card__badges">
+        <span class="badge badge--brand">{category}</span>
+        {isNew && <span class="badge badge--new">New</span>}
+        <span class="badge badge--muted">
+          <Icon name="clock" size={11} />
+          {duration}
+        </span>
+      </div>
     </div>
 
     <h3 class="course-card__title">
@@ -30,20 +51,34 @@ const href = coursePath(course);
 
     <p class="course-card__summary">{summary}</p>
 
-    {!compact && (
-      <ul class="chip-list">
-        {modes.map((mode) => <li class="chip">{mode}</li>)}
+    {keyOutcomes.length > 0 && (
+      <ul class="course-card__highlights">
+        {keyOutcomes.map((point) => (
+          <li>
+            <Icon name="check" size={13} class="highlight-check" />
+            <span>{point}</span>
+          </li>
+        ))}
       </ul>
     )}
 
+    {!compact && (
+      <div class="course-card__delivery">
+        <span class="delivery-label">Mode:</span>
+        <ul class="chip-list">
+          {modes.map((mode) => <li class="chip chip--sm">{mode}</li>)}
+        </ul>
+      </div>
+    )}
+
     <div class="course-card__footer">
-      <span class="course-card__facts">
-        <strong>{shortTitle}</strong>
-        <span>{duration}</span>
-      </span>
-      <a class="btn btn--primary btn--sm" href={href}>
-        View course
-        <Icon name="arrow-right" size={15} />
+      <div class="course-card__status">
+        <span class="pulse-indicator"></span>
+        <span>Admissions Open</span>
+      </div>
+      <a class="btn btn--primary btn--sm course-card__btn" href={href}>
+        <span>View course</span>
+        <Icon name="arrow-right" size={14} />
       </a>
     </div>
   </div>

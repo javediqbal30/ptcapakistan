@@ -19,6 +19,19 @@ const courses = await getPublishedCourses();
 const mentors = await getPublishedMentors();
 const posts = (await getPublishedPosts()).slice(0, 3);
 
+// Top 6 featured courses on homepage
+const featuredCourseIds = [
+  'advanced-taxation-litigation-course',
+  'sales-tax-course-pakistan',
+  'erpnext-course-pakistan',
+  'ai-ecommerce-course-pakistan',
+  'chrp-hr-course-karachi',
+  'company-secretary-course-pakistan',
+];
+const featuredCourses = featuredCourseIds
+  .map((id) => courses.find((c) => c.id === id))
+  .filter(Boolean) as typeof courses;
+
 const homeFaqs = [
   {
     q: 'What courses does PTCA offer in Karachi?',
@@ -63,7 +76,7 @@ const approach = [
 ];
 
 const stats = [
-  { value: '6', label: 'Professional programmes' },
+  { value: '8', label: 'Professional programmes' },
   { value: '15+', label: 'Years mentor experience' },
   { value: '3', label: 'Learning modes' },
   { value: 'Karachi', label: 'Campus location' },
@@ -177,22 +190,39 @@ const careerPaths = courses.flatMap((c) => c.data.careerPaths).slice(0, 12);
     </div>
   </section>
 
-  <section class="section section--soft">
+  <section class="section courses-section">
     <div class="container">
-      <SectionHead
-        eyebrow="Professional programmes"
-        title="Courses built for real practice"
-        lead="Structured, career-focused programmes spanning taxation, litigation, sales tax, corporate law, HR, ERPNext systems, and AI-powered e-commerce."
-        align="center"
-      />
-      <div class="grid grid--3">
-        {courses.map((course) => <CourseCard course={course} />)}
+      <div class="courses-section__header">
+        <div class="pill-badge">
+          <Icon name="graduation" size={15} />
+          <span>Professional Programmes</span>
+        </div>
+        <h2 class="courses-section__title">Courses built for real practice</h2>
+        <p class="courses-section__lead">
+          Structured, career-focused programmes designed around Pakistan's statutory frameworks, enterprise ERP systems, and e-commerce.
+        </p>
       </div>
-      <div style="margin-top:2.5rem; text-align:center">
-        <a class="btn btn--primary btn--lg" href="/courses/">
-          View all courses
-          <Icon name="arrow-right" size={16} />
-        </a>
+
+      <div class="grid grid--3">
+        {featuredCourses.map((course) => <CourseCard course={course} />)}
+      </div>
+
+      <div class="courses-section__footer">
+        <div class="courses-cta-bar">
+          <div class="courses-cta-bar__content">
+            <h4>Explore All 8 Career Programmes</h4>
+            <p>From foundation certifications and corporate secretarial practice to ERPNext and digital commerce.</p>
+          </div>
+          <div class="courses-cta-bar__actions">
+            <a class="btn btn--primary btn--md" href="/courses/">
+              <span>View all 8 courses</span>
+              <Icon name="arrow-right" size={15} />
+            </a>
+            <a class="btn btn--outline btn--md" href="/admissions/">
+              <span>Admissions Guide</span>
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   </section>

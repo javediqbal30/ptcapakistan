@@ -1050,3 +1050,105 @@
   gap: 0.4rem;
   margin-top: var(--space-4);
 }
+
+
+/* --- Courses Showcase Section on Homepage ------------------------------- */
+
+.courses-section {
+  background: linear-gradient(180deg, #f8fafc 0%, #f0fdf4 45%, #f8fafc 100%);
+  border-block: 1px solid rgba(34, 167, 74, 0.12);
+  position: relative;
+  padding-block: clamp(3.5rem, 6vw, 5.5rem);
+}
+
+.courses-section__header {
+  text-align: center;
+  max-width: 680px;
+  margin-inline: auto;
+  margin-bottom: clamp(2rem, 4vw, 3rem);
+}
+
+.pill-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: var(--brand-50);
+  border: 1px solid var(--brand-200);
+  color: var(--brand-800);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.85rem;
+  border-radius: 999px;
+  margin-bottom: 0.85rem;
+}
+
+.courses-section__title {
+  font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+  font-weight: 800;
+  color: var(--heading);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin-bottom: 0.65rem;
+}
+
+.courses-section__lead {
+  font-size: clamp(0.95rem, 1.8vw, 1.1rem);
+  color: var(--muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.courses-section__footer {
+  margin-top: 3rem;
+}
+
+.courses-cta-bar {
+  background: #ffffff;
+  border: 1px solid rgba(34, 167, 74, 0.2);
+  border-radius: 16px;
+  padding: 1.5rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+}
+
+.courses-cta-bar__content h4 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--heading);
+  margin-bottom: 0.25rem;
+}
+
+.courses-cta-bar__content p {
+  font-size: 0.88rem;
+  color: var(--muted);
+  margin: 0;
+}
+
+.courses-cta-bar__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .courses-cta-bar {
+    flex-direction: column;
+    text-align: center;
+    padding: 1.5rem;
+  }
+  
+  .courses-cta-bar__actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .courses-cta-bar__actions .btn {
+    width: 100%;
+  }
+}
