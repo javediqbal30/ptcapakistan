@@ -94,15 +94,19 @@ export const COURSE_MENU: CourseCategory[] = [
     ],
   },
   {
-    label: 'Corporate',
+    label: 'Corporate & HR',
     slugs: [
       'company-secretary-course-pakistan',
       'intellectual-property-course-pakistan',
+      'chrp-hr-course-karachi',
     ],
   },
   {
-    label: 'Human Resources',
-    slugs: ['chrp-hr-course-karachi'],
+    label: 'Tech & E-Commerce',
+    slugs: [
+      'erpnext-course-pakistan',
+      'ai-ecommerce-course-pakistan',
+    ],
   },
 ];
 

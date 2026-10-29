@@ -8,7 +8,14 @@ import { glob } from 'astro/loaders';
  */
 
 const modes = z.enum(['Physical', 'Online', 'Hybrid']);
-const category = z.enum(['Taxation', 'Corporate', 'Human Resources', 'Intellectual Property']);
+const category = z.enum([
+  'Taxation',
+  'Corporate',
+  'Human Resources',
+  'Intellectual Property',
+  'Technology & ERP',
+  'E-Commerce',
+]);
 
 const faq = z.object({
   q: z.string(),
