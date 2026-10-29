@@ -90,7 +90,8 @@ careerPaths:
   - Digital Media & Brand Content Creator
   - E-Commerce Virtual Assistant (VA)
 certificateName: Professional Certificate in AI-Powered Local E-Commerce
-mentors: []
+mentors:
+  - maaz-ali
 faqs:
   - q: "Who should join the AI-Powered Local E-Commerce course?"
     a: "This course is specifically structured for aspiring online sellers, business owners, students and freelancers who want to build a thriving e-commerce brand in Pakistan selling on Daraz and their own Shopify website."

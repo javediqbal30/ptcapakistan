@@ -60,10 +60,12 @@ import type { ImageMetadata } from 'astro';
  */
 import rukhsanaRustamKhan from '@assets/mentors/rukhsana-rustam-khan.jpg';
 import zohaibAkhtar from '@assets/mentors/zohaib-akhtar.jpg';
+import maazAli from '@assets/mentors/maaz-ali.webp';
 
 const photos: Record<string, ImageMetadata> = {
   'rukhsana-rustam-khan': rukhsanaRustamKhan,
   'zohaib-akhtar': zohaibAkhtar,
+  'maaz-ali': maazAli,
 };
 
 /** Returns the optimised portrait for a mentor slug, if one has been supplied. */
