@@ -113,6 +113,7 @@ export const FOOTER_QUICK_LINKS: NavLink[] = [
   { label: 'Corporate Training', href: '/corporate-training/' },
   { label: 'Our Mentors', href: '/mentors/' },
   { label: 'Admissions', href: '/admissions/' },
+  { label: 'Student LMS Portal', href: 'https://ptca.zenslearn.org/' },
   { label: 'Blog', href: '/blog/' },
   { label: 'Contact Us', href: '/contact/' },
 ];

@@ -29,6 +29,19 @@
   color: #fff;
 }
 
+.topbar__lms-link {
+  color: #a6dcbe !important;
+  font-weight: var(--weight-semibold);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: color var(--dur-fast) var(--ease);
+}
+
+.topbar__lms-link:hover {
+  color: #fff !important;
+}
+
 .topbar__list {
   display: flex;
   align-items: center;

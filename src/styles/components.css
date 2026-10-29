@@ -90,6 +90,19 @@
   --btn-bg: #1eb455;
 }
 
+.btn--lms {
+  --btn-bg: var(--brand-50);
+  --btn-fg: var(--brand-800);
+  --btn-bd: var(--brand-300);
+  font-weight: var(--weight-semibold);
+}
+
+.btn--lms:hover {
+  --btn-bg: var(--brand-100);
+  --btn-fg: var(--brand-900);
+  --btn-bd: var(--brand-500);
+}
+
 .btn--lg {
   padding: 1.02rem 1.9rem;
   font-size: var(--fs-base);
