@@ -44,7 +44,7 @@ export const CALC_MENU: CalcCategory[] = [
     links: [
       { label: 'Income Tax Calculator',      slug: 'income-tax'          },
       { label: 'Withholding Tax (Sec 149)',   slug: 'withholding-tax'     },
-      { label: 'Sales Tax / GST 17%',        slug: 'sales-tax'           },
+      { label: 'Sales Tax / GST 18%',        slug: 'sales-tax'           },
       { label: 'Advance Tax (Sec 147)',       slug: 'advance-tax'         },
       { label: 'Super Tax (Sec 4C)',          slug: 'super-tax'           },
       { label: 'Corporate Tax',              slug: 'corporate-tax'       },

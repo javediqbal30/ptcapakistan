@@ -7,8 +7,8 @@ summary: >-
   A complete, hands-on program to build, design and sell on Daraz and Shopify in Pakistan.
   Master product sourcing, store design, Canva, AI creative tools (ChatGPT, Claude, Google Flow),
   and paid Facebook and Instagram ad campaigns.
-duration: 6 Months
-durationISO: P6M
+duration: 4 Months
+durationISO: P4M
 sessionsPerWeek: 3
 modes:
   - Online
@@ -102,7 +102,7 @@ faqs:
   - q: "Will I learn how to handle shipping and Cash-on-Delivery (COD)?"
     a: "Yes. A dedicated section covers local courier onboarding (PostEx, Trax, Leopards, Call Courier), API tracking integration, and managing COD returns and cash reconciliation."
   - q: "What is the class structure and duration?"
-    a: "The course spans 6 months with 3 sessions per week: 2 concept & platform training classes plus 1 live hands-on workshop focused on building your real store and getting instructor feedback."
+    a: "The course spans 4 months with 3 sessions per week: 2 concept & platform training classes plus 1 live hands-on workshop focused on building your real store and getting instructor feedback."
   - q: "Will I get FBR IRIS registration support?"
     a: "Yes. The curriculum includes practical guidance on obtaining an NTN via FBR IRIS so your business operates on a sound, registered legal footing in Pakistan."
 seoTitle: "Local E-Commerce Course in Pakistan: Daraz, Shopify, AI & Meta Ads"
@@ -123,6 +123,6 @@ A distinctive edge of this program is its deep integration of modern AI and visu
 Students learn to use **Canva**, **ChatGPT**, **Claude**, and **Google Flow** to automate copywriting,
 create studio-grade product photoshoots without cameras, and generate viral short-form video ads.
 
-By the end of the 6 months, every participant walks away with a live Daraz store, a fully customized
+By the end of the 4 months, every participant walks away with a live Daraz store, a fully customized
 Shopify website, legal FBR registration, connected delivery logistics, and an active advertising
 campaign generating real customer sales.

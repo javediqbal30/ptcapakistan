@@ -8,6 +8,7 @@ import Breadcrumbs from '@components/ui/Breadcrumbs.astro';
 import CourseCard from '@components/ui/CourseCard.astro';
 import CtaBanner from '@components/ui/CtaBanner.astro';
 import Icon from '@components/ui/Icon.astro';
+import { whatsappLink } from '@data/site';
 import type { Mentor } from '@lib/content';
 
 export async function getStaticPaths() {
@@ -22,14 +23,26 @@ interface Props {
 const { mentor } = Astro.props as Props;
 const { Content } = await render(mentor);
 
-const { name, title, yearsExperience, qualifications, memberships, expertise, linkedin, photo } = mentor.data;
+const {
+  name,
+  title,
+  yearsExperience,
+  qualifications = [],
+  memberships = [],
+  expertise = [],
+  careerHistory = [],
+  education = [],
+  languages = [],
+  linkedin,
+  photo,
+} = mentor.data;
 
 // Mentor "title" can be a long role line ("Senior VP – Corporate Affairs | Advocate..."),
 // so the SEO title uses its first segment to keep the final title under ~55 chars.
 const shortTitle = title.split(/[–|]/)[0]?.trim() || title;
 
 // Optimised portrait for the hero of this profile page.
-const portrait = photo ?? mentorPhoto(mentor.id);
+const portrait = mentorPhoto(mentor.id) ?? photo;
 
 // Courses this mentor teaches (references are resolved by the collection loader).
 const taught = (await getPublishedCourses()).filter((course) =>
@@ -41,6 +54,10 @@ const crumbs = [
   { name: 'Mentors', path: '/mentors/' },
   { name, path: mentorPath(mentor) },
 ];
+
+const whatsappInquiryUrl = whatsappLink(
+  `Hi PTCA, I would like to inquire about courses and practical mentorship led by ${name}.`
+);
 ---
 
 <BaseLayout
@@ -62,33 +79,99 @@ const crumbs = [
     breadcrumbSchema(crumbs),
   ]}
 >
-  <section class="page-hero">
+  <section class="mentor-hero">
     <div class="container">
       <Breadcrumbs items={crumbs} />
-      <div style="display:flex; gap:1.5rem; align-items:center; flex-wrap:wrap; margin-top:1.5rem">
-        <div class="mentor-card__avatar" style="width:140px; height:140px; font-size:var(--fs-2xl); border-radius:var(--radius-lg)">
-          {typeof portrait === 'string' ? (
-            <img src={portrait} alt={name} width="140" height="140" />
-          ) : portrait ? (
-            <Image
-              src={portrait}
-              alt={name}
-              widths={[140, 280, 420]}
-              sizes="140px"
-              loading="eager"
-              decoding="async"
-              quality={85}
-            />
-          ) : (
-            initials(name)
-          )}
+
+      <div class="mentor-hero__grid">
+        <div class="mentor-hero__avatar-col">
+          <div class="mentor-hero__avatar-wrapper">
+            {typeof portrait === 'string' ? (
+              <img src={portrait} alt={name} width="170" height="170" loading="eager" decoding="async" />
+            ) : portrait ? (
+              <Image
+                src={portrait}
+                alt={name}
+                widths={[170, 340, 510]}
+                sizes="170px"
+                loading="eager"
+                decoding="async"
+                quality={88}
+              />
+            ) : (
+              <div class="mentor-hero__avatar-fallback">
+                {initials(name)}
+              </div>
+            )}
+          </div>
+          <div class="mentor-hero__badge">
+            <Icon name="check-circle" size={14} />
+            <span>Verified Faculty</span>
+          </div>
         </div>
-        <div>
-          <h1 style="margin-top:0">{name}</h1>
-          <p class="mentor-card__role" style="font-size:var(--fs-md)">{title}</p>
-          <p style="margin-top:0.5rem; font-size:var(--fs-sm); color:var(--muted)">
-            <Icon name="briefcase" size={14} /> {yearsExperience}+ years of professional experience
-          </p>
+
+        <div class="mentor-hero__content">
+          <div class="mentor-hero__eyebrow">
+            <span class="pulse-dot"></span>
+            <span>PTCA Senior Faculty &amp; Industry Mentor</span>
+          </div>
+
+          <h1 class="mentor-hero__name">{name}</h1>
+          <p class="mentor-hero__title">{title}</p>
+
+          <div class="mentor-hero__stats">
+            <div class="mentor-stat-pill">
+              <Icon name="briefcase" size={15} />
+              <span><strong>{yearsExperience}+ Years</strong> Practice</span>
+            </div>
+
+            {education.length > 0 && (
+              <div class="mentor-stat-pill">
+                <Icon name="graduation" size={15} />
+                <span>{education[0]}</span>
+              </div>
+            )}
+
+            {languages.length > 0 && (
+              <div class="mentor-stat-pill">
+                <Icon name="globe" size={15} />
+                <span><strong>{languages.length}</strong> Languages Spoken</span>
+              </div>
+            )}
+
+            {taught.length > 0 && (
+              <div class="mentor-stat-pill">
+                <Icon name="book" size={15} />
+                <span><strong>{taught.length}</strong> {taught.length === 1 ? 'Program' : 'Programs'} Taught</span>
+              </div>
+            )}
+          </div>
+
+          <div class="mentor-hero__actions">
+            {taught.length > 0 ? (
+              <a class="btn btn--primary" href="#mentor-courses">
+                View Courses Taught
+                <Icon name="arrow-right" size={16} />
+              </a>
+            ) : (
+              <a class="btn btn--primary" href="/enroll/">
+                Enroll in Mentorship
+                <Icon name="arrow-right" size={16} />
+              </a>
+            )}
+
+            <a class="btn btn--whatsapp" href={whatsappInquiryUrl} target="_blank" rel="noopener">
+              <Icon name="whatsapp" size={16} />
+              WhatsApp Inquiry
+            </a>
+
+            {linkedin && (
+              <a class="btn--outline-light" href={linkedin} target="_blank" rel="noopener" aria-label="LinkedIn profile">
+                <Icon name="linkedin" size={16} />
+                <span>LinkedIn</span>
+              </a>
+            )}
+          </div>
         </div>
       </div>
     </div>
@@ -98,24 +181,72 @@ const crumbs = [
     <div class="container">
       <div class="course-layout">
         <div class="course-layout__body">
-          <section>
-            <h2>About {name}</h2>
+          <div class="mentor-feature-box">
+            <div class="mentor-feature-box__icon">
+              <Icon name="star" size={24} />
+            </div>
+            <div>
+              <h3>Practical Mentorship &amp; Executive Leadership</h3>
+              <p>
+                Learn through real-world corporate frameworks, standard operating procedures, and actionable insights drawn directly from over {yearsExperience} years of active industry practice.
+              </p>
+            </div>
+          </div>
+
+          <section class="mentor-section">
+            <h2 class="section-title">About {name}</h2>
             <div class="prose" style="margin-top:1rem">
               <Content />
             </div>
           </section>
 
-          <section>
-            <h2>Expertise</h2>
-            <ul class="chip-list" style="margin-top:1.25rem">
-              {expertise.map((item) => <li class="chip">{item}</li>)}
-            </ul>
-          </section>
+          {careerHistory.length > 0 && (
+            <section class="mentor-section">
+              <h2 class="section-title">Career Milestones &amp; Experience</h2>
+              <p class="section-subtitle">Cross-functional industry leadership across Pakistan and international GCC markets:</p>
+              <div class="career-milestones">
+                {careerHistory.map((item) => {
+                  const parts = item.split('–');
+                  const role = parts[0]?.trim();
+                  const company = parts.slice(1).join('–').trim();
+                  return (
+                    <div class="career-card">
+                      <div class="career-card__marker">
+                        <Icon name="briefcase" size={18} />
+                      </div>
+                      <div class="career-card__content">
+                        <div class="career-card__role">{role}</div>
+                        <div class="career-card__company">{company || item}</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+          )}
+
+          {expertise.length > 0 && (
+            <section class="mentor-section">
+              <h2 class="section-title">Areas of Expertise &amp; Practical Domains</h2>
+              <p class="section-subtitle">Core functional competencies applied in professional training modules:</p>
+              <div class="expertise-grid">
+                {expertise.map((item) => (
+                  <div class="expertise-card">
+                    <div class="expertise-card__check">
+                      <Icon name="check" size={14} />
+                    </div>
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
 
           {taught.length > 0 && (
-            <section>
-              <h2>Courses taught</h2>
-              <div class="grid grid--2" style="margin-top:1.5rem">
+            <section class="mentor-section" id="mentor-courses">
+              <h2 class="section-title">Courses Taught by {name}</h2>
+              <p class="section-subtitle">Structured, hands-on training programs taught in Karachi, online and hybrid:</p>
+              <div class="grid grid--2" style="margin-top:1.25rem">
                 {taught.map((course) => <CourseCard course={course} compact />)}
               </div>
             </section>
@@ -123,30 +254,77 @@ const crumbs = [
         </div>
 
         <aside class="course-sidebar">
-          <div class="facts-card">
+          <div class="facts-card mentor-sidebar-card">
             <div class="facts-card__head">
-              <h2>Profile</h2>
-              <p>{name}</p>
+              <span class="mentor-sidebar__badge">Faculty Profile</span>
+              <h2>{name}</h2>
+              <p>{shortTitle}</p>
             </div>
+
             <ul class="facts-list">
-              <li><span class="k">Experience</span><span class="v">{yearsExperience}+ years</span></li>
-              <li><span class="k">Courses</span><span class="v">{taught.length}</span></li>
+              <li>
+                <span class="k">Experience</span>
+                <span class="v">{yearsExperience}+ Years</span>
+              </li>
+              <li>
+                <span class="k">Programs</span>
+                <span class="v">{taught.length} {taught.length === 1 ? 'Course' : 'Courses'}</span>
+              </li>
+              <li>
+                <span class="k">Delivery Mode</span>
+                <span class="v">Physical &amp; Online</span>
+              </li>
+              <li>
+                <span class="k">Faculty Status</span>
+                <span class="v" style="color:var(--brand-600)">Active Mentor</span>
+              </li>
             </ul>
 
-            {qualifications.length > 0 && (
-              <div style="padding:1.25rem 1.5rem; border-top:1px solid var(--line)">
-                <h3 style="font-size:var(--fs-sm); margin-bottom:0.75rem">Qualifications</h3>
-                <ul class="check-list">
-                  {qualifications.map((item) => (
-                    <li><Icon name="check" size={16} /> {item}</li>
+            {education.length > 0 && (
+              <div class="mentor-sidebar__section">
+                <h3 class="mentor-sidebar__title">
+                  <Icon name="graduation" size={16} />
+                  <span>Academic Degree</span>
+                </h3>
+                <ul class="mentor-detail-list">
+                  {education.map((edu) => (
+                    <li>{edu}</li>
                   ))}
                 </ul>
               </div>
             )}
 
+            {qualifications.length > 0 && (
+              <div class="mentor-sidebar__section">
+                <h3 class="mentor-sidebar__title">
+                  <Icon name="shield" size={16} />
+                  <span>Qualifications &amp; Credentials</span>
+                </h3>
+                <ul class="check-list">
+                  {qualifications.map((item) => (
+                    <li><Icon name="check" size={15} /> {item}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {languages.length > 0 && (
+              <div class="mentor-sidebar__section">
+                <h3 class="mentor-sidebar__title">
+                  <Icon name="globe" size={16} />
+                  <span>Languages Spoken</span>
+                </h3>
+                <div class="lang-pills">
+                  {languages.map((lang) => (
+                    <span class="lang-pill">{lang}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {memberships.length > 0 && (
-              <div style="padding:0 1.5rem 1.25rem">
-                <h3 style="font-size:var(--fs-sm); margin-bottom:0.75rem">Memberships</h3>
+              <div class="mentor-sidebar__section">
+                <h3 class="mentor-sidebar__title">Memberships &amp; Affiliations</h3>
                 <ul class="chip-list">
                   {memberships.map((item) => <li class="chip">{item}</li>)}
                 </ul>
@@ -154,12 +332,31 @@ const crumbs = [
             )}
 
             <div class="facts-card__actions">
-              <a class="btn btn--primary btn--block" href="/enroll/">Enroll in a course</a>
+              <a class="btn btn--primary btn--block" href="/enroll/">
+                Enroll in a Course
+                <Icon name="arrow-right" size={16} />
+              </a>
+              <a class="btn btn--whatsapp btn--block" href={whatsappInquiryUrl} target="_blank" rel="noopener">
+                <Icon name="whatsapp" size={16} />
+                Message on WhatsApp
+              </a>
               {linkedin && (
                 <a class="btn btn--outline btn--block" href={linkedin} target="_blank" rel="noopener">
-                  LinkedIn profile
+                  <Icon name="linkedin" size={16} />
+                  LinkedIn Profile
                 </a>
               )}
+            </div>
+
+            <div class="mentor-sidebar__trust">
+              <div class="mentor-trust-item">
+                <Icon name="check-circle" size={15} />
+                <span>100% Practical &amp; Case Study Focused</span>
+              </div>
+              <div class="mentor-trust-item">
+                <Icon name="check-circle" size={15} />
+                <span>Direct Access to Instructor Mentorship</span>
+              </div>
             </div>
           </div>
         </aside>
@@ -170,7 +367,7 @@ const crumbs = [
   <CtaBanner
     title="Learn from practising professionals"
     text="Join a PTCA programme in Karachi, online or hybrid and build job-ready capability."
-    primaryLabel="View courses"
+    primaryLabel="View all courses"
     primaryHref="/courses/"
   />
 </BaseLayout>

@@ -1,4 +1,4 @@
-﻿---
+---
 title: Intellectual Property Course
 shortTitle: Intellectual Property Course
 category: Intellectual Property
@@ -6,10 +6,9 @@ order: 6
 summary: >-
   A comprehensive introduction to intellectual property rights, legal protection
   mechanisms and registration procedures in Pakistan.
-duration: 3â€“6 Months
-durationISO: P6M
+duration: 4 Months
+durationISO: P4M
 modes:
-  - Physical
   - Online
   - Hybrid
 eligibility:
@@ -40,7 +39,7 @@ faqs:
   - q: What does the Intellectual Property course cover?
     a: It provides a comprehensive understanding of intellectual property rights, the legal protection mechanisms available, and registration procedures in Pakistan.
   - q: How long is the course and what modes are offered?
-    a: The programme runs three to six months and is offered in physical (Karachi), online and hybrid modes.
+    a: The programme runs 4 months and is offered in online and hybrid modes.
   - q: Who is this course designed for?
     a: It suits law students, advocates, entrepreneurs, brand owners and compliance teams who deal with trademarks, copyright and related rights.
   - q: Is a detailed curriculum available?
@@ -48,7 +47,7 @@ faqs:
   - q: IP course ki fees kya hai?
     a: Fees vary by intake and learning mode and are confirmed by admissions. Please contact the team for current details.
 seoTitle: Intellectual Property Course in Pakistan
-seoDescription: 3-6 month course on intellectual property rights, trademark, copyright and patent registration procedures in Pakistan. Karachi, online and hybrid.
+seoDescription: 4-month course on intellectual property rights, trademark, copyright and patent registration procedures in Pakistan. Online and hybrid.
 updated: 2026-04-10
 ---
 

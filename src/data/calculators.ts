@@ -60,16 +60,16 @@ export const CALCULATORS: Calculator[] = [
   },
   {
     slug: 'sales-tax',
-    title: 'Sales Tax / GST Calculator Pakistan 17%',
+    title: 'Sales Tax / GST Calculator Pakistan 18%',
     description:
-      'Add or remove 17% Pakistan sales tax (GST) from any amount instantly. Also supports FED and custom tax rates for business invoicing and pricing.',
+      'Add or remove 18% Pakistan sales tax (GST) from any amount instantly. Also supports FED and custom tax rates for business invoicing and pricing.',
     canonical: '/calculators/sales-tax/',
     label: 'Sales Tax / GST',
-    summary: '17% GST — add or extract tax from amount',
+    summary: '18% GST — add or extract tax from amount',
     category: 'taxation',
     icon: 'shield',
     featured: true,
-    keywords: ['sales tax Pakistan', 'GST calculator', '17% tax', 'FBR sales tax'],
+    keywords: ['sales tax Pakistan', 'GST calculator', '18% tax', 'FBR sales tax'],
   },
   {
     slug: 'advance-tax',

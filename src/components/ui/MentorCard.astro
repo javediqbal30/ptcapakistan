@@ -11,9 +11,7 @@ interface Props {
 const { mentor } = Astro.props;
 const { name, title, yearsExperience, expertise, photo } = mentor.data;
 const href = mentorPath(mentor);
-// `photo` (a raw path) still wins when present; otherwise fall back to the
-// optimised asset registered in `mentorPhoto()`.
-const portrait = photo ?? mentorPhoto(mentor.id);
+const portrait = mentorPhoto(mentor.id) ?? photo;
 ---
 
 <article class="mentor-card">
@@ -41,7 +39,7 @@ const portrait = photo ?? mentorPhoto(mentor.id);
       {yearsExperience}+ years of professional experience. Focus areas include{' '}
       {expertise.slice(0, 3).join(', ')}.
     </p>
-    <a class="btn btn--ghost btn--sm" href={href} style="padding-left:0">
+    <a class="btn btn--ghost btn--sm" href={href} style="padding-left:0; margin-top:0.5rem">
       View profile
       <Icon name="arrow-right" size={15} />
     </a>

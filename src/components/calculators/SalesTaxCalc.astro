@@ -1,14 +1,14 @@
 ---
 /**
  * SalesTaxCalc.astro
- * Pakistan Sales Tax / GST Calculator — 17% standard rate.
+ * Pakistan Sales Tax / GST Calculator — 18% standard rate.
  * Add or remove tax from any amount.
  */
 ---
 
 <div class="stc">
   <h2 class="calc-subheading">Sales Tax / GST Calculator</h2>
-  <p class="calc-lead">Add or remove 17% Pakistan sales tax (GST) from any amount.</p>
+  <p class="calc-lead">Add or remove 18% Pakistan sales tax (GST) from any amount.</p>
 
   <form id="stc-form" class="calc-form" novalidate>
     <div class="form-row">
@@ -29,9 +29,9 @@
     </div>
 
     <div class="form-row">
-      <label for="stc-rate" class="form-label">Tax Rate <span class="form-hint">default 17% GST</span></label>
+      <label for="stc-rate" class="form-label">Tax Rate <span class="form-hint">default 18% GST</span></label>
       <div class="input-wrap input-wrap--suffix">
-        <input type="number" id="stc-rate" name="rate" class="form-input" value="17" min="0" max="100" step="0.5" />
+        <input type="number" id="stc-rate" name="rate" class="form-input" value="18" min="0" max="100" step="0.5" />
         <span class="input-suffix">%</span>
       </div>
     </div>
@@ -71,7 +71,7 @@
     err.textContent = '';
     const mode = (form.querySelector('input[name="mode"]:checked') as HTMLInputElement).value;
     const amount = parseFloat((document.getElementById('stc-amount') as HTMLInputElement).value);
-    const rate = parseFloat((document.getElementById('stc-rate') as HTMLInputElement).value) || 17;
+    const rate = parseFloat((document.getElementById('stc-rate') as HTMLInputElement).value) || 18;
     if (!amount || amount < 0) { err.textContent = 'Please enter a valid amount.'; return; }
     let net, gross, tax;
     if (mode === 'add') {

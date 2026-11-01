@@ -85,6 +85,7 @@ careerPaths:
 certificateName: Certified Human Resource Professional (CHRP) Course
 mentors:
   - rukhsana-rustam-khan
+  - asim-zaman
 faqs:
   - q: What is the CHRP course in Karachi?
     a: The Certified Human Resource Professional programme is a three-month course covering the full HR function - recruitment, performance, employment law, compensation, learning, HR analytics and strategic HR.

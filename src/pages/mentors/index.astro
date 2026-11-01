@@ -13,14 +13,14 @@ const mentors = await getPublishedMentors();
 // Optimised portrait per mentor (falls back to initials when none supplied).
 const portraits = mentors.map((mentor) => ({
   mentor,
-  portrait: mentor.data.photo ?? mentorPhoto(mentor.id),
+  portrait: mentorPhoto(mentor.id) ?? mentor.data.photo,
 }));
 ---
 
 <BaseLayout
   seo={{
-    title: 'Mentors - Practising Tax & Corporate Experts',
-    description: 'Meet PTCA mentors: practising tax, corporate affairs and human resource professionals with 15+ and 20+ years of experience. Karachi, online and hybrid.',
+    title: 'Mentors - Practising Tax, Corporate & HR Experts',
+    description: 'Meet PTCA faculty: practising tax litigators, corporate affairs directors, HR professionals, and digital commerce entrepreneurs with 10+ to 20+ years of real experience.',
     canonical: '/mentors/',
   }}
   schemaNodes={[
@@ -33,11 +33,36 @@ const portraits = mentors.map((mentor) => ({
   <section class="page-hero">
     <div class="container">
       <Breadcrumbs items={[{ name: 'Home', path: '/' }, { name: 'Mentors', path: '/mentors/' }]} />
-      <h1>Our mentors</h1>
+      <span class="badge badge--brand" style="margin-bottom:0.75rem">PTCA Faculty &amp; Industry Leaders</span>
+      <h1>Our Expert Mentors</h1>
       <p class="page-hero__lead">
-        PTCA is taught by practising professionals. Our mentors combine senior
-        corporate roles with long-standing experience in professional training.
+        Learn from active industry practitioners. PTCA mentors combine senior
+        corporate executive roles across Pakistan, Saudi Arabia, and the UAE with dedicated, hands-on training.
       </p>
+    </div>
+  </section>
+
+  <!-- Faculty Trust Strip -->
+  <section class="trust-strip">
+    <div class="container">
+      <div style="display:flex; flex-wrap:wrap; justify-content:space-around; gap:1.5rem; padding-block:1.25rem; font-size:var(--fs-sm); color:var(--text); text-align:center;">
+        <div style="display:flex; align-items:center; gap:0.5rem;">
+          <Icon name="briefcase" size={18} class="color-brand" />
+          <span><strong>10+ to 20+ Years</strong> Industry Practice</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:0.5rem;">
+          <Icon name="globe" size={18} class="color-brand" />
+          <span><strong>Pakistan &amp; GCC</strong> Regional Experience</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:0.5rem;">
+          <Icon name="users" size={18} class="color-brand" />
+          <span><strong>100% Practising</strong> Professionals</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:0.5rem;">
+          <Icon name="check-circle" size={18} class="color-brand" />
+          <span><strong>Physical, Online &amp; Hybrid</strong> Batches</span>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -45,49 +70,74 @@ const portraits = mentors.map((mentor) => ({
     <div class="container">
       <div class="grid grid--2">
         {portraits.map(({ mentor, portrait }) => (
-          <article class="card">
-            <div style="display:flex; gap:1.5rem; align-items:flex-start">
-              <div
-                class="mentor-card__avatar"
-                style="width:120px; height:120px; font-size:var(--fs-2xl); border-radius:var(--radius-lg)"
-              >
-                {typeof portrait === 'string' ? (
-                  <img src={portrait} alt={mentor.data.name} width="120" height="120" loading="lazy" decoding="async" />
-                ) : portrait ? (
-                  <Image
-                    src={portrait}
-                    alt={mentor.data.name}
-                    widths={[120, 240, 360]}
-                    sizes="120px"
-                    quality={85}
-                    loading="lazy"
-                    decoding="async"
-                  />
-                ) : (
-                  initials(mentor.data.name)
-                )}
+          <article class="mentor-faculty-card">
+            <div>
+              <div class="mentor-faculty-card__top">
+                <div class="mentor-faculty-card__avatar">
+                  {typeof portrait === 'string' ? (
+                    <img
+                      src={portrait}
+                      alt={mentor.data.name}
+                      width="110"
+                      height="110"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  ) : portrait ? (
+                    <Image
+                      src={portrait}
+                      alt={mentor.data.name}
+                      widths={[110, 220, 330]}
+                      sizes="110px"
+                      quality={88}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  ) : (
+                    <div class="mentor-hero__avatar-fallback">
+                      {initials(mentor.data.name)}
+                    </div>
+                  )}
+                </div>
+
+                <div style="flex:1">
+                  <div class="mentor-faculty-card__exp">
+                    <Icon name="briefcase" size={13} />
+                    <span>{mentor.data.yearsExperience}+ years experience</span>
+                  </div>
+
+                  <h2 class="mentor-faculty-card__name">
+                    <a href={`/mentors/${mentor.id}/`}>{mentor.data.name}</a>
+                  </h2>
+
+                  <p class="mentor-faculty-card__role">{mentor.data.title}</p>
+                </div>
               </div>
-              <div>
-                <h2 style="font-size:var(--fs-xl)">
-                  <a href={`/mentors/${mentor.id}/`}>{mentor.data.name}</a>
-                </h2>
-                <p class="mentor-card__role">{mentor.data.title}</p>
-                <p style="margin-top:0.5rem; font-size:var(--fs-sm); color:var(--muted)">
-                  <Icon name="briefcase" size={14} /> {mentor.data.yearsExperience}+ years of experience
+
+              <div style="margin-top:1.25rem">
+                <p style="font-size:var(--fs-2xs); font-weight:var(--weight-bold); text-transform:uppercase; letter-spacing:0.06em; color:var(--muted); margin-bottom:0.5rem">
+                  Key Focus Areas
                 </p>
+                <ul class="chip-list">
+                  {mentor.data.expertise.slice(0, 5).map((item) => (
+                    <li class="chip">{item}</li>
+                  ))}
+                </ul>
               </div>
             </div>
 
-            <ul class="chip-list" style="margin-top:1.25rem">
-              {mentor.data.expertise.slice(0, 5).map((item) => (
-                <li class="chip">{item}</li>
-              ))}
-            </ul>
+            <div class="mentor-faculty-card__footer">
+              <span style="font-size:var(--fs-xs); color:var(--muted)">
+                {mentor.data.courses.length > 0
+                  ? `${mentor.data.courses.length} ${mentor.data.courses.length === 1 ? 'Program' : 'Programs'} Taught`
+                  : 'Executive Faculty'}
+              </span>
 
-            <a class="btn btn--primary btn--sm" href={`/mentors/${mentor.id}/`} style="margin-top:1.25rem">
-              View full profile
-              <Icon name="arrow-right" size={15} />
-            </a>
+              <a class="btn btn--primary btn--sm" href={`/mentors/${mentor.id}/`}>
+                View full profile
+                <Icon name="arrow-right" size={15} />
+              </a>
+            </div>
           </article>
         ))}
       </div>
@@ -95,13 +145,45 @@ const portraits = mentors.map((mentor) => ({
   </section>
 
   <section class="section section--soft">
-    <div class="container container--narrow">
+    <div class="container">
       <SectionHead
-        eyebrow="Why it matters"
-        title="Taught by people who do the work"
+        eyebrow="Why It Matters"
+        title="Taught by People Who Do the Work"
         align="center"
-        lead="Every mentor on the faculty holds a current professional role, so examples in class reflect live practice rather than textbooks alone."
+        lead="Every mentor on the PTCA faculty holds active corporate roles, so every session reflects live workplace standards rather than static textbook theory."
       />
+
+      <div class="grid grid--3" style="margin-top:2.5rem">
+        <div class="card" style="padding:var(--space-6)">
+          <div style="width:42px; height:42px; border-radius:var(--radius-sm); background:var(--brand-50); color:var(--brand-600); display:grid; place-items:center; margin-bottom:1rem">
+            <Icon name="briefcase" size={20} />
+          </div>
+          <h3 style="font-size:var(--fs-md); margin-bottom:0.5rem">Live Case Studies &amp; SOPs</h3>
+          <p style="font-size:var(--fs-sm); color:var(--muted); line-height:1.5">
+            Learn from real corporate files, contracts, FBR notices, and HR dispute scenarios handled by our faculty in their daily practice.
+          </p>
+        </div>
+
+        <div class="card" style="padding:var(--space-6)">
+          <div style="width:42px; height:42px; border-radius:var(--radius-sm); background:var(--brand-50); color:var(--brand-600); display:grid; place-items:center; margin-bottom:1rem">
+            <Icon name="globe" size={20} />
+          </div>
+          <h3 style="font-size:var(--fs-md); margin-bottom:0.5rem">International Standards</h3>
+          <p style="font-size:var(--fs-sm); color:var(--muted); line-height:1.5">
+            Mentors with leadership experience across Pakistan, Saudi Arabia, and the UAE bring cross-border perspectives to organizational systems.
+          </p>
+        </div>
+
+        <div class="card" style="padding:var(--space-6)">
+          <div style="width:42px; height:42px; border-radius:var(--radius-sm); background:var(--brand-50); color:var(--brand-600); display:grid; place-items:center; margin-bottom:1rem">
+            <Icon name="graduation" size={20} />
+          </div>
+          <h3 style="font-size:var(--fs-md); margin-bottom:0.5rem">Career &amp; Interview Guidance</h3>
+          <p style="font-size:var(--fs-sm); color:var(--muted); line-height:1.5">
+            Benefit from direct feedback on resumes, interview preparation, and corporate promotion criteria from hiring managers and directors.
+          </p>
+        </div>
+      </div>
     </div>
   </section>
 </BaseLayout>
