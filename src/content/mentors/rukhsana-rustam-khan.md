@@ -3,10 +3,10 @@ name: Rukhsana Rustam Khan
 title: Senior Vice President – Corporate Affairs | Advocate & Corporate Trainer
 yearsExperience: 20
 qualifications:
-  - MPA
-  - LL.B
-  - FCIS
-  - Diploma in Taxation (IBA CEE)
+  - MPA, LL.B, Diploma in Taxation (IBA – CEE)
+  - FCIS – Fellow Member of Institute of Corporate Secretaries of Pakistan
+  - Advocate and Certified Director
+  - Certified Trainer
 memberships:
   - Sindh Bar Council
   - Karachi Tax Bar
